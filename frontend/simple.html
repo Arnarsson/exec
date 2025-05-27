@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+        .status { padding: 10px; background: #f0f8ff; border-left: 4px solid #007acc; }
+    </style>
+</head>
+<body>
+    <h1>Executive Assistant Test Page</h1>
+    <div class="status">
+        <p>✅ Static HTML is working!</p>
+        <p>If you can see this, the basic web server functionality is working.</p>
+        <p>Time: <span id="time"></span></p>
+    </div>
+    
+    <script>
+        document.getElementById('time').textContent = new Date().toLocaleString();
+    </script>
+</body>
+</html>

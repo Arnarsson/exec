@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Assistant MVP</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f9fafb; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 12px; margin-bottom: 2rem; }
+        .card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1rem; }
+        .chat-container { background: white; border-radius: 8px; height: 500px; display: flex; flex-direction: column; }
+        .chat-messages { flex: 1; padding: 1rem; overflow-y: auto; border-bottom: 1px solid #e5e7eb; }
+        .chat-input { padding: 1rem; display: flex; gap: 10px; }
+        .chat-input input { flex: 1; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; }
+        .chat-input button { padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        .message { margin-bottom: 1rem; }
+        .message.user { text-align: right; }
+        .message-content { display: inline-block; padding: 10px 15px; border-radius: 12px; max-width: 70%; }
+        .message.user .message-content { background: #3b82f6; color: white; }
+        .message.assistant .message-content { background: #f3f4f6; color: #1f2937; }
+        .status { margin-bottom: 10px; font-size: 0.875rem; opacity: 0.7; }
+        .connection-status { padding: 8px 16px; background: #fef3c7; border-radius: 6px; margin-bottom: 1rem; }
+        .connection-status.connected { background: #dcfce7; }
+        .typing { opacity: 0.5; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Executive Assistant MVP</h1>
+            <p>Real-time AG-UI Protocol • Streaming Chat • Tool Execution</p>
+        </div>
+
+        <div class="card">
+            <div id="connection-status" class="connection-status">
+                🔄 Connecting to AG-UI backend...
+            </div>
+            
+            <div class="chat-container">
+                <div id="chat-messages" class="chat-messages">
+                    <div class="message assistant">
+                        <div class="message-content">
+                            Welcome! I'm your Executive Assistant powered by AG-UI protocol. I can help you with calendar, email, tasks, and research. What would you like me to help you with?
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input">
+                    <input type="text" id="message-input" placeholder="Ask me about your calendar, emails, tasks..." disabled>
+                    <button onclick="sendMessage()" id="send-button" disabled>Send</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🎯 Try these commands:</h3>
+            <div style="margin-top: 10px;">
+                <button class="suggestion" onclick="setMessage('📅 Show my calendar for today')">📅 Show Calendar</button>
+                <button class="suggestion" onclick="setMessage('📧 Summarize my inbox')">📧 Email Summary</button>
+                <button class="suggestion" onclick="setMessage('📋 Create a high-priority task')">📋 Create Task</button>
+                <button class="suggestion" onclick="setMessage('💰 Review Q4 budget status')">💰 Budget Review</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .suggestion { margin: 5px; padding: 8px 16px; background: #f3f4f6; border: none; border-radius: 20px; cursor: pointer; font-size: 0.875rem; }
+        .suggestion:hover { background: #e5e7eb; }
+    </style>
+
+    <script>
+        let ws = null;
+        let isConnected = false;
+        let currentMessageId = null;
+
+        // Connect to WebSocket
+        function connectWebSocket() {
+            try {
+                ws = new WebSocket('ws://localhost:8080');
+                
+                ws.onopen = function() {
+                    console.log('Connected to AG-UI backend');
+                    isConnected = true;
+                    updateConnectionStatus(true);
+                    document.getElementById('message-input').disabled = false;
+                    document.getElementById('send-button').disabled = false;
+                };
+
+                ws.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        console.log('AG-UI Event:', data);
+                        handleAGUIEvent(data);
+                    } catch (error) {
+                        console.error('Error parsing message:', error);
+                    }
+                };
+
+                ws.onclose = function() {
+                    console.log('Disconnected from AG-UI backend');
+                    isConnected = false;
+                    updateConnectionStatus(false);
+                    document.getElementById('message-input').disabled = true;
+                    document.getElementById('send-button').disabled = true;
+                    
+                    // Reconnect after 3 seconds
+                    setTimeout(connectWebSocket, 3000);
+                };
+
+                ws.onerror = function(error) {
+                    console.error('WebSocket error:', error);
+                };
+            } catch (error) {
+                console.error('Failed to connect:', error);
+                setTimeout(connectWebSocket, 3000);
+            }
+        }
+
+        function updateConnectionStatus(connected) {
+            const status = document.getElementById('connection-status');
+            if (connected) {
+                status.className = 'connection-status connected';
+                status.innerHTML = '🟢 Connected to AG-UI backend';
+            } else {
+                status.className = 'connection-status';
+                status.innerHTML = '🔄 Connecting to AG-UI backend...';
+            }
+        }
+
+        function handleAGUIEvent(data) {
+            switch (data.data?.type) {
+                case 'TextMessageStart':
+                    currentMessageId = data.data.messageId;
+                    addMessage('assistant', '', true);
+                    break;
+                    
+                case 'TextMessageContent':
+                    if (currentMessageId === data.data.messageId) {
+                        appendToLastMessage(data.data.delta);
+                    }
+                    break;
+                    
+                case 'TextMessageEnd':
+                    if (currentMessageId === data.data.messageId) {
+                        finishMessage();
+                        currentMessageId = null;
+                    }
+                    break;
+                    
+                case 'ToolCallStart':
+                    addMessage('system', `🔧 Using tool: ${data.data.toolCallName}...`);
+                    break;
+                    
+                case 'ToolCallEnd':
+                    const toolName = data.data.toolCallName || data.data.toolName || 'tool';
+                    addMessage('system', `✅ Tool completed: ${toolName}`);
+                    break;
+            }
+        }
+
+        function addMessage(role, content, isStreaming = false) {
+            const messagesDiv = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = `message-content ${isStreaming ? 'typing' : ''}`;
+            contentDiv.textContent = content;
+            
+            messageDiv.appendChild(contentDiv);
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            
+            if (isStreaming) {
+                messagesDiv.lastElementChild.id = 'streaming-message';
+            }
+        }
+
+        function appendToLastMessage(delta) {
+            const streamingMessage = document.getElementById('streaming-message');
+            if (streamingMessage) {
+                const contentDiv = streamingMessage.querySelector('.message-content');
+                contentDiv.textContent += delta;
+                document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+            }
+        }
+
+        function finishMessage() {
+            const streamingMessage = document.getElementById('streaming-message');
+            if (streamingMessage) {
+                streamingMessage.id = '';
+                streamingMessage.querySelector('.message-content').className = 'message-content';
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            
+            if (!message || !isConnected) return;
+            
+            // Add user message to chat
+            addMessage('user', message);
+            
+            // Send to backend
+            const agUIMessage = {
+                type: 'ChatMessage',
+                messageId: `msg_${Date.now()}`,
+                content: message,
+                role: 'user',
+                timestamp: new Date().toISOString(),
+                context: {
+                    executiveProfile: 'CEO Sarah Chen',
+                    timezone: 'PST',
+                    workingHours: '08:00-18:00'
+                }
+            };
+            
+            ws.send(JSON.stringify(agUIMessage));
+            input.value = '';
+        }
+
+        function setMessage(text) {
+            document.getElementById('message-input').value = text;
+        }
+
+        // Handle Enter key
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('message-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // Connect to WebSocket
+            connectWebSocket();
+        });
+    </script>
+</body>
+</html>

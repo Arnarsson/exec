@@ -1,0 +1,88 @@
+# Executive Assistant MVP - Production Docker Compose
+
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    ports:
+      - "3001:3001"
+      - "8080:8080"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - WS_PORT=8080
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - executive-network
+
+  frontend:
+    build:
+      context: ./frontend  
+      dockerfile: Dockerfile.prod
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - executive-network
+
+  # Optional: Redis for caching and session storage
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - executive-network
+
+  # Optional: PostgreSQL for persistent data storage
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: executive_assistant
+      POSTGRES_USER: executive
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+    networks:
+      - executive-network
+
+volumes:
+  redis_data:
+  postgres_data:
+
+networks:
+  executive-network:
+    driver: bridge

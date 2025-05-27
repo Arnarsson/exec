@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm:*)",
+      "Bash(npm install)",
+      "Bash(npm run dev:*)",
+      "Bash(./scripts/dev.sh:*)",
+      "Bash(npm run build:*)",
+      "Bash(pkill:*)",
+      "Bash(npm audit fix:*)",
+      "Bash(npm install:*)",
+      "Bash(lsof:*)",
+      "Bash(curl:*)",
+      "Bash(VITE_HOST=127.0.0.1 npm run dev)",
+      "Bash(python3:*)",
+      "Bash(npx serve:*)",
+      "Bash(kill:*)",
+      "Bash(cat:*)",
+      "Bash(grep:*)"
+    ],
+    "deny": []
+  }
+}

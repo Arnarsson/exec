@@ -1,0 +1,151 @@
+{
+  "meta": {
+    "instanceId": "ea_automation_001"
+  },
+  "name": "📧 Email Intelligence & Auto-Triage",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "email-intelligence",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-email",
+      "name": "Email Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "webhookId": "ea-email-intelligence"
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "operation": "message",
+        "model": "gpt-4",
+        "messages": {
+          "messageValues": [
+            {
+              "role": "system",
+              "message": "You are an Executive Assistant AI. Analyze this email and return ONLY valid JSON with these exact fields: {\"priority\": 1-5, \"action_items\": [\"string array\"], \"meeting_requests\": [], \"deadlines\": [\"ISO date strings\"], \"sentiment\": \"positive|neutral|negative\", \"category\": \"urgent|important|routine|informational\"}"
+            },
+            {
+              "role": "user",
+              "message": "Email Analysis:\nFrom: {{ $json.sender }}\nSubject: {{ $json.subject }}\nContent: {{ $json.content }}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "id": "ai-analysis",
+      "name": "AI Email Analysis",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.EA_BACKEND_URL }}/api/automation/webhook/n8n",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.EA_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "jsonParameters": {
+          "parameters": [
+            {
+              "name": "workflow",
+              "value": "email-intelligence"
+            },
+            {
+              "name": "data",
+              "value": {
+                "email_id": "={{ $('Email Webhook').item.json.email_id }}",
+                "sender": "={{ $('Email Webhook').item.json.sender }}",
+                "subject": "={{ $('Email Webhook').item.json.subject }}",
+                "content": "={{ $('Email Webhook').item.json.content }}",
+                "priority": "={{ $json.message.content.priority }}",
+                "action_items": "={{ $json.message.content.action_items }}",
+                "meeting_requests": "={{ $json.message.content.meeting_requests }}",
+                "deadlines": "={{ $json.message.content.deadlines }}",
+                "sentiment": "={{ $json.message.content.sentiment }}",
+                "category": "={{ $json.message.content.category }}"
+              }
+            }
+          ]
+        }
+      },
+      "id": "send-to-ea",
+      "name": "Send to Executive Assistant",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": {
+          "success": true,
+          "workflow": "email-intelligence",
+          "processed_at": "={{ new Date().toISOString() }}",
+          "priority": "={{ $('AI Email Analysis').item.json.message.content.priority }}",
+          "action_items_count": "={{ $('AI Email Analysis').item.json.message.content.action_items.length }}"
+        }
+      },
+      "id": "response",
+      "name": "Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Email Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Email Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Email Analysis": {
+      "main": [
+        [
+          {
+            "node": "Send to Executive Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send to Executive Assistant": {
+      "main": [
+        [
+          {
+            "node": "Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "versionId": "ea-email-v1.0"
+}

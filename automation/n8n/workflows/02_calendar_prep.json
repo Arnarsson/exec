@@ -1,0 +1,137 @@
+{
+  "meta": {
+    "instanceId": "ea_automation_002"
+  },
+  "name": "📅 Smart Calendar Preparation",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "hour": 8,
+              "minute": 0
+            }
+          ]
+        }
+      },
+      "id": "daily-trigger",
+      "name": "Daily Morning Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.EA_BACKEND_URL }}/api/calendar/agenda",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "httpHeaderAuth": {
+          "name": "Authorization",
+          "value": "Bearer {{ $env.EA_API_KEY }}"
+        }
+      },
+      "id": "get-meetings",
+      "name": "Get Today's Meetings",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "operation": "message",
+        "model": "gpt-4",
+        "messages": {
+          "messageValues": [
+            {
+              "role": "system",
+              "message": "You are an Executive Assistant. For each meeting provided, create comprehensive preparation materials. Return valid JSON with this structure: {\"meeting_preparations\": [{\"meeting_id\": \"string\", \"title\": \"string\", \"agenda\": [\"item1\", \"item2\"], \"prep_tasks\": [\"task1\", \"task2\"], \"briefing_notes\": \"string\", \"required_documents\": [\"doc1\"], \"talking_points\": [\"point1\"]}]}"
+            },
+            {
+              "role": "user",
+              "message": "Prepare materials for today's meetings: {{ JSON.stringify($json) }}"
+            }
+          ]
+        }
+      },
+      "id": "generate-prep",
+      "name": "Generate Meeting Prep",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.EA_BACKEND_URL }}/api/automation/webhook/n8n",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.EA_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "jsonParameters": {
+          "parameters": [
+            {
+              "name": "workflow",
+              "value": "calendar-prep"
+            },
+            {
+              "name": "data",
+              "value": "={{ $json.message.content }}"
+            }
+          ]
+        }
+      },
+      "id": "send-prep",
+      "name": "Send Prep to EA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Daily Morning Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Today's Meetings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Today's Meetings": {
+      "main": [
+        [
+          {
+            "node": "Generate Meeting Prep",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Meeting Prep": {
+      "main": [
+        [
+          {
+            "node": "Send Prep to EA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

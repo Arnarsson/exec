@@ -1,0 +1,1053 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;\f1\fnil\fcharset0 Menlo-Bold;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red170\green171\blue37;\red207\green125\blue255;
+\red202\green51\blue35;\red116\green116\blue116;\red57\green192\blue38;\red50\green244\blue241;\red235\green239\blue24;
+\red252\green50\blue32;\red125\green125\blue125;\red255\green255\blue255;\red86\green32\blue244;\red56\green185\blue199;
+\red37\green90\blue29;\red133\green0\blue2;\red223\green223\blue223;\red199\green199\blue199;\red219\green39\blue218;
+}
+{\*\expandedcolortbl;;\csgray\c0;\cssrgb\c72331\c71682\c18599;\cssrgb\c85422\c59131\c100000;
+\cssrgb\c83899\c28663\c18026;\csgenericrgb\c45371\c45371\c45371;\cssrgb\c25706\c77963\c19557;\cssrgb\c19572\c95778\c95688;\cssrgb\c93803\c93590\c10851;
+\cssrgb\c100000\c29539\c16203;\cssrgb\c56352\c56352\c56352;\csgray\c100000;\cssrgb\c41681\c25958\c96648;\cssrgb\c25546\c77007\c82023;
+\csgenericrgb\c14346\c35449\c11344;\cspthree\c54876\c10355\c6515;\cspthree\c90000\c90000\c90000;\cssrgb\c82112\c82112\c82112;\cssrgb\c89513\c29736\c88485;
+}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs22 \cf2 \CocoaLigature0 Last login: Sat May 24 11:23:47 on ttys013\
+sven@Svens-MacBook-Air ~ % cd /Users/sven/Desktop/MCP/executive-assistant-mvp\
+\
+sven@Svens-MacBook-Air executive-assistant-mvp % # Make the helper script executable first\
+chmod +x make-executable.sh\
+\
+# Run it to make all scripts executable\
+./make-executable.sh\
+zsh: command not found: #\
+zsh: command not found: #\
+\uc0\u55357 \u56615  Making scripts executable...\
+\uc0\u9989  All scripts are now executable!\
+\
+You can now run:\
+  ./scripts/setup.sh    # Setup development environment\
+  ./scripts/dev.sh      # Start development servers\
+  ./scripts/deploy.sh   # Deploy to production\
+sven@Svens-MacBook-Air executive-assistant-mvp % ./scripts/setup.sh\
+\uc0\u55357 \u56960  Setting up Executive Assistant MVP...\
+======================================\
+\uc0\u9989  Node.js v20.18.3 detected\
+\uc0\u55357 \u56513  Project root: /Users/sven/Desktop/MCP/executive-assistant-mvp\
+\uc0\u55357 \u56541  Setting up environment configuration...\
+\uc0\u9989  Created backend/.env template\
+\uc0\u9989  Created frontend/.env template\
+\uc0\u55357 \u56550  Installing backend dependencies...\
+
+\f1\b npm
+\f0\b0  \cf3 warn\cf2  \cf4 ERESOLVE\cf2  overriding peer dependency\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2  \cf4 code\cf2  ERESOLVE\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2  \cf4 ERESOLVE\cf2  could not resolve\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2 \
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2  While resolving: langchain@0.1.37\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2  Found: google-auth-library@9.15.1\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2  \cf6 node_modules/google-auth-library\cf2 \
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2    peerOptional google-auth-library@"^8.9.0" from @langchain/community@0.0.57\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2    \cf6 node_modules/langchain/node_modules/@langchain/community\cf2 \
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2      @langchain/community@"~0.0.47" from langchain@0.1.37\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2      \cf6 node_modules/langchain\cf2 \
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2        langchain@"^0.1.0" from the root project\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2 \
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2  Could not resolve dependency:\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2  peerOptional google-auth-library@"^8.9.0" from langchain@0.1.37\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2  \cf6 node_modules/langchain\cf2 \
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2    langchain@"^0.1.0" from the root project\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2 \
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2  Conflicting peer dependency: google-auth-library@8.9.0\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2  \cf6 node_modules/google-auth-library\cf2 \
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2    peerOptional google-auth-library@"^8.9.0" from langchain@0.1.37\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2    \cf6 node_modules/langchain\cf2 \
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2      langchain@"^0.1.0" from the root project\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2 \
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2  Fix the upstream dependency conflict, or retry\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2  this command with --force or --legacy-peer-deps\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2  to accept an incorrect (and potentially broken) dependency resolution.\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2 \
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2 \
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2  For a full report see:\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2  /Users/sven/.npm/_logs/2025-05-26T08_35_13_042Z-eresolve-report.txt\
+
+\f1\b npm
+\f0\b0  \cf5 error\cf2  A complete log of this run can be found in: /Users/sven/.npm/_logs/2025-05-26T08_35_13_042Z-debug-0.log\
+sven@Svens-MacBook-Air executive-assistant-mvp % # Clean existing installation\
+rm -rf backend/node_modules backend/package-lock.json\
+\
+# Navigate to backend and install\
+cd backend\
+npm install\
+zsh: command not found: #\
+zsh: command not found: #\
+
+\f1\b npm
+\f0\b0  \cf3 warn\cf2  \cf4 deprecated\cf2  node-domexception@1.0.0: Use your platform's native DOMException instead\
+
+\f1\b npm
+\f0\b0  \cf3 warn\cf2  \cf4 deprecated\cf2  inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.\
+
+\f1\b npm
+\f0\b0  \cf3 warn\cf2  \cf4 deprecated\cf2  glob@7.2.3: Glob versions prior to v9 are no longer supported\
+
+\f1\b npm
+\f0\b0  \cf3 warn\cf2  \cf4 deprecated\cf2  google-p12-pem@4.0.1: Package is no longer maintained\
+
+\f1\b npm
+\f0\b0  \cf3 warn\cf2  \cf4 deprecated\cf2  rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported\
+
+\f1\b npm
+\f0\b0  \cf3 warn\cf2  \cf4 deprecated\cf2  @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead\
+
+\f1\b npm
+\f0\b0  \cf3 warn\cf2  \cf4 deprecated\cf2  @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead\
+
+\f1\b npm
+\f0\b0  \cf3 warn\cf2  \cf4 deprecated\cf2  eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.\
+\
+added 551 packages, and audited 552 packages in 23s\
+\
+85 packages are looking for funding\
+  run `npm fund` for details\
+\
+found 
+\f1\b \cf7 0
+\f0\b0 \cf2  vulnerabilities\
+sven@Svens-MacBook-Air backend % # Go back to project root\
+cd ..\
+\
+# Continue with setup script\
+./scripts/setup.sh\
+zsh: command not found: #\
+zsh: command not found: #\
+\uc0\u55357 \u56960  Setting up Executive Assistant MVP...\
+======================================\
+\uc0\u9989  Node.js v20.18.3 detected\
+\uc0\u55357 \u56513  Project root: /Users/sven/Desktop/MCP/executive-assistant-mvp\
+\uc0\u55357 \u56541  Setting up environment configuration...\
+\uc0\u9889  backend/.env already exists\
+\uc0\u9889  frontend/.env already exists\
+\uc0\u55357 \u56550  Installing backend dependencies...\
+\uc0\u9889  Backend dependencies already installed\
+\uc0\u55357 \u56550  Installing frontend dependencies...\
+
+\f1\b npm
+\f0\b0  \cf3 warn\cf2  \cf4 deprecated\cf2  inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.\
+
+\f1\b npm
+\f0\b0  \cf3 warn\cf2  \cf4 deprecated\cf2  @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead\
+
+\f1\b npm
+\f0\b0  \cf3 warn\cf2  \cf4 deprecated\cf2  rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported\
+
+\f1\b npm
+\f0\b0  \cf3 warn\cf2  \cf4 deprecated\cf2  glob@7.2.3: Glob versions prior to v9 are no longer supported\
+
+\f1\b npm
+\f0\b0  \cf3 warn\cf2  \cf4 deprecated\cf2  @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead\
+
+\f1\b npm
+\f0\b0  \cf3 warn\cf2  \cf4 deprecated\cf2  eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.\
+\
+added 821 packages, and audited 822 packages in 25s\
+\
+264 packages are looking for funding\
+  run `npm fund` for details\
+\
+8 
+\f1\b \cf3 moderate
+\f0\b0 \cf2  severity vulnerabilities\
+\
+To address all issues (including breaking changes), run:\
+  npm audit fix --force\
+\
+Run `npm audit` for details.\
+\uc0\u9989  Frontend dependencies installed\
+\uc0\u55357 \u56616  Building backend TypeScript...\
+\
+> executive-assistant-backend@1.0.0 build\
+> tsc\
+\
+\cf8 src/agents/calendar-agent.ts\cf2 :\cf9 8\cf2 :\cf9 32\cf2  - \cf10 error\cf11  TS6137: \cf2 Cannot import type declaration files. Consider importing 'ag-ui' instead of '@types/ag-ui'.\
+\
+\cf12 \cb2 8\cf2 \cb1  import \{ ExecutiveState \} from '@types/ag-ui';\
+\cf12 \cb2  \cf2 \cb1  \cf10                                ~~~~~~~~~~~~~~\cf2 \
+\
+\cf8 src/agents/calendar-agent.ts\cf2 :\cf9 115\cf2 :\cf9 61\cf2  - \cf10 error\cf11  TS18046: \cf2 'error' is of type 'unknown'.\
+\
+\cf12 \cb2 115\cf2 \cb1        this.stream.errorRun(`Failed to check availability: $\{error.message\}`);\
+\cf12 \cb2    \cf2 \cb1  \cf10                                                             ~~~~~\cf2 \
+\
+\cf8 src/agents/calendar-agent.ts\cf2 :\cf9 200\cf2 :\cf9 59\cf2  - \cf10 error\cf11  TS18046: \cf2 'error' is of type 'unknown'.\
+\
+\cf12 \cb2 200\cf2 \cb1        this.stream.errorRun(`Failed to schedule meeting: $\{error.message\}`);\
+\cf12 \cb2    \cf2 \cb1  \cf10                                                           ~~~~~\cf2 \
+\
+\cf8 src/agents/calendar-agent.ts\cf2 :\cf9 262\cf2 :\cf9 6\cf2  - \cf10 error\cf11  TS18048: \cf2 'event.attendees' is possibly 'undefined'.\
+\
+\cf12 \cb2 262\cf2 \cb1     $\{event.attendees.length > 0 ? `\uc0\u55357 \u56421  $\{event.attendees.length\} attendees` : ''\}`;\
+\cf12 \cb2    \cf2 \cb1  \cf10      ~~~~~~~~~~~~~~~\cf2 \
+\
+\cf8 src/agents/calendar-agent.ts\cf2 :\cf9 262\cf2 :\cf9 41\cf2  - \cf10 error\cf11  TS18048: \cf2 'event.attendees' is possibly 'undefined'.\
+\
+\cf12 \cb2 262\cf2 \cb1     $\{event.attendees.length > 0 ? `\uc0\u55357 \u56421  $\{event.attendees.length\} attendees` : ''\}`;\
+\cf12 \cb2    \cf2 \cb1  \cf10                                         ~~~~~~~~~~~~~~~\cf2 \
+\
+\cf8 src/agents/calendar-agent.ts\cf2 :\cf9 276\cf2 :\cf9 55\cf2  - \cf10 error\cf11  TS18046: \cf2 'error' is of type 'unknown'.\
+\
+\cf12 \cb2 276\cf2 \cb1        this.stream.errorRun(`Failed to fetch agenda: $\{error.message\}`);\
+\cf12 \cb2    \cf2 \cb1  \cf10                                                       ~~~~~\cf2 \
+\
+\cf8 src/agents/calendar-agent.ts\cf2 :\cf9 357\cf2 :\cf9 68\cf2  - \cf10 error\cf11  TS18046: \cf2 'error' is of type 'unknown'.\
+\
+\cf12 \cb2 357\cf2 \cb1        this.stream.errorRun(`Failed to find optimal meeting time: $\{error.message\}`);\
+\cf12 \cb2    \cf2 \cb1  \cf10                                                                    ~~~~~\cf2 \
+\
+\cf8 src/agents/calendar-agent.ts\cf2 :\cf9 393\cf2 :\cf9 57\cf2  - \cf10 error\cf11  TS18046: \cf2 'error' is of type 'unknown'.\
+\
+\cf12 \cb2 393\cf2 \cb1        this.stream.errorRun(`Failed to cancel meeting: $\{error.message\}`);\
+\cf12 \cb2    \cf2 \cb1  \cf10                                                         ~~~~~\cf2 \
+\
+\cf8 src/agents/email-agent.ts\cf2 :\cf9 8\cf2 :\cf9 32\cf2  - \cf10 error\cf11  TS6137: \cf2 Cannot import type declaration files. Consider importing 'ag-ui' instead of '@types/ag-ui'.\
+\
+\cf12 \cb2 8\cf2 \cb1  import \{ ExecutiveState \} from '@types/ag-ui';\
+\cf12 \cb2  \cf2 \cb1  \cf10                                ~~~~~~~~~~~~~~\cf2 \
+\
+\cf8 src/agents/email-agent.ts\cf2 :\cf9 149\cf2 :\cf9 59\cf2  - \cf10 error\cf11  TS18046: \cf2 'error' is of type 'unknown'.\
+\
+\cf12 \cb2 149\cf2 \cb1        this.stream.errorRun(`Failed to summarize emails: $\{error.message\}`);\
+\cf12 \cb2    \cf2 \cb1  \cf10                                                           ~~~~~\cf2 \
+\
+\cf8 src/agents/email-agent.ts\cf2 :\cf9 204\cf2 :\cf9 63\cf2  - \cf10 error\cf11  TS18046: \cf2 'error' is of type 'unknown'.\
+\
+\cf12 \cb2 204\cf2 \cb1        this.stream.errorRun(`Failed to draft email response: $\{error.message\}`);\
+\cf12 \cb2    \cf2 \cb1  \cf10                                                               ~~~~~\cf2 \
+\
+\cf8 src/agents/email-agent.ts\cf2 :\cf9 248\cf2 :\cf9 53\cf2  - \cf10 error\cf11  TS18046: \cf2 'error' is of type 'unknown'.\
+\
+\cf12 \cb2 248\cf2 \cb1        this.stream.errorRun(`Failed to send email: $\{error.message\}`);\
+\cf12 \cb2    \cf2 \cb1  \cf10                                                     ~~~~~\cf2 \
+\
+\cf8 src/agents/email-agent.ts\cf2 :\cf9 319\cf2 :\cf9 59\cf2  - \cf10 error\cf11  TS18046: \cf2 'error' is of type 'unknown'.\
+\
+\cf12 \cb2 319\cf2 \cb1        this.stream.errorRun(`Failed to prioritize inbox: $\{error.message\}`);\
+\cf12 \cb2    \cf2 \cb1  \cf10                                                           ~~~~~\cf2 \
+\
+\cf8 src/agents/orchestrator.ts\cf2 :\cf9 9\cf2 :\cf9 32\cf2  - \cf10 error\cf11  TS6137: \cf2 Cannot import type declaration files. Consider importing 'ag-ui' instead of '@types/ag-ui'.\
+\
+\cf12 \cb2 9\cf2 \cb1  import \{ ExecutiveState \} from '@types/ag-ui';\
+\cf12 \cb2  \cf2 \cb1  \cf10                                ~~~~~~~~~~~~~~\cf2 \
+\
+\cf8 src/agents/orchestrator.ts\cf2 :\cf9 89\cf2 :\cf9 58\cf2  - \cf10 error\cf11  TS18046: \cf2 'error' is of type 'unknown'.\
+\
+\cf12 \cb2 89\cf2 \cb1        this.stream.errorRun(`Failed to process request: $\{error.message\}`);\
+\cf12 \cb2   \cf2 \cb1  \cf10                                                          ~~~~~\cf2 \
+\
+\cf8 src/agents/orchestrator.ts\cf2 :\cf9 94\cf2 :\cf9 75\cf2  - \cf10 error\cf11  TS18046: \cf2 'error' is of type 'unknown'.\
+\
+\cf12 \cb2 94\cf2 \cb1          content: `I encountered an error while processing your request: $\{error.message\}`\
+\cf12 \cb2   \cf2 \cb1  \cf10                                                                           ~~~~~\cf2 \
+\
+\cf8 src/agents/orchestrator.ts\cf2 :\cf9 601\cf2 :\cf9 11\cf2  - \cf10 error\cf11  TS2322: \cf2 Type '"professional"' is not assignable to type '"formal" | "casual" | "direct"'.\
+\
+\cf12 \cb2 601\cf2 \cb1            communicationStyle: 'professional',\
+\cf12 \cb2    \cf2 \cb1  \cf10           ~~~~~~~~~~~~~~~~~~\cf2 \
+\
+  \cf8 src/types/ag-ui.ts\cf2 :\cf9 144\cf2 :\cf9 7\cf2 \
+    \cf12 \cb2 144\cf2 \cb1        communicationStyle: 'formal' | 'casual' | 'direct';\
+    \cf12 \cb2    \cf2 \cb1  \cf8       ~~~~~~~~~~~~~~~~~~\cf2 \
+    The expected type comes from property 'communicationStyle' which is declared here on type '\{ workingHours: \{ start: string; end: string; \}; communicationStyle: "formal" | "casual" | "direct"; priorityLevel: "high" | "medium" | "low"; autoApprovalLimits: \{ calendar: boolean; email: boolean; documents: boolean; \}; \}'\
+\
+\cf8 src/events/emitter.ts\cf2 :\cf9 8\cf2 :\cf9 38\cf2  - \cf10 error\cf11  TS6137: \cf2 Cannot import type declaration files. Consider importing 'ag-ui' instead of '@types/ag-ui'.\
+\
+\cf12 \cb2 8\cf2 \cb1  import \{ AGUIEvent, WSMessage \} from '@types/ag-ui';\
+\cf12 \cb2  \cf2 \cb1  \cf10                                      ~~~~~~~~~~~~~~\cf2 \
+\
+\cf8 src/events/stream.ts\cf2 :\cf9 24\cf2 :\cf9 8\cf2  - \cf10 error\cf11  TS6137: \cf2 Cannot import type declaration files. Consider importing 'ag-ui' instead of '@types/ag-ui'.\
+\
+\cf12 \cb2 24\cf2 \cb1  \} from '@types/ag-ui';\
+\cf12 \cb2   \cf2 \cb1  \cf10        ~~~~~~~~~~~~~~\cf2 \
+\
+\cf8 src/index.ts\cf2 :\cf9 71\cf2 :\cf9 30\cf2  - \cf10 error\cf11  TS7030: \cf2 Not all code paths return a value.\
+\
+\cf12 \cb2 71\cf2 \cb1  app.post('/api/test-events', async (req, res) => \{\
+\cf12 \cb2   \cf2 \cb1  \cf10                              ~~~~~~~~~~~~~~~~~~~~~\cf2 \
+\
+\cf8 src/index.ts\cf2 :\cf9 108\cf2 :\cf9 35\cf2  - \cf10 error\cf11  TS18046: \cf2 'error' is of type 'unknown'.\
+\
+\cf12 \cb2 108\cf2 \cb1      res.status(500).json(\{ error: error.message \});\
+\cf12 \cb2    \cf2 \cb1  \cf10                                   ~~~~~\cf2 \
+\
+\cf8 src/index.ts\cf2 :\cf9 122\cf2 :\cf9 35\cf2  - \cf10 error\cf11  TS18046: \cf2 'error' is of type 'unknown'.\
+\
+\cf12 \cb2 122\cf2 \cb1      res.status(500).json(\{ error: error.message \});\
+\cf12 \cb2    \cf2 \cb1  \cf10                                   ~~~~~\cf2 \
+\
+\cf8 src/index.ts\cf2 :\cf9 140\cf2 :\cf9 35\cf2  - \cf10 error\cf11  TS18046: \cf2 'error' is of type 'unknown'.\
+\
+\cf12 \cb2 140\cf2 \cb1      res.status(500).json(\{ error: error.message \});\
+\cf12 \cb2    \cf2 \cb1  \cf10                                   ~~~~~\cf2 \
+\
+\cf8 src/server/websocket.ts\cf2 :\cf9 10\cf2 :\cf9 27\cf2  - \cf10 error\cf11  TS6137: \cf2 Cannot import type declaration files. Consider importing 'ag-ui' instead of '@types/ag-ui'.\
+\
+\cf12 \cb2 10\cf2 \cb1  import \{ WSMessage \} from '@types/ag-ui';\
+\cf12 \cb2   \cf2 \cb1  \cf10                           ~~~~~~~~~~~~~~\cf2 \
+\
+\cf8 src/server/websocket.ts\cf2 :\cf9 36\cf2 :\cf9 11\cf2  - \cf10 error\cf11  TS2564: \cf2 Property 'heartbeatInterval' has no initializer and is not definitely assigned in the constructor.\
+\
+\cf12 \cb2 36\cf2 \cb1    private heartbeatInterval: NodeJS.Timeout;\
+\cf12 \cb2   \cf2 \cb1  \cf10           ~~~~~~~~~~~~~~~~~\cf2 \
+\
+\cf8 src/server/websocket.ts\cf2 :\cf9 99\cf2 :\cf9 64\cf2  - \cf10 error\cf11  TS18046: \cf2 'error' is of type 'unknown'.\
+\
+\cf12 \cb2 99\cf2 \cb1            this.sendError(connection, 'Invalid message format', error.message);\
+\cf12 \cb2   \cf2 \cb1  \cf10                                                                ~~~~~\cf2 \
+\
+\cf8 src/server/websocket.ts\cf2 :\cf9 193\cf2 :\cf9 55\cf2  - \cf10 error\cf11  TS18046: \cf2 'error' is of type 'unknown'.\
+\
+\cf12 \cb2 193\cf2 \cb1        this.sendError(connection, 'Processing failed', error.message, message.id);\
+\cf12 \cb2    \cf2 \cb1  \cf10                                                       ~~~~~\cf2 \
+\
+\cf8 src/server/websocket.ts\cf2 :\cf9 247\cf2 :\cf9 51\cf2  - \cf10 error\cf11  TS18046: \cf2 'error' is of type 'unknown'.\
+\
+\cf12 \cb2 247\cf2 \cb1        this.sendError(connection, 'Action failed', error.message, message.id);\
+\cf12 \cb2    \cf2 \cb1  \cf10                                                   ~~~~~\cf2 \
+\
+\cf8 src/server/websocket.ts\cf2 :\cf9 253\cf2 :\cf9 13\cf2  - \cf10 error\cf11  TS2339: \cf2 Property 'approved' does not exist on type '\{ content?: string | undefined; action?: string | undefined; params?: any; threadId?: string | undefined; \}'.\
+\
+\cf12 \cb2 253\cf2 \cb1      const \{ approved, actionId, comments \} = message.data;\
+\cf12 \cb2    \cf2 \cb1  \cf10             ~~~~~~~~\cf2 \
+\
+\cf8 src/server/websocket.ts\cf2 :\cf9 253\cf2 :\cf9 23\cf2  - \cf10 error\cf11  TS2339: \cf2 Property 'actionId' does not exist on type '\{ content?: string | undefined; action?: string | undefined; params?: any; threadId?: string | undefined; \}'.\
+\
+\cf12 \cb2 253\cf2 \cb1      const \{ approved, actionId, comments \} = message.data;\
+\cf12 \cb2    \cf2 \cb1  \cf10                       ~~~~~~~~\cf2 \
+\
+\cf8 src/server/websocket.ts\cf2 :\cf9 253\cf2 :\cf9 33\cf2  - \cf10 error\cf11  TS2339: \cf2 Property 'comments' does not exist on type '\{ content?: string | undefined; action?: string | undefined; params?: any; threadId?: string | undefined; \}'.\
+\
+\cf12 \cb2 253\cf2 \cb1      const \{ approved, actionId, comments \} = message.data;\
+\cf12 \cb2    \cf2 \cb1  \cf10                                 ~~~~~~~~\cf2 \
+\
+\
+Found 31 errors in 7 files.\
+\
+Errors  Files\
+     8  src/agents/calendar-agent.ts\cf11 :8\cf2 \
+     5  src/agents/email-agent.ts\cf11 :8\cf2 \
+     4  src/agents/orchestrator.ts\cf11 :9\cf2 \
+     1  src/events/emitter.ts\cf11 :8\cf2 \
+     1  src/events/stream.ts\cf11 :24\cf2 \
+     4  src/index.ts\cf11 :71\cf2 \
+     8  src/server/websocket.ts\cf11 :10\cf2 \
+sven@Svens-MacBook-Air executive-assistant-mvp % cd /Users/sven/Desktop/MCP/executive-assistant-mvp/backend\
+npm run build\
+\
+> executive-assistant-backend@1.0.0 build\
+> tsc\
+\
+\cf8 src/index.ts\cf2 :\cf9 76\cf2 :\cf9 7\cf2  - \cf10 error\cf11  TS2322: \cf2 Type 'Response<any, Record<string, any>, number>' is not assignable to type 'void'.\
+\
+\cf12 \cb2 76\cf2 \cb1        return res.status(503).json(\{ error: 'WebSocket server not running' \});\
+\cf12 \cb2   \cf2 \cb1  \cf10       ~~~~~~\cf2 \
+\
+\cf8 src/index.ts\cf2 :\cf9 98\cf2 :\cf9 9\cf2  - \cf10 error\cf11  TS2322: \cf2 Type 'Response<any, Record<string, any>, number>' is not assignable to type 'void'.\
+\
+\cf12 \cb2 98\cf2 \cb1          return res.status(400).json(\{ error: 'Invalid event type' \});\
+\cf12 \cb2   \cf2 \cb1  \cf10         ~~~~~~\cf2 \
+\
+\
+Found 2 errors in the same file, starting at: src/index.ts\cf11 :76\cf2 \
+\
+sven@Svens-MacBook-Air backend % cd /Users/sven/Desktop/MCP/executive-assistant-mvp/backend\
+npm run build\
+\
+> executive-assistant-backend@1.0.0 build\
+> tsc\
+\
+sven@Svens-MacBook-Air backend % # After successful build\
+cd ..\
+./scripts/setup.sh\
+zsh: command not found: #\
+\uc0\u55357 \u56960  Setting up Executive Assistant MVP...\
+======================================\
+\uc0\u9989  Node.js v20.18.3 detected\
+\uc0\u55357 \u56513  Project root: /Users/sven/Desktop/MCP/executive-assistant-mvp\
+\uc0\u55357 \u56541  Setting up environment configuration...\
+\uc0\u9889  backend/.env already exists\
+\uc0\u9889  frontend/.env already exists\
+\uc0\u55357 \u56550  Installing backend dependencies...\
+\uc0\u9889  Backend dependencies already installed\
+\uc0\u55357 \u56550  Installing frontend dependencies...\
+\uc0\u9889  Frontend dependencies already installed\
+\uc0\u55357 \u56616  Building backend TypeScript...\
+\
+> executive-assistant-backend@1.0.0 build\
+> tsc\
+\
+\
+\uc0\u55356 \u57225  Setup Complete!\
+==================\
+\
+\uc0\u55357 \u56541  Next Steps:\
+1. Configure your API keys in backend/.env:\
+   - OPENAI_API_KEY (required for AI functionality)\
+   - GOOGLE_CLIENT_ID & GOOGLE_CLIENT_SECRET (for calendar/email)\
+\
+2. Start the development servers:\
+   ./scripts/dev.sh\
+\
+3. Access the application:\
+   - Frontend: http://localhost:3000\
+   - Backend API: http://localhost:3001\
+   - WebSocket: ws://localhost:8080\
+\
+\uc0\u55357 \u56615  For production deployment, see ./scripts/deploy.sh\
+\
+sven@Svens-MacBook-Air executive-assistant-mvp % ./scripts/dev.sh        \
+\uc0\u55357 \u56960  Starting Executive Assistant MVP Development Servers...\
+========================================================\
+\
+\cf13 \uc0\u55357 \u56615  Starting Backend Server (AG-UI + WebSocket)...\cf2 \
+================================================\
+\
+> executive-assistant-backend@1.0.0 dev\
+> tsx watch src/index.ts\
+\
+\uc0\u55357 \u56960  AG-UI WebSocket server started on port 8080\
+\uc0\u55356 \u57104  WebSocket server started on port 8080\
+\uc0\u10060  Uncaught Exception: Error: listen EADDRINUSE: address already in use :::3001\
+\cf11     at Server.setupListenHandle [as _listen2] (node:net:1908:16)\cf2 \
+\cf11     at listenInCluster (node:net:1965:12)\cf2 \
+\cf11     at Server.listen (node:net:2067:7)\cf2 \
+    at Function.listen \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/application.js:635:24\cf11 )\cf2 \
+    at startServer \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 src/index.ts:186:22\cf11 )\cf2 \
+    at express \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 src/index.ts:240:3\cf11 )\cf2 \
+    at Object.<anonymous> \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 src/index.ts:241:1\cf11 )\cf2 \
+\cf11     at Module._compile (node:internal/modules/cjs/loader:1469:14)\cf2 \
+    at Object.transformer \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul tsx\ulnone /dist/register-D2KMMyKp.cjs:2:1186\cf11 )\cf2 \
+\cf11     at Module.load (node:internal/modules/cjs/loader:1288:32)\cf2  \{\
+  code: \cf7 'EADDRINUSE'\cf2 ,\
+  errno: \cf3 -48\cf2 ,\
+  syscall: \cf7 'listen'\cf2 ,\
+  address: \cf7 '::'\cf2 ,\
+  port: \cf3 3001\cf2 \
+\}\
+\
+\cf7 \uc0\u55356 \u57256  Starting Frontend Development Server...\cf2 \
+===========================================\
+\
+> executive-assistant-frontend@1.0.0 dev\
+> vite\
+\
+\
+  
+\f1\b \cf7 VITE
+\f0\b0  v4.5.14\cf2   \cf6 ready in 
+\f1\b \cf2 225
+\f0\b0  ms\
+\
+  \cf7 \uc0\u10140 \cf2   
+\f1\b Local
+\f0\b0 :   \cf14 http://localhost:
+\f1\b 3000
+\f0\b0 /\cf2 \
+\cf6   \cf15 \uc0\u10140 \cf6   
+\f1\b Network
+\f0\b0 : use 
+\f1\b \cf2 --host
+\f0\b0 \cf6  to expose\cf2 \
+Error: \cf5   Failed to scan for dependencies from entries:\cf2 \
+\cf5   /Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/index.html\cf2 \
+\
+\cf5   \uc0\u10008  \cf16 \cb16 [\cf17 ERROR\cf16 ]\cf2 \cb1  
+\f1\b Expected "\}" but found "s"
+\f0\b0 \
+\
+    src/pages/Email.tsx:91:81:\
+\cf18       91 \uc0\u9474  ...t TechSummit 2024. This year\\\\'\cf7 s\cf18  theme is "Innovation in the Di...\cf2 \
+\cf18          \uc0\u9474                                    \cf7 ^\cf2 \
+\cf18          \uc0\u9589                                    \cf7 \}\cf2 \
+\
+\
+    at failureErrorWithLog (/Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/esbuild/lib/main.js:1649:15)\
+    at /Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/esbuild/lib/main.js:1058:25\
+    at runOnEndCallbacks (/Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/esbuild/lib/main.js:1484:45)\
+    at buildResponseToResult (/Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/esbuild/lib/main.js:1056:7)\
+    at /Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/esbuild/lib/main.js:1068:9\
+    at new Promise (<anonymous>)\
+    at requestCallbacks.on-end (/Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/esbuild/lib/main.js:1067:54)\
+    at handleRequest (/Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/esbuild/lib/main.js:729:19)\
+    at handleIncomingPacket (/Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/esbuild/lib/main.js:755:7)\
+    at Socket.readFromStdout (/Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/esbuild/lib/main.js:679:7)\
+\
+\uc0\u55356 \u57225  Development Environment Ready!\
+=================================\
+\
+\cf7 \uc0\u9989  Backend Server:\cf2 \
+   \uc0\u55357 \u56525  API: http://localhost:3001\
+   \uc0\u55357 \u56588  WebSocket: ws://localhost:8080\
+   \uc0\u55357 \u56467  Health: http://localhost:3001/health\
+\
+\cf7 \uc0\u9989  Frontend Application:\cf2 \
+   \uc0\u55356 \u57104  Dashboard: http://localhost:3000\
+   \uc0\u55356 \u57256  Development: http://localhost:5173 (if using Vite)\
+\
+
+\f1\b \cf3 \uc0\u55357 \u56538  Available Features:
+\f0\b0 \cf2 \
+   \uc0\u55357 \u56522  Executive Dashboard with real-time metrics\
+   \uc0\u55357 \u56517  Calendar management and scheduling\
+   \uc0\u55357 \u56551  Email interface with AI summarization\
+   \uc0\u55357 \u56523  Task management with Kanban views\
+   \uc0\u55357 \u56492  AI Chat with AG-UI streaming\
+   \uc0\u9881 \u65039   Settings and integration management\
+\
+\cf13 \uc0\u55357 \u56615  Development Tools:\cf2 \
+   \'95 Hot reload enabled for both servers\
+   \'95 TypeScript compilation in watch mode\
+   \'95 AG-UI events visible in browser console\
+   \'95 WebSocket connection status in UI\
+\
+
+\f1\b \cf3 \uc0\u55357 \u56481  Tips:
+\f0\b0 \cf2 \
+   \'95 Use Ctrl+C to stop both servers\
+   \'95 Check browser console for AG-UI events\
+   \'95 Configure API keys in .env files for full functionality\
+   \'95 WebSocket events stream in real-time\
+\
+\uc0\u55357 \u56541  Logs will appear below as you use the application...\
+======================================================\
+\
+\cf6 10:51:42 AM\cf2  
+\f1\b \cf5 [vite]
+\f0\b0 \cf2  \cf5 Internal server error: parsing /Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/tsconfig.node.json failed: Error: ENOENT: no such file or directory, open '/Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/tsconfig.node.json'\cf2 \
+  Plugin: \cf19 vite:esbuild\cf2 \
+  File: \cf14 /Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/src/main.tsx\cf2 \
+      at parseFile$1 (file:///Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/vite/dist/node/chunks/dep-827b23df.js:13574:11)\
+      at async Promise.all (index 0)\
+      at async parseReferences (file:///Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/vite/dist/node/chunks/dep-827b23df.js:13594:22)\
+      at async Promise.all (index 1)\
+      at async parse$f (file:///Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/vite/dist/node/chunks/dep-827b23df.js:13553:5)\
+      at async loadTsconfigJsonForFile (file:///Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/vite/dist/node/chunks/dep-827b23df.js:14200:24)\
+      at async transformWithEsbuild (file:///Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/vite/dist/node/chunks/dep-827b23df.js:13867:36)\
+      at async TransformContext.transform (file:///Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/vite/dist/node/chunks/dep-827b23df.js:14010:32)\
+      at async Object.transform (file:///Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/vite/dist/node/chunks/dep-827b23df.js:44356:30)\
+      at async loadAndTransform (file:///Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/vite/dist/node/chunks/dep-827b23df.js:55088:29)\
+parsing /Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/tsconfig.node.json failed: Error: ENOENT: no such file or directory, open '/Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/tsconfig.node.json'\
+\cf6 10:51:55 AM\cf2  
+\f1\b \cf14 [vite]
+\f0\b0 \cf2  \cf7 \uc0\u10024  new dependencies optimized: \cf3 react-dom/client, react-router-dom, react-query, @copilotkit/react-core, react-hot-toast, @copilotkit/react-ui, @heroicons/react/24/outline, date-fns, @heroicons/react/24/solid, @copilotkit/react-textarea, socket.io-client, axios\cf2 \
+\cf6 10:51:55 AM\cf2  
+\f1\b \cf14 [vite]
+\f0\b0 \cf2  \cf7 \uc0\u10024  optimized dependencies changed. reloading\cf2 \
+^C\
+\uc0\u55357 \u57041  Shutting down development servers...\
+kill: 68836: No such process\
+kill: 68894: No such process\
+sven@Svens-MacBook-Air executive-assistant-mvp % \
+sven@Svens-MacBook-Air executive-assistant-mvp % # Open the backend environment file\
+nano backend/.env\
+# or if you prefer VS Code:\
+# code backend/.env\
+zsh: command not found: #\
+zsh: command not found: #\
+zsh: command not found: #\
+sven@Svens-MacBook-Air executive-assistant-mvp % # Kill processes using the ports\
+lsof -ti:3001,3000,8080 | xargs kill -9\
+\
+# Wait a moment for cleanup\
+sleep 3\
+\
+# Restart the development servers\
+./scripts/dev.sh\
+zsh: command not found: #\
+zsh: command not found: #\
+zsh: command not found: #\
+\uc0\u55357 \u56960  Starting Executive Assistant MVP Development Servers...\
+========================================================\
+\
+\cf13 \uc0\u55357 \u56615  Starting Backend Server (AG-UI + WebSocket)...\cf2 \
+================================================\
+\
+> executive-assistant-backend@1.0.0 dev\
+> tsx watch src/index.ts\
+\
+\uc0\u55357 \u56960  AG-UI WebSocket server started on port 8080\
+\uc0\u55356 \u57104  WebSocket server started on port 8080\
+\uc0\u55357 \u56960  Executive Assistant API server running on port 3001\
+\uc0\u55357 \u56541  Environment: development\
+\uc0\u55357 \u56599  Health check: http://localhost:3001/health\
+\
+\cf7 \uc0\u55356 \u57256  Starting Frontend Development Server...\cf2 \
+===========================================\
+\
+> executive-assistant-frontend@1.0.0 dev\
+> vite\
+\
+\
+  
+\f1\b \cf7 VITE
+\f0\b0  v4.5.14\cf2   \cf6 ready in 
+\f1\b \cf2 152
+\f0\b0  ms\
+\
+  \cf7 \uc0\u10140 \cf2   
+\f1\b Local
+\f0\b0 :   \cf14 http://localhost:
+\f1\b 3000
+\f0\b0 /\cf2 \
+\cf6   \cf15 \uc0\u10140 \cf6   
+\f1\b Network
+\f0\b0 : use 
+\f1\b \cf2 --host
+\f0\b0 \cf6  to expose\cf2 \
+\cf6 10:53:29 AM\cf2  
+\f1\b \cf5 [vite]
+\f0\b0 \cf2  \cf5 Internal server error: parsing /Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/tsconfig.node.json failed: Error: ENOENT: no such file or directory, open '/Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/tsconfig.node.json'\cf2 \
+  Plugin: \cf19 vite:esbuild\cf2 \
+  File: \cf14 /Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/src/main.tsx\cf2 \
+      at parseFile$1 (file:///Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/vite/dist/node/chunks/dep-827b23df.js:13574:11)\
+      at async Promise.all (index 0)\
+      at async parseReferences (file:///Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/vite/dist/node/chunks/dep-827b23df.js:13594:22)\
+      at async Promise.all (index 1)\
+      at async parse$f (file:///Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/vite/dist/node/chunks/dep-827b23df.js:13553:5)\
+      at async loadTsconfigJsonForFile (file:///Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/vite/dist/node/chunks/dep-827b23df.js:14200:24)\
+      at async transformWithEsbuild (file:///Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/vite/dist/node/chunks/dep-827b23df.js:13867:36)\
+      at async TransformContext.transform (file:///Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/vite/dist/node/chunks/dep-827b23df.js:14010:32)\
+      at async Object.transform (file:///Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/vite/dist/node/chunks/dep-827b23df.js:44356:30)\
+      at async loadAndTransform (file:///Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/node_modules/vite/dist/node/chunks/dep-827b23df.js:55088:29)\
+parsing /Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/tsconfig.node.json failed: Error: ENOENT: no such file or directory, open '/Users/sven/Desktop/MCP/executive-assistant-mvp/frontend/tsconfig.node.json'\
+\
+\uc0\u55356 \u57225  Development Environment Ready!\
+=================================\
+\
+\cf7 \uc0\u9989  Backend Server:\cf2 \
+   \uc0\u55357 \u56525  API: http://localhost:3001\
+   \uc0\u55357 \u56588  WebSocket: ws://localhost:8080\
+   \uc0\u55357 \u56467  Health: http://localhost:3001/health\
+\
+\cf7 \uc0\u9989  Frontend Application:\cf2 \
+   \uc0\u55356 \u57104  Dashboard: http://localhost:3000\
+   \uc0\u55356 \u57256  Development: http://localhost:5173 (if using Vite)\
+\
+
+\f1\b \cf3 \uc0\u55357 \u56538  Available Features:
+\f0\b0 \cf2 \
+   \uc0\u55357 \u56522  Executive Dashboard with real-time metrics\
+   \uc0\u55357 \u56517  Calendar management and scheduling\
+   \uc0\u55357 \u56551  Email interface with AI summarization\
+   \uc0\u55357 \u56523  Task management with Kanban views\
+   \uc0\u55357 \u56492  AI Chat with AG-UI streaming\
+   \uc0\u9881 \u65039   Settings and integration management\
+\
+\cf13 \uc0\u55357 \u56615  Development Tools:\cf2 \
+   \'95 Hot reload enabled for both servers\
+   \'95 TypeScript compilation in watch mode\
+   \'95 AG-UI events visible in browser console\
+   \'95 WebSocket connection status in UI\
+\
+
+\f1\b \cf3 \uc0\u55357 \u56481  Tips:
+\f0\b0 \cf2 \
+   \'95 Use Ctrl+C to stop both servers\
+   \'95 Check browser console for AG-UI events\
+   \'95 Configure API keys in .env files for full functionality\
+   \'95 WebSocket events stream in real-time\
+\
+\uc0\u55357 \u56541  Logs will appear below as you use the application...\
+======================================================\
+\
+\cf6 10:55:16 AM\cf2  
+\f1\b \cf14 [vite]
+\f0\b0 \cf2  \cf7 page reload \cf6 src/main.tsx\cf2 \
+AG-UI connection added: 1bf579c2-9bdd-48d5-8567-16cb65cba94c\
+\uc0\u55357 \u56599  Client connected: 1bf579c2-9bdd-48d5-8567-16cb65cba94c (undefined)\
+AG-UI connection removed: 1bf579c2-9bdd-48d5-8567-16cb65cba94c\
+\uc0\u55357 \u56588  Client disconnected: 1bf579c2-9bdd-48d5-8567-16cb65cba94c (code: 1006, reason: )\
+AG-UI connection removed: 1bf579c2-9bdd-48d5-8567-16cb65cba94c\
+2025-05-26T08:55:17.489Z POST /api/copilot\
+AG-UI connection added: 01a5b03c-2395-4055-94bc-6a701bbc65ac\
+\uc0\u55357 \u56599  Client connected: 01a5b03c-2395-4055-94bc-6a701bbc65ac (::1)\
+AG-UI connection removed: 01a5b03c-2395-4055-94bc-6a701bbc65ac\
+\uc0\u55357 \u56588  Client disconnected: 01a5b03c-2395-4055-94bc-6a701bbc65ac (code: 1005, reason: )\
+AG-UI connection removed: 01a5b03c-2395-4055-94bc-6a701bbc65ac\
+\uc0\u55357 \u56960  AG-UI WebSocket server started on port 8080\
+\uc0\u55356 \u57104  WebSocket server started on port 8080\
+\uc0\u55357 \u56960  Executive Assistant API server running on port 3001\
+\uc0\u55357 \u56541  Environment: development\
+\uc0\u55357 \u56599  Health check: http://localhost:3001/health\
+AG-UI connection added: 36838161-64cc-4014-8505-1108efbb394f\
+\uc0\u55357 \u56599  Client connected: 36838161-64cc-4014-8505-1108efbb394f (::1)\
+AG-UI connection removed: 36838161-64cc-4014-8505-1108efbb394f\
+\uc0\u55357 \u56588  Client disconnected: 36838161-64cc-4014-8505-1108efbb394f (code: 1005, reason: )\
+AG-UI connection removed: 36838161-64cc-4014-8505-1108efbb394f\
+AG-UI connection added: fd89c652-2c50-4636-9791-a79dafb15c75\
+\uc0\u55357 \u56599  Client connected: fd89c652-2c50-4636-9791-a79dafb15c75 (::1)\
+AG-UI connection removed: fd89c652-2c50-4636-9791-a79dafb15c75\
+\uc0\u55357 \u56588  Client disconnected: fd89c652-2c50-4636-9791-a79dafb15c75 (code: 1005, reason: )\
+AG-UI connection removed: fd89c652-2c50-4636-9791-a79dafb15c75\
+AG-UI connection added: 0f4a9a67-7a19-4bce-b8a3-c42cd49a59ee\
+\uc0\u55357 \u56599  Client connected: 0f4a9a67-7a19-4bce-b8a3-c42cd49a59ee (::1)\
+AG-UI connection removed: 0f4a9a67-7a19-4bce-b8a3-c42cd49a59ee\
+\uc0\u55357 \u56588  Client disconnected: 0f4a9a67-7a19-4bce-b8a3-c42cd49a59ee (code: 1001, reason: )\
+AG-UI connection removed: 0f4a9a67-7a19-4bce-b8a3-c42cd49a59ee\
+2025-05-26T08:55:37.819Z POST /api/copilot\
+CopilotKit API Error: TypeError: Cannot read properties of undefined (reading 'length')\
+    at <anonymous> \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 src/index.ts:123:45\cf11 )\cf2 \
+    at Layer.handle [as handle_request] \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/layer.js:95:5\cf11 )\cf2 \
+    at next \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/route.js:149:13\cf11 )\cf2 \
+    at Route.dispatch \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/route.js:119:3\cf11 )\cf2 \
+    at Layer.handle [as handle_request] \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/layer.js:95:5\cf11 )\cf2 \
+    at \cf11 /Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/index.js:284:15\
+    at Function.process_params \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/index.js:346:12\cf11 )\cf2 \
+    at next \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/index.js:280:10\cf11 )\cf2 \
+    at <anonymous> \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 src/index.ts:42:3\cf11 )\cf2 \
+    at Layer.handle [as handle_request] \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/layer.js:95:5\cf11 )\cf2 \
+AG-UI connection added: 706c0c57-73ab-4b92-b486-340697c685c5\
+\uc0\u55357 \u56599  Client connected: 706c0c57-73ab-4b92-b486-340697c685c5 (::1)\
+AG-UI connection removed: 706c0c57-73ab-4b92-b486-340697c685c5\
+\uc0\u55357 \u56588  Client disconnected: 706c0c57-73ab-4b92-b486-340697c685c5 (code: 1005, reason: )\
+AG-UI connection removed: 706c0c57-73ab-4b92-b486-340697c685c5\
+AG-UI connection added: 5d8a10f3-95b6-4938-8c32-efde1e59185d\
+\uc0\u55357 \u56599  Client connected: 5d8a10f3-95b6-4938-8c32-efde1e59185d (::1)\
+AG-UI connection removed: 5d8a10f3-95b6-4938-8c32-efde1e59185d\
+\uc0\u55357 \u56588  Client disconnected: 5d8a10f3-95b6-4938-8c32-efde1e59185d (code: 1005, reason: )\
+AG-UI connection removed: 5d8a10f3-95b6-4938-8c32-efde1e59185d\
+AG-UI connection added: 313721b4-b2e1-4340-a39d-60e1bbf03dc4\
+\uc0\u55357 \u56599  Client connected: 313721b4-b2e1-4340-a39d-60e1bbf03dc4 (::1)\
+AG-UI connection removed: 313721b4-b2e1-4340-a39d-60e1bbf03dc4\
+\uc0\u55357 \u56588  Client disconnected: 313721b4-b2e1-4340-a39d-60e1bbf03dc4 (code: 1005, reason: )\
+AG-UI connection removed: 313721b4-b2e1-4340-a39d-60e1bbf03dc4\
+AG-UI connection added: 2623adf1-3ae0-4744-af41-06257cb51f48\
+\uc0\u55357 \u56599  Client connected: 2623adf1-3ae0-4744-af41-06257cb51f48 (::1)\
+2025-05-26T08:55:42.747Z POST /api/copilot\
+CopilotKit API Error: TypeError: Cannot read properties of undefined (reading 'length')\
+    at <anonymous> \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 src/index.ts:123:45\cf11 )\cf2 \
+    at Layer.handle [as handle_request] \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/layer.js:95:5\cf11 )\cf2 \
+    at next \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/route.js:149:13\cf11 )\cf2 \
+    at Route.dispatch \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/route.js:119:3\cf11 )\cf2 \
+    at Layer.handle [as handle_request] \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/layer.js:95:5\cf11 )\cf2 \
+    at \cf11 /Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/index.js:284:15\
+    at Function.process_params \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/index.js:346:12\cf11 )\cf2 \
+    at next \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/index.js:280:10\cf11 )\cf2 \
+    at <anonymous> \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 src/index.ts:42:3\cf11 )\cf2 \
+    at Layer.handle [as handle_request] \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/layer.js:95:5\cf11 )\cf2 \
+AG-UI connection removed: 2623adf1-3ae0-4744-af41-06257cb51f48\
+\uc0\u55357 \u56588  Client disconnected: 2623adf1-3ae0-4744-af41-06257cb51f48 (code: 1001, reason: )\
+AG-UI connection removed: 2623adf1-3ae0-4744-af41-06257cb51f48\
+AG-UI connection added: 2a69ced7-e3dc-48c4-8766-dd01c4581a91\
+\uc0\u55357 \u56599  Client connected: 2a69ced7-e3dc-48c4-8766-dd01c4581a91 (::1)\
+AG-UI connection removed: 2a69ced7-e3dc-48c4-8766-dd01c4581a91\
+\uc0\u55357 \u56588  Client disconnected: 2a69ced7-e3dc-48c4-8766-dd01c4581a91 (code: 1005, reason: )\
+AG-UI connection removed: 2a69ced7-e3dc-48c4-8766-dd01c4581a91\
+AG-UI connection added: 10458a16-401c-4f29-aeeb-216bd285e191\
+\uc0\u55357 \u56599  Client connected: 10458a16-401c-4f29-aeeb-216bd285e191 (::1)\
+AG-UI connection removed: 10458a16-401c-4f29-aeeb-216bd285e191\
+\uc0\u55357 \u56588  Client disconnected: 10458a16-401c-4f29-aeeb-216bd285e191 (code: 1005, reason: )\
+AG-UI connection removed: 10458a16-401c-4f29-aeeb-216bd285e191\
+AG-UI connection added: 22bd3ed1-4bdd-469c-a261-ee29e36ad590\
+\uc0\u55357 \u56599  Client connected: 22bd3ed1-4bdd-469c-a261-ee29e36ad590 (::1)\
+AG-UI connection removed: 22bd3ed1-4bdd-469c-a261-ee29e36ad590\
+\uc0\u55357 \u56588  Client disconnected: 22bd3ed1-4bdd-469c-a261-ee29e36ad590 (code: 1005, reason: )\
+AG-UI connection removed: 22bd3ed1-4bdd-469c-a261-ee29e36ad590\
+AG-UI connection added: 9d12bd64-7af8-45fa-9a6c-71b291c303a2\
+\uc0\u55357 \u56599  Client connected: 9d12bd64-7af8-45fa-9a6c-71b291c303a2 (::1)\
+AG-UI connection removed: 9d12bd64-7af8-45fa-9a6c-71b291c303a2\
+\uc0\u55357 \u56588  Client disconnected: 9d12bd64-7af8-45fa-9a6c-71b291c303a2 (code: 1005, reason: )\
+AG-UI connection removed: 9d12bd64-7af8-45fa-9a6c-71b291c303a2\
+AG-UI connection added: 3705a2cd-0d05-4ea1-a2b0-3ed5882668b8\
+\uc0\u55357 \u56599  Client connected: 3705a2cd-0d05-4ea1-a2b0-3ed5882668b8 (::1)\
+AG-UI connection removed: 3705a2cd-0d05-4ea1-a2b0-3ed5882668b8\
+\uc0\u55357 \u56588  Client disconnected: 3705a2cd-0d05-4ea1-a2b0-3ed5882668b8 (code: 1005, reason: )\
+AG-UI connection removed: 3705a2cd-0d05-4ea1-a2b0-3ed5882668b8\
+AG-UI connection added: df87645e-4414-40f2-8790-a792459c8bee\
+\uc0\u55357 \u56599  Client connected: df87645e-4414-40f2-8790-a792459c8bee (::1)\
+AG-UI connection removed: df87645e-4414-40f2-8790-a792459c8bee\
+\uc0\u55357 \u56588  Client disconnected: df87645e-4414-40f2-8790-a792459c8bee (code: 1005, reason: )\
+AG-UI connection removed: df87645e-4414-40f2-8790-a792459c8bee\
+^C\uc0\u55357 \u56580  SIGINT received, shutting down gracefully...\
+\uc0\u9989  HTTP server closed\
+\uc0\u55357 \u56588  AG-UI WebSocket server closed\
+\uc0\u9989  WebSocket server closed\
+\
+\uc0\u55357 \u57041  Shutting down development servers...\
+\cf11 10:56:04 AM\cf2  \cf8 [tsx]\cf2  \cf3 Previous process hasn't exited yet. Force killing...\cf2 \
+\cf11 10:56:04 AM\cf2  \cf8 [tsx]\cf2  \cf3 Previous process hasn't exited yet. Force killing...\cf2 \
+\
+\
+sven@Svens-MacBook-Air executive-assistant-mvp % # Press Ctrl+C to stop current servers, then restart\
+./scripts/dev.sh\
+zsh: command not found: #\
+\uc0\u55357 \u56960  Starting Executive Assistant MVP Development Servers...\
+========================================================\
+\
+\cf13 \uc0\u55357 \u56615  Starting Backend Server (AG-UI + WebSocket)...\cf2 \
+================================================\
+\
+> executive-assistant-backend@1.0.0 dev\
+> tsx watch src/index.ts\
+\
+\uc0\u55357 \u56960  AG-UI WebSocket server started on port 8080\
+\uc0\u55356 \u57104  WebSocket server started on port 8080\
+\uc0\u55357 \u56960  Executive Assistant API server running on port 3001\
+\uc0\u55357 \u56541  Environment: development\
+\uc0\u55357 \u56599  Health check: http://localhost:3001/health\
+\
+\cf7 \uc0\u55356 \u57256  Starting Frontend Development Server...\cf2 \
+===========================================\
+\
+> executive-assistant-frontend@1.0.0 dev\
+> vite\
+\
+\
+  
+\f1\b \cf7 VITE
+\f0\b0  v4.5.14\cf2   \cf6 ready in 
+\f1\b \cf2 118
+\f0\b0  ms\
+\
+  \cf7 \uc0\u10140 \cf2   
+\f1\b Local
+\f0\b0 :   \cf14 http://localhost:
+\f1\b 3000
+\f0\b0 /\cf2 \
+\cf6   \cf15 \uc0\u10140 \cf6   
+\f1\b Network
+\f0\b0 : use 
+\f1\b \cf2 --host
+\f0\b0 \cf6  to expose\cf2 \
+AG-UI connection added: 0915806b-ba1f-4ca7-86f8-79aee29918d2\
+\uc0\u55357 \u56599  Client connected: 0915806b-ba1f-4ca7-86f8-79aee29918d2 (::1)\
+2025-05-26T08:56:12.751Z POST /api/copilot\
+CopilotKit API Error: TypeError: Cannot read properties of undefined (reading 'length')\
+    at <anonymous> \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 src/index.ts:123:45\cf11 )\cf2 \
+    at Layer.handle [as handle_request] \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/layer.js:95:5\cf11 )\cf2 \
+    at next \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/route.js:149:13\cf11 )\cf2 \
+    at Route.dispatch \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/route.js:119:3\cf11 )\cf2 \
+    at Layer.handle [as handle_request] \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/layer.js:95:5\cf11 )\cf2 \
+    at \cf11 /Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/index.js:284:15\
+    at Function.process_params \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/index.js:346:12\cf11 )\cf2 \
+    at next \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/index.js:280:10\cf11 )\cf2 \
+    at <anonymous> \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 src/index.ts:42:3\cf11 )\cf2 \
+    at Layer.handle [as handle_request] \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/layer.js:95:5\cf11 )\cf2 \
+AG-UI connection removed: 0915806b-ba1f-4ca7-86f8-79aee29918d2\
+\uc0\u55357 \u56588  Client disconnected: 0915806b-ba1f-4ca7-86f8-79aee29918d2 (code: 1001, reason: )\
+AG-UI connection removed: 0915806b-ba1f-4ca7-86f8-79aee29918d2\
+AG-UI connection added: e834ef1b-3147-4664-8071-c6ae6a7746c1\
+\uc0\u55357 \u56599  Client connected: e834ef1b-3147-4664-8071-c6ae6a7746c1 (::1)\
+AG-UI connection removed: e834ef1b-3147-4664-8071-c6ae6a7746c1\
+\uc0\u55357 \u56588  Client disconnected: e834ef1b-3147-4664-8071-c6ae6a7746c1 (code: 1005, reason: )\
+AG-UI connection removed: e834ef1b-3147-4664-8071-c6ae6a7746c1\
+AG-UI connection added: 0822a1a7-51e8-44ae-beac-b6ddd07c96d2\
+\uc0\u55357 \u56599  Client connected: 0822a1a7-51e8-44ae-beac-b6ddd07c96d2 (::1)\
+AG-UI connection removed: 0822a1a7-51e8-44ae-beac-b6ddd07c96d2\
+\uc0\u55357 \u56588  Client disconnected: 0822a1a7-51e8-44ae-beac-b6ddd07c96d2 (code: 1005, reason: )\
+AG-UI connection removed: 0822a1a7-51e8-44ae-beac-b6ddd07c96d2\
+\
+\uc0\u55356 \u57225  Development Environment Ready!\
+=================================\
+\
+\cf7 \uc0\u9989  Backend Server:\cf2 \
+   \uc0\u55357 \u56525  API: http://localhost:3001\
+   \uc0\u55357 \u56588  WebSocket: ws://localhost:8080\
+   \uc0\u55357 \u56467  Health: http://localhost:3001/health\
+\
+\cf7 \uc0\u9989  Frontend Application:\cf2 \
+   \uc0\u55356 \u57104  Dashboard: http://localhost:3000\
+   \uc0\u55356 \u57256  Development: http://localhost:5173 (if using Vite)\
+\
+
+\f1\b \cf3 \uc0\u55357 \u56538  Available Features:
+\f0\b0 \cf2 \
+   \uc0\u55357 \u56522  Executive Dashboard with real-time metrics\
+   \uc0\u55357 \u56517  Calendar management and scheduling\
+   \uc0\u55357 \u56551  Email interface with AI summarization\
+   \uc0\u55357 \u56523  Task management with Kanban views\
+   \uc0\u55357 \u56492  AI Chat with AG-UI streaming\
+   \uc0\u9881 \u65039   Settings and integration management\
+\
+\cf13 \uc0\u55357 \u56615  Development Tools:\cf2 \
+   \'95 Hot reload enabled for both servers\
+   \'95 TypeScript compilation in watch mode\
+   \'95 AG-UI events visible in browser console\
+   \'95 WebSocket connection status in UI\
+\
+
+\f1\b \cf3 \uc0\u55357 \u56481  Tips:
+\f0\b0 \cf2 \
+   \'95 Use Ctrl+C to stop both servers\
+   \'95 Check browser console for AG-UI events\
+   \'95 Configure API keys in .env files for full functionality\
+   \'95 WebSocket events stream in real-time\
+\
+\uc0\u55357 \u56541  Logs will appear below as you use the application...\
+======================================================\
+\
+AG-UI connection added: 24a938db-ebbb-43e9-bf9b-09f5ef995318\
+\uc0\u55357 \u56599  Client connected: 24a938db-ebbb-43e9-bf9b-09f5ef995318 (::1)\
+AG-UI connection removed: 24a938db-ebbb-43e9-bf9b-09f5ef995318\
+\uc0\u55357 \u56588  Client disconnected: 24a938db-ebbb-43e9-bf9b-09f5ef995318 (code: 1005, reason: )\
+AG-UI connection removed: 24a938db-ebbb-43e9-bf9b-09f5ef995318\
+AG-UI connection added: 9505441d-cc7d-4251-b081-8a3986165798\
+\uc0\u55357 \u56599  Client connected: 9505441d-cc7d-4251-b081-8a3986165798 (::1)\
+AG-UI connection removed: 9505441d-cc7d-4251-b081-8a3986165798\
+\uc0\u55357 \u56588  Client disconnected: 9505441d-cc7d-4251-b081-8a3986165798 (code: 1005, reason: )\
+AG-UI connection removed: 9505441d-cc7d-4251-b081-8a3986165798\
+AG-UI connection added: dd0947f5-b8bc-4ee1-8b71-3674b4a5be0b\
+\uc0\u55357 \u56599  Client connected: dd0947f5-b8bc-4ee1-8b71-3674b4a5be0b (::1)\
+AG-UI connection removed: dd0947f5-b8bc-4ee1-8b71-3674b4a5be0b\
+\uc0\u55357 \u56588  Client disconnected: dd0947f5-b8bc-4ee1-8b71-3674b4a5be0b (code: 1005, reason: )\
+AG-UI connection removed: dd0947f5-b8bc-4ee1-8b71-3674b4a5be0b\
+AG-UI connection added: 2e21ed8e-76b6-488a-ac89-5f326860758d\
+\uc0\u55357 \u56599  Client connected: 2e21ed8e-76b6-488a-ac89-5f326860758d (::1)\
+AG-UI connection removed: 2e21ed8e-76b6-488a-ac89-5f326860758d\
+\uc0\u55357 \u56588  Client disconnected: 2e21ed8e-76b6-488a-ac89-5f326860758d (code: 1005, reason: )\
+AG-UI connection removed: 2e21ed8e-76b6-488a-ac89-5f326860758d\
+AG-UI connection added: f0dc48f9-0f0e-4381-b861-eb4e3efb4384\
+\uc0\u55357 \u56599  Client connected: f0dc48f9-0f0e-4381-b861-eb4e3efb4384 (::1)\
+2025-05-26T08:56:31.767Z POST /api/copilot\
+CopilotKit API Error: TypeError: Cannot read properties of undefined (reading 'length')\
+    at <anonymous> \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 src/index.ts:123:45\cf11 )\cf2 \
+    at Layer.handle [as handle_request] \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/layer.js:95:5\cf11 )\cf2 \
+    at next \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/route.js:149:13\cf11 )\cf2 \
+    at Route.dispatch \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/route.js:119:3\cf11 )\cf2 \
+    at Layer.handle [as handle_request] \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/layer.js:95:5\cf11 )\cf2 \
+    at \cf11 /Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/index.js:284:15\
+    at Function.process_params \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/index.js:346:12\cf11 )\cf2 \
+    at next \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/index.js:280:10\cf11 )\cf2 \
+    at <anonymous> \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 src/index.ts:42:3\cf11 )\cf2 \
+    at Layer.handle [as handle_request] \cf11 (/Users/sven/Desktop/MCP/executive-assistant-mvp/backend/\cf2 node_modules/\ul express\ulnone /lib/router/layer.js:95:5\cf11 )\cf2 \
+AG-UI connection removed: f0dc48f9-0f0e-4381-b861-eb4e3efb4384\
+\uc0\u55357 \u56588  Client disconnected: f0dc48f9-0f0e-4381-b861-eb4e3efb4384 (code: 1001, reason: )\
+AG-UI connection removed: f0dc48f9-0f0e-4381-b861-eb4e3efb4384\
+AG-UI connection added: c3998b4b-6b17-40ea-a99f-7e3e64cfb04e\
+\uc0\u55357 \u56599  Client connected: c3998b4b-6b17-40ea-a99f-7e3e64cfb04e (::1)\
+AG-UI connection removed: c3998b4b-6b17-40ea-a99f-7e3e64cfb04e\
+\uc0\u55357 \u56588  Client disconnected: c3998b4b-6b17-40ea-a99f-7e3e64cfb04e (code: 1005, reason: )\
+AG-UI connection removed: c3998b4b-6b17-40ea-a99f-7e3e64cfb04e\
+AG-UI connection added: d7e04e01-aabf-4b7e-864d-0878f8728475\
+\uc0\u55357 \u56599  Client connected: d7e04e01-aabf-4b7e-864d-0878f8728475 (::1)\
+AG-UI connection removed: d7e04e01-aabf-4b7e-864d-0878f8728475\
+\uc0\u55357 \u56588  Client disconnected: d7e04e01-aabf-4b7e-864d-0878f8728475 (code: 1005, reason: )\
+AG-UI connection removed: d7e04e01-aabf-4b7e-864d-0878f8728475\
+AG-UI connection added: f0848947-ad35-4242-813f-019051e91383\
+\uc0\u55357 \u56599  Client connected: f0848947-ad35-4242-813f-019051e91383 (::1)\
+AG-UI connection removed: f0848947-ad35-4242-813f-019051e91383\
+\uc0\u55357 \u56588  Client disconnected: f0848947-ad35-4242-813f-019051e91383 (code: 1005, reason: )\
+AG-UI connection removed: f0848947-ad35-4242-813f-019051e91383\
+\uc0\u55357 \u56960  AG-UI WebSocket server started on port 8080\
+\uc0\u55356 \u57104  WebSocket server started on port 8080\
+\uc0\u55357 \u56960  Executive Assistant API server running on port 3001\
+\uc0\u55357 \u56541  Environment: development\
+\uc0\u55357 \u56599  Health check: http://localhost:3001/health\
+\cf6 10:58:23 AM\cf2  
+\f1\b \cf14 [vite]
+\f0\b0 \cf2  \cf7 hmr update \cf6 /src/App.tsx\cf2 \
+AG-UI connection added: 4d6a388f-4504-4ba0-82b7-aa580f1c4e3c\
+\uc0\u55357 \u56599  Client connected: 4d6a388f-4504-4ba0-82b7-aa580f1c4e3c (::1)\
+AG-UI connection removed: 4d6a388f-4504-4ba0-82b7-aa580f1c4e3c\
+\uc0\u55357 \u56588  Client disconnected: 4d6a388f-4504-4ba0-82b7-aa580f1c4e3c (code: 1005, reason: )\
+AG-UI connection removed: 4d6a388f-4504-4ba0-82b7-aa580f1c4e3c\
+AG-UI connection added: 38f56815-4921-474b-bded-8979c3c9802c\
+\uc0\u55357 \u56599  Client connected: 38f56815-4921-474b-bded-8979c3c9802c (::1)\
+AG-UI connection removed: 38f56815-4921-474b-bded-8979c3c9802c\
+\uc0\u55357 \u56588  Client disconnected: 38f56815-4921-474b-bded-8979c3c9802c (code: 1005, reason: )\
+AG-UI connection removed: 38f56815-4921-474b-bded-8979c3c9802c\
+AG-UI connection added: 8ed05539-b519-48b4-8757-547d184ae385\
+\uc0\u55357 \u56599  Client connected: 8ed05539-b519-48b4-8757-547d184ae385 (::1)\
+AG-UI connection removed: 8ed05539-b519-48b4-8757-547d184ae385\
+\uc0\u55357 \u56588  Client disconnected: 8ed05539-b519-48b4-8757-547d184ae385 (code: 1005, reason: )\
+AG-UI connection removed: 8ed05539-b519-48b4-8757-547d184ae385\
+AG-UI connection added: 5ac88b3d-fc79-4c1c-afb2-8ab101008d31\
+\uc0\u55357 \u56599  Client connected: 5ac88b3d-fc79-4c1c-afb2-8ab101008d31 (::1)\
+AG-UI connection removed: 5ac88b3d-fc79-4c1c-afb2-8ab101008d31\
+\uc0\u55357 \u56588  Client disconnected: 5ac88b3d-fc79-4c1c-afb2-8ab101008d31 (code: 1005, reason: )\
+AG-UI connection removed: 5ac88b3d-fc79-4c1c-afb2-8ab101008d31\
+\cf6 10:58:33 AM\cf2  
+\f1\b \cf14 [vite]
+\f0\b0 \cf2  \cf7 hmr update \cf6 /src/App.tsx, /src/components/Layout.tsx, /src/pages/Dashboard.tsx, /src/pages/Tasks.tsx, /src/pages/Chat.tsx, /src/pages/Settings.tsx\cf2 \
+AG-UI connection added: eab32381-a1df-4796-9ddd-d1d312d5dde9\
+\uc0\u55357 \u56599  Client connected: eab32381-a1df-4796-9ddd-d1d312d5dde9 (::1)\
+AG-UI connection removed: eab32381-a1df-4796-9ddd-d1d312d5dde9\
+\uc0\u55357 \u56588  Client disconnected: eab32381-a1df-4796-9ddd-d1d312d5dde9 (code: 1001, reason: )\
+AG-UI connection removed: eab32381-a1df-4796-9ddd-d1d312d5dde9\
+^C\
+\uc0\u55357 \u57041  Shutting down development servers...\
+\uc0\u55357 \u56580  SIGINT received, shutting down gracefully...\
+\cf11 10:59:06 AM\cf2  \cf8 [tsx]\cf2  \cf3 Previous process hasn't exited yet. Force killing...\cf2 \
+\cf11 10:59:06 AM\cf2  \cf8 [tsx]\cf2  \cf3 Previous process hasn't exited yet. Force killing...\cf2 \
+\
+\
+sven@Svens-MacBook-Air executive-assistant-mvp % h\
+\
+\
+\
+\
+\
+\
+\
+}

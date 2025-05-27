@@ -1,0 +1,130 @@
+{
+  "meta": {
+    "instanceId": "ea_automation_003"
+  },
+  "name": "✅ Intelligent Task Management",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "task-automation",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-task",
+      "name": "Task Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "webhookId": "ea-task-automation"
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "operation": "message",
+        "model": "gpt-4",
+        "messages": {
+          "messageValues": [
+            {
+              "role": "system",
+              "message": "You are an Executive Assistant AI specialized in task optimization. Analyze the provided data and return JSON with: {\"optimized_tasks\": [{\"title\": \"string\", \"priority\": 1-5, \"category\": \"string\", \"estimated_duration\": \"string\", \"dependencies\": [], \"deadline\": \"ISO date or null\"}], \"priority_adjustments\": [{\"task_id\": \"string\", \"new_priority\": 1-5, \"reason\": \"string\"}], \"insights\": \"string\"}"
+            },
+            {
+              "role": "user",
+              "message": "Task data to analyze: {{ JSON.stringify($json) }}"
+            }
+          ]
+        }
+      },
+      "id": "ai-task-analysis",
+      "name": "AI Task Analysis",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.EA_BACKEND_URL }}/api/automation/webhook/n8n",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "jsonParameters": {
+          "parameters": [
+            {
+              "name": "workflow",
+              "value": "task-automation"
+            },
+            {
+              "name": "data",
+              "value": "={{ $json.message.content }}"
+            }
+          ]
+        }
+      },
+      "id": "send-to-ea-tasks",
+      "name": "Send to EA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": {
+          "success": true,
+          "workflow": "task-automation",
+          "processed_at": "={{ new Date().toISOString() }}",
+          "tasks_processed": "={{ $('AI Task Analysis').item.json.message.content.optimized_tasks.length }}"
+        }
+      },
+      "id": "task-response",
+      "name": "Task Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Task Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Task Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Task Analysis": {
+      "main": [
+        [
+          {
+            "node": "Send to EA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send to EA": {
+      "main": [
+        [
+          {
+            "node": "Task Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

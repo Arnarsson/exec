@@ -1,0 +1,292 @@
+{
+  "meta": {
+    "instanceId": "ea_automation_004"
+  },
+  "name": "📧📅 Gmail Calendar Integration",
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "user",
+        "user": {
+          "__rl": true,
+          "value": "me",
+          "mode": "list"
+        },
+        "simple": false,
+        "filters": {
+          "query": "is:unread has:attachment OR meeting OR calendar OR schedule"
+        },
+        "format": "simple"
+      },
+      "id": "gmail-trigger",
+      "name": "Gmail Trigger",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gmail_oauth",
+          "name": "Gmail OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "operation": "message",
+        "model": "gpt-4",
+        "messages": {
+          "messageValues": [
+            {
+              "role": "system",
+              "message": "You are an AI assistant that extracts meeting information from emails. Analyze the email content and extract meeting details. Return ONLY valid JSON with this structure: {\"has_meeting\": boolean, \"meeting_details\": {\"title\": \"string\", \"start_date\": \"YYYY-MM-DD\", \"start_time\": \"HH:MM\", \"end_time\": \"HH:MM\", \"attendees\": [\"email@example.com\"], \"location\": \"string or null\", \"description\": \"string\"}, \"action_required\": \"create_event|update_event|decline|none\"}"
+            },
+            {
+              "role": "user",
+              "message": "Email Analysis:\nFrom: {{ $json.from }}\nSubject: {{ $json.subject }}\nContent: {{ $json.snippet }}\nFull Body: {{ $json.body }}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "id": "ai-meeting-extraction",
+      "name": "AI Meeting Extraction",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "credentials": {
+        "openAiApi": {
+          "id": "openai_api",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.message.content.has_meeting }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "has-meeting-check",
+      "name": "Has Meeting?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "event",
+        "operation": "create",
+        "calendarId": {
+          "__rl": true,
+          "value": "primary",
+          "mode": "list"
+        },
+        "start": "={{ $('AI Meeting Extraction').item.json.message.content.meeting_details.start_date }}T{{ $('AI Meeting Extraction').item.json.message.content.meeting_details.start_time }}:00",
+        "end": "={{ $('AI Meeting Extraction').item.json.message.content.meeting_details.start_date }}T{{ $('AI Meeting Extraction').item.json.message.content.meeting_details.end_time }}:00",
+        "summary": "={{ $('AI Meeting Extraction').item.json.message.content.meeting_details.title }}",
+        "description": "Auto-created from email: {{ $('Gmail Trigger').item.json.subject }}\n\n{{ $('AI Meeting Extraction').item.json.message.content.meeting_details.description }}",
+        "location": "={{ $('AI Meeting Extraction').item.json.message.content.meeting_details.location }}",
+        "attendees": "={{ $('AI Meeting Extraction').item.json.message.content.meeting_details.attendees.join(',') }}",
+        "sendUpdates": "all"
+      },
+      "id": "create-calendar-event",
+      "name": "Create Calendar Event",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1,
+      "position": [900, 200],
+      "credentials": {
+        "googleCalendarOAuth2": {
+          "id": "google_calendar_oauth",
+          "name": "Google Calendar OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "message",
+        "operation": "addLabels",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "labelIds": [
+          "INBOX"
+        ]
+      },
+      "id": "mark-email-processed",
+      "name": "Mark Email Processed",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [1120, 200],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gmail_oauth",
+          "name": "Gmail OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.EA_BACKEND_URL }}/api/automation/webhook/n8n",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.EA_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "jsonParameters": {
+          "parameters": [
+            {
+              "name": "workflow",
+              "value": "gmail-calendar-integration"
+            },
+            {
+              "name": "data",
+              "value": {
+                "action": "calendar_event_created",
+                "email_id": "={{ $('Gmail Trigger').item.json.id }}",
+                "email_subject": "={{ $('Gmail Trigger').item.json.subject }}",
+                "email_from": "={{ $('Gmail Trigger').item.json.from }}",
+                "calendar_event_id": "={{ $json.id }}",
+                "event_title": "={{ $('AI Meeting Extraction').item.json.message.content.meeting_details.title }}",
+                "event_start": "={{ $('AI Meeting Extraction').item.json.message.content.meeting_details.start_date }}T{{ $('AI Meeting Extraction').item.json.message.content.meeting_details.start_time }}:00",
+                "processed_at": "={{ new Date().toISOString() }}"
+              }
+            }
+          ]
+        }
+      },
+      "id": "notify-ea-backend",
+      "name": "Notify EA Backend",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1340, 200]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.EA_BACKEND_URL }}/api/automation/webhook/n8n",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.EA_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "jsonParameters": {
+          "parameters": [
+            {
+              "name": "workflow",
+              "value": "gmail-calendar-integration"
+            },
+            {
+              "name": "data",
+              "value": {
+                "action": "no_meeting_detected",
+                "email_id": "={{ $('Gmail Trigger').item.json.id }}",
+                "email_subject": "={{ $('Gmail Trigger').item.json.subject }}",
+                "email_from": "={{ $('Gmail Trigger').item.json.from }}",
+                "processed_at": "={{ new Date().toISOString() }}"
+              }
+            }
+          ]
+        }
+      },
+      "id": "log-no-meeting",
+      "name": "Log No Meeting",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [900, 400]
+    }
+  ],
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Meeting Extraction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Meeting Extraction": {
+      "main": [
+        [
+          {
+            "node": "Has Meeting?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Meeting?": {
+      "main": [
+        [
+          {
+            "node": "Create Calendar Event",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log No Meeting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Calendar Event": {
+      "main": [
+        [
+          {
+            "node": "Mark Email Processed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Email Processed": {
+      "main": [
+        [
+          {
+            "node": "Notify EA Backend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "versionId": "ea-gmail-calendar-v1.0"
+}

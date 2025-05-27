@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: executive-assistant-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      # Basic Configuration
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=ExecutiveAssistant2025!
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=Europe/Copenhagen
+      
+      # Security & Performance
+      - N8N_SECURE_COOKIE=false
+      - N8N_METRICS=true
+      - N8N_LOG_LEVEL=info
+      - N8N_LOG_OUTPUT=console
+      
+      # Executive Assistant Integration
+      - EA_BACKEND_URL=http://host.docker.internal:3001
+      - EA_WEBSOCKET_URL=ws://host.docker.internal:8080
+      - EA_API_KEY=ea_integration_key_2025
+      
+      # AI Integration (Add your API keys later)
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./workflows:/home/node/.n8n/workflows:ro
+      - ./credentials:/home/node/.n8n/credentials
+      - ../logs:/home/node/.n8n/logs
+    networks:
+      - ea-automation
+
+volumes:
+  n8n_data:
+    driver: local
+
+networks:
+  ea-automation:
+    driver: bridge
+    name: executive-assistant-network
