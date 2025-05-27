@@ -98,3 +98,4 @@ npm run dev
 
 **Built with ❤️ using AG-UI Protocol**
 # exe
+# exec
