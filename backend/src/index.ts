@@ -1,6 +1,6 @@
 /**
  * Main Server Entry Point
- * Executive Assistant MVP Backend
+ * Executive Assistant MVP Backend with OKR 10X Enhancement
  */
 
 import 'dotenv/config';
@@ -11,10 +11,30 @@ import { AGUIWebSocketServer } from './server/websocket';
 import { ExecutiveAssistantOrchestrator } from './agents/orchestrator';
 import { AutomationService } from './services/AutomationService';
 import automationRoutes, { initializeAutomationRoutes } from './routes/automation';
+import okrRoutes from './routes/okr.js';
+import webhookRoutes from './routes/webhooks.js';
+import { okrService } from './services/okr-service.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 const WS_PORT = process.env.WS_PORT || 8080;
+
+// Enhanced logging for OKR system
+const logInfo = (operation: string, data?: any) => {
+  console.log(`[SERVER-INFO] ${operation}:`, {
+    data,
+    timestamp: new Date().toISOString()
+  });
+};
+
+const logError = (operation: string, error: any, context?: any) => {
+  console.error(`[SERVER-ERROR] ${operation}:`, {
+    error: error.message || error,
+    stack: error.stack,
+    context,
+    timestamp: new Date().toISOString()
+  });
+};
 
 // Middleware
 app.use(helmet({
@@ -44,17 +64,42 @@ app.use((req, res, next) => {
   next();
 });
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    version: '1.0.0',
-    services: {
-      webSocket: wsServer ? 'running' : 'stopped',
-      connections: wsServer ? wsServer.getStats().totalConnections : 0
-    }
-  });
+// Health check endpoint (enhanced with OKR status)
+app.get('/health', async (req, res) => {
+  try {
+    const dashboardData = await okrService.getDashboardData();
+    
+    res.json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      version: '1.0.0',
+      services: {
+        webSocket: wsServer ? 'running' : 'stopped',
+        connections: wsServer ? wsServer.getStats().totalConnections : 0,
+        okrSystem: {
+          enabled: true,
+          okrCount: dashboardData.okrs.length,
+          totalProgress: dashboardData.totalProgress,
+          alertCount: dashboardData.recentAlerts.length
+        }
+      }
+    });
+  } catch (error) {
+    logError('Health check', error);
+    res.json({
+      status: 'degraded',
+      timestamp: new Date().toISOString(),
+      version: '1.0.0',
+      services: {
+        webSocket: wsServer ? 'running' : 'stopped',
+        connections: wsServer ? wsServer.getStats().totalConnections : 0,
+        okrSystem: {
+          enabled: false,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        }
+      }
+    });
+  }
 });
 
 // API endpoints
@@ -113,12 +158,12 @@ app.post('/api/test-events', async (req, res): Promise<void> => {
   }
 });
 
-// CopilotKit Integration endpoint
+// Enhanced CopilotKit Integration with OKR commands
 app.post('/api/copilot', async (req, res): Promise<void> => {
   try {
     const { messages, tools } = req.body;
     
-    console.log('CopilotKit request:', { messages, tools });
+    logInfo('CopilotKit request', { messageCount: messages?.length, tools: tools?.length });
     
     // Handle missing or empty messages array
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
@@ -126,7 +171,7 @@ app.post('/api/copilot', async (req, res): Promise<void> => {
         choices: [{
           message: {
             role: 'assistant',
-            content: 'Hello! I\'m your Executive Assistant. How can I help you today?'
+            content: 'Hello! I\'m your Executive Assistant with OKR intelligence. Ask me about your progress, priorities, or say things like "DOZY progress" or "revenue status".'
           }
         }]
       });
@@ -151,19 +196,61 @@ app.post('/api/copilot', async (req, res): Promise<void> => {
       return;
     }
 
-    // Process the request through our orchestrator
-    const agentRequest = {
-      id: `copilot_${Date.now()}`,
-      type: 'chat' as const,
-      content: latestMessage.content,
-      metadata: {
-        threadId: req.body.threadId || `thread_${Date.now()}`,
-        userId: 'copilot_user',
-        tools: tools
-      }
-    };
+    // Check if this is an OKR-related query
+    const messageContent = latestMessage.content.toLowerCase();
+    const isOKRQuery = messageContent.includes('okr') || 
+                      messageContent.includes('progress') || 
+                      messageContent.includes('dozy') || 
+                      messageContent.includes('revenue') || 
+                      messageContent.includes('priority') || 
+                      messageContent.includes('status');
 
-    const response = await orchestrator.processRequest(agentRequest);
+    let response;
+    
+    if (isOKRQuery) {
+      // Handle OKR queries directly
+      try {
+        const okrResponse = await fetch('http://localhost:3001/api/okr/chat-command', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ command: latestMessage.content })
+        });
+        
+        if (okrResponse.ok) {
+          const okrData = await okrResponse.json() as { response: string };
+          response = { content: okrData.response };
+        } else {
+          throw new Error('OKR service unavailable');
+        }
+      } catch (error) {
+        logError('OKR query processing', error);
+        // Fallback to regular orchestrator
+        const agentRequest = {
+          id: `copilot_${Date.now()}`,
+          type: 'chat' as const,
+          content: latestMessage.content,
+          metadata: {
+            threadId: req.body.threadId || `thread_${Date.now()}`,
+            userId: 'copilot_user',
+            tools: tools
+          }
+        };
+        response = await orchestrator.processRequest(agentRequest);
+      }
+    } else {
+      // Process regular requests through orchestrator
+      const agentRequest = {
+        id: `copilot_${Date.now()}`,
+        type: 'chat' as const,
+        content: latestMessage.content,
+        metadata: {
+          threadId: req.body.threadId || `thread_${Date.now()}`,
+          userId: 'copilot_user',
+          tools: tools
+        }
+      };
+      response = await orchestrator.processRequest(agentRequest);
+    }
     
     // Return response in CopilotKit format
     res.json({
@@ -175,7 +262,7 @@ app.post('/api/copilot', async (req, res): Promise<void> => {
       }]
     });
   } catch (error) {
-    console.error('CopilotKit API Error:', error);
+    logError('CopilotKit API', error);
     res.status(500).json({ 
       error: 'Internal server error',
       details: error instanceof Error ? error.message : String(error) 
@@ -183,6 +270,11 @@ app.post('/api/copilot', async (req, res): Promise<void> => {
   }
 });
 
+// OKR API routes
+app.use('/api/okr', okrRoutes);
+
+// Webhook routes (including GitHub)
+app.use('/api/webhooks', webhookRoutes);
 
 // Automation API routes
 app.use('/api/automation', automationRoutes);
@@ -191,7 +283,7 @@ app.use('/api/automation', automationRoutes);
 app.post('/webhooks/calendar/events', async (req, res) => {
   try {
     const { events, action } = req.body;
-    console.log('📅 Calendar webhook received:', { action, eventsCount: events?.length });
+    logInfo('Calendar webhook received', { action, eventsCount: events?.length });
     
     // Store calendar events (you can add database persistence here)
     if (wsServer) {
@@ -215,7 +307,7 @@ app.post('/webhooks/calendar/events', async (req, res) => {
       eventsProcessed: events?.length || 0 
     });
   } catch (error) {
-    console.error('Calendar webhook error:', error);
+    logError('Calendar webhook', error);
     res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
   }
 });
@@ -224,7 +316,7 @@ app.post('/webhooks/calendar/events', async (req, res) => {
 app.post('/webhooks/email/received', async (req, res) => {
   try {
     const { emails, summary } = req.body;
-    console.log('📧 Email webhook received:', { emailCount: emails?.length, summary });
+    logInfo('Email webhook received', { emailCount: emails?.length, summary });
     
     // Broadcast email update to connected clients
     if (wsServer) {
@@ -247,7 +339,7 @@ app.post('/webhooks/email/received', async (req, res) => {
       emailsProcessed: emails?.length || 0 
     });
   } catch (error) {
-    console.error('Email webhook error:', error);
+    logError('Email webhook', error);
     res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
   }
 });
@@ -289,7 +381,7 @@ app.get('/api/email/summary', async (req, res) => {
 
 // Error handling middleware
 app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('API Error:', error);
+  logError('API Error', error);
   res.status(500).json({
     error: 'Internal server error',
     message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong',
@@ -323,22 +415,59 @@ function initializeWebSocketServer() {
     if (wsServer) {
       automationService = new AutomationService(wsServer);
       initializeAutomationRoutes(automationService);
-      console.log('🤖 Automation service initialized');
+      logInfo('Automation service initialized');
     }
     
-    console.log(`🌐 WebSocket server started on port ${WS_PORT}`);
+    logInfo('WebSocket server started', { port: WS_PORT });
   } catch (error) {
-    console.error('❌ Failed to start WebSocket server:', error);
+    logError('WebSocket server start failed', error);
+  }
+}
+
+// Initialize OKR demo data
+async function initializeOKRSystem() {
+  try {
+    logInfo('Initializing OKR system');
+    
+    // Check if we already have data
+    const existingOKRs = await okrService.getAllOKRs();
+    
+    if (existingOKRs.length === 0) {
+      logInfo('No existing OKRs found, initializing demo data');
+      await okrService.generateInitialData();
+      logInfo('OKR demo data initialized successfully');
+    } else {
+      logInfo('Existing OKRs found, skipping initialization', { count: existingOKRs.length });
+    }
+    
+    // Log current system status
+    const dashboardData = await okrService.getDashboardData();
+    logInfo('OKR system ready', {
+      okrCount: dashboardData.okrs.length,
+      totalProgress: dashboardData.totalProgress,
+      alertCount: dashboardData.recentAlerts.length
+    });
+    
+  } catch (error) {
+    logError('OKR system initialization failed', error);
   }
 }
 
 // Start servers
 function startServer() {
   // Start HTTP server
-  const server = app.listen(PORT, () => {
+  const server = app.listen(PORT, async () => {
+    logInfo('Executive Assistant API server started', { 
+      port: PORT, 
+      environment: process.env.NODE_ENV || 'development' 
+    });
     console.log(`🚀 Executive Assistant API server running on port ${PORT}`);
     console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+    console.log(`📊 OKR Dashboard API: http://localhost:${PORT}/api/okr/dashboard`);
+    
+    // Initialize OKR system after server starts
+    await initializeOKRSystem();
   });
 
   // Start WebSocket server
@@ -346,7 +475,7 @@ function startServer() {
 
   // Graceful shutdown
   process.on('SIGTERM', async () => {
-    console.log('🔄 SIGTERM received, shutting down gracefully...');
+    logInfo('SIGTERM received, shutting down gracefully');
     
     server.close(() => {
       console.log('✅ HTTP server closed');
@@ -361,7 +490,7 @@ function startServer() {
   });
 
   process.on('SIGINT', async () => {
-    console.log('🔄 SIGINT received, shutting down gracefully...');
+    logInfo('SIGINT received, shutting down gracefully');
     
     server.close(() => {
       console.log('✅ HTTP server closed');
@@ -377,12 +506,12 @@ function startServer() {
 
   // Handle uncaught exceptions
   process.on('uncaughtException', (error) => {
-    console.error('❌ Uncaught Exception:', error);
+    logError('Uncaught Exception', error);
     process.exit(1);
   });
 
   process.on('unhandledRejection', (reason, promise) => {
-    console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+    logError('Unhandled Rejection', { reason, promise });
     process.exit(1);
   });
 }

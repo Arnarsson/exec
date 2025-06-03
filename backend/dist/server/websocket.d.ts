@@ -26,6 +26,12 @@ export declare class AGUIWebSocketServer {
     constructor(port?: number, credentials?: any);
     private setupWebSocketServer;
     private handleMessage;
+    private handleAGUIChatMessage;
+    private generateExecutiveResponse;
+    private shouldUseTool;
+    private simulateToolCall;
+    private generateToolResults;
+    private streamResponse;
     private handleChatMessage;
     private handleActionRequest;
     private handleApprovalResponse;

@@ -48,7 +48,7 @@ export class AutomationService {
       this.wsService.broadcast({
         type: 'automation_error',
         workflow: automation.workflow,
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Unknown error',
         timestamp: new Date().toISOString()
       });
     }

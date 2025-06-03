@@ -82,9 +82,14 @@ class AGUIWebSocketServer {
         });
     }
     async handleMessage(connection, data) {
-        const message = JSON.parse(data.toString());
+        const rawMessage = JSON.parse(data.toString());
         connection.lastActivity = new Date();
-        console.log(`📨 Message from ${connection.id}:`, message.type, message.data?.action || message.data?.content?.substring(0, 50));
+        console.log(`📨 Message from ${connection.id}:`, rawMessage.type, rawMessage.content?.substring(0, 50) || rawMessage.data?.content?.substring(0, 50));
+        if (rawMessage.type === 'ChatMessage') {
+            await this.handleAGUIChatMessage(connection, rawMessage);
+            return;
+        }
+        const message = rawMessage;
         switch (message.type) {
             case 'message':
                 await this.handleChatMessage(connection, message);
@@ -106,6 +111,157 @@ class AGUIWebSocketServer {
             default:
                 this.sendError(connection, 'Unknown message type', `Unsupported message type: ${message.type}`);
         }
+    }
+    async handleAGUIChatMessage(connection, message) {
+        if (!message.content) {
+            this.sendError(connection, 'Missing content', 'Chat message must include content');
+            return;
+        }
+        console.log(`💬 AG-UI Chat Message: "${message.content}"`);
+        this.sendMessage(connection, {
+            id: (0, uuid_1.v4)(),
+            type: 'event',
+            data: {
+                type: 'TextMessageStart',
+                messageId: `response_${Date.now()}`,
+                role: 'assistant',
+                timestamp: new Date().toISOString()
+            },
+            timestamp: new Date().toISOString()
+        });
+        const responseContent = this.generateExecutiveResponse(message.content);
+        await this.streamResponse(connection, `response_${Date.now()}`, responseContent);
+        if (this.shouldUseTool(message.content)) {
+            await this.simulateToolCall(connection, message.content);
+        }
+    }
+    generateExecutiveResponse(userMessage) {
+        const lowerMessage = userMessage.toLowerCase();
+        if (lowerMessage.includes('calendar') || lowerMessage.includes('meeting') || lowerMessage.includes('schedule')) {
+            return "I'll check your calendar and help you with scheduling. Looking at your agenda for today...";
+        }
+        if (lowerMessage.includes('email') || lowerMessage.includes('inbox')) {
+            return "Let me analyze your inbox and provide a summary of important emails that require your attention.";
+        }
+        if (lowerMessage.includes('task') || lowerMessage.includes('project')) {
+            return "I'll help you manage your tasks and projects. Let me review your current priorities...";
+        }
+        if (lowerMessage.includes('budget') || lowerMessage.includes('financial')) {
+            return "I'll pull up the latest financial data and budget reports for your review.";
+        }
+        if (lowerMessage.includes('research') || lowerMessage.includes('analyze')) {
+            return "I'll conduct research and analysis on that topic. Let me gather the latest information...";
+        }
+        return `I understand you're asking about: "${userMessage}". As your executive assistant, I'll help you with this request. Let me process this information...`;
+    }
+    shouldUseTool(message) {
+        const toolKeywords = ['calendar', 'email', 'schedule', 'meeting', 'task', 'budget', 'research', 'analyze'];
+        return toolKeywords.some(keyword => message.toLowerCase().includes(keyword));
+    }
+    async simulateToolCall(connection, message) {
+        const lowerMessage = message.toLowerCase();
+        let toolName = 'general_assistant';
+        if (lowerMessage.includes('calendar') || lowerMessage.includes('schedule')) {
+            toolName = 'calendar_manager';
+        }
+        else if (lowerMessage.includes('email')) {
+            toolName = 'email_summarizer';
+        }
+        else if (lowerMessage.includes('task')) {
+            toolName = 'task_manager';
+        }
+        else if (lowerMessage.includes('research')) {
+            toolName = 'research_agent';
+        }
+        const toolCallId = `tool_${Date.now()}`;
+        this.sendMessage(connection, {
+            id: (0, uuid_1.v4)(),
+            type: 'event',
+            data: {
+                type: 'ToolCallStart',
+                toolCallId,
+                toolCallName: toolName,
+                parentMessageId: `response_${Date.now()}`,
+                timestamp: new Date().toISOString()
+            },
+            timestamp: new Date().toISOString()
+        });
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        this.sendMessage(connection, {
+            id: (0, uuid_1.v4)(),
+            type: 'event',
+            data: {
+                type: 'ToolCallEnd',
+                toolCallId,
+                toolCallName: toolName,
+                result: `Tool ${toolName} completed successfully`,
+                timestamp: new Date().toISOString()
+            },
+            timestamp: new Date().toISOString()
+        });
+        const toolResponseMessage = `\n\n✅ I've completed the ${toolName} operation. Here are the results:\n\n${this.generateToolResults(toolName, message)}`;
+        await this.streamResponse(connection, `response_${Date.now() + 1}`, toolResponseMessage);
+    }
+    generateToolResults(toolName, originalMessage) {
+        switch (toolName) {
+            case 'calendar_manager':
+                return `📅 **Calendar Summary:**
+• Today: 3 meetings scheduled (Board Review at 10 AM, Product Planning at 2 PM, Investor Call at 4:30 PM)
+• Tomorrow: 2 meetings (Team Standup at 9 AM, Budget Review at 3 PM)
+• This week: 12 total meetings, 4 high-priority
+• Available slots today: 11:30 AM - 12:30 PM, 3:30 PM - 4:00 PM`;
+            case 'email_summarizer':
+                return `📧 **Email Intelligence:**
+• 23 unread emails (8 marked important)
+• 2 urgent emails requiring immediate attention
+• Top senders: Legal Team (3), VP Engineering (2), Board Assistant (2)
+• Key topics: Contract review (urgent), Q4 planning, budget approvals`;
+            case 'task_manager':
+                return `📋 **Task & Project Status:**
+• 3 high-priority tasks due this week
+• Q4 Product Roadmap: 75% complete (on track)
+• Series B Fundraising: 90% complete (ahead of schedule)
+• Enterprise Sales: 45% complete (at risk - needs attention)`;
+            case 'research_agent':
+                return `🔍 **Research Results:**
+• Analyzed latest industry trends and market data
+• Key insights: Market growth 15% YoY, competitor analysis updated
+• 3 new opportunities identified for strategic consideration
+• Full report available in your dashboard`;
+            default:
+                return `✨ **Assistant Analysis:**
+• Processed your request: "${originalMessage}"
+• Action items identified and prioritized
+• Recommendations ready for your review`;
+        }
+    }
+    async streamResponse(connection, messageId, content) {
+        const words = content.split(' ');
+        for (let i = 0; i < words.length; i++) {
+            const delta = i === 0 ? words[i] : ' ' + words[i];
+            this.sendMessage(connection, {
+                id: (0, uuid_1.v4)(),
+                type: 'event',
+                data: {
+                    type: 'TextMessageContent',
+                    messageId,
+                    delta,
+                    timestamp: new Date().toISOString()
+                },
+                timestamp: new Date().toISOString()
+            });
+            await new Promise(resolve => setTimeout(resolve, 50 + Math.random() * 100));
+        }
+        this.sendMessage(connection, {
+            id: (0, uuid_1.v4)(),
+            type: 'event',
+            data: {
+                type: 'TextMessageEnd',
+                messageId,
+                timestamp: new Date().toISOString()
+            },
+            timestamp: new Date().toISOString()
+        });
     }
     async handleChatMessage(connection, message) {
         if (!message.data.content) {

@@ -34,7 +34,7 @@ router.post('/webhook/n8n', async (req: Request, res: Response) => {
     console.error('❌ Automation webhook error:', error);
     res.status(500).json({ 
       error: 'Webhook processing failed',
-      details: error.message 
+      details: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 });
