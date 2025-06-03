@@ -9,19 +9,20 @@ Last Updated: $(date +'%Y-%m-%d %H:%M:%S')
     - [X] WebSocket integration for real-time frontend updates *(Based on commit ddd4a7c9)*
     - [ ] Data persistence for progress history
 
-### GitHub Integration (DOZY Auto-Tracking)
+### GitHub Integration (Project Auto-Tracking)
 - [X] **Backend: GitHub Tracking Logic** *(Based on commit ddd4a7c9)*
     - [X] Endpoint for receiving GitHub webhooks (`/api/webhooks/github`) *(Identified in backend/src/routes/webhooks.ts)*
-    - [ ] Logic to parse commit data for "DOZY" project
-    - [ ] Logic to update DOZY OKR progress
-- [ ] **Configuration: GitHub Webhook for DOZY Repository**
-    - [ ] Webhook created in DOZY GitHub repository settings
+    - [ ] Logic to parse commit data for the **TARGET PROJECT REPOSITORY** (e.g., specific keywords, branches)
+    - [ ] Logic to update relevant OKR progress based on commits
+- [ ] **Configuration: GitHub Webhook for TARGET Repository**
+    - [ ] **TARGET REPOSITORY IDENTIFIED: \`[Please specify repository: owner/repo_name]\`**
+    - [ ] Webhook created in TARGET GitHub repository settings
     - [ ] Webhook points to the correct backend endpoint (requires ngrok or public IP for localhost)
     - [ ] Webhook configured to send 'push' or 'commit' events
-- [ ] **Testing: End-to-End DOZY Tracking**
-    - [ ] Make a test commit to DOZY repo
+- [ ] **Testing: End-to-End Target Project Tracking**
+    - [ ] Make a test commit to TARGET repo
     - [ ] Verify backend receives webhook
-    - [ ] Verify DOZY OKR progress updates in the system/dashboard
+    - [ ] Verify relevant OKR progress updates in the system/dashboard
 
 ### Email Monitoring (VMS/HARKA)
 - [ ] **Backend: Email Processing Logic**
