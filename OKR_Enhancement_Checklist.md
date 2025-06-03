@@ -11,12 +11,12 @@ Last Updated: $(date +'%Y-%m-%d %H:%M:%S')
 
 ### GitHub Integration (DOZY Auto-Tracking)
 - [X] **Backend: GitHub Tracking Logic** *(Based on commit ddd4a7c9)*
-    - [ ] Endpoint for receiving GitHub webhooks
+    - [X] Endpoint for receiving GitHub webhooks (`/api/webhooks/github`) *(Identified in backend/src/routes/webhooks.ts)*
     - [ ] Logic to parse commit data for "DOZY" project
     - [ ] Logic to update DOZY OKR progress
 - [ ] **Configuration: GitHub Webhook for DOZY Repository**
     - [ ] Webhook created in DOZY GitHub repository settings
-    - [ ] Webhook points to the correct backend endpoint
+    - [ ] Webhook points to the correct backend endpoint (requires ngrok or public IP for localhost)
     - [ ] Webhook configured to send 'push' or 'commit' events
 - [ ] **Testing: End-to-End DOZY Tracking**
     - [ ] Make a test commit to DOZY repo
