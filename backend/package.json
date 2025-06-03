@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "tsc && tscpaths -p tsconfig.json -s ./src -o ./dist",
     "start": "node dist/index.js",
     "test": "jest",
     "lint": "eslint src --ext .ts,.tsx",
@@ -43,7 +43,8 @@
     "eslint": "^8.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
-    "prettier": "^3.0.0"
+    "prettier": "^3.0.0",
+    "tscpaths": "^0.0.9"
   },
   "keywords": [
     "executive-assistant",
