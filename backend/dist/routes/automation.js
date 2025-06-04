@@ -70,5 +70,24 @@ router.post('/trigger/:workflow', async (req, res) => {
         res.status(500).json({ error: 'Workflow trigger failed' });
     }
 });
+router.post('/broadcast-test', async (req, res) => {
+    try {
+        const { type, data } = req.body;
+        if (!type) {
+            return res.status(400).json({ error: 'Missing type in request body' });
+        }
+        if (automationService && automationService.wsService && typeof automationService.wsService.broadcast === 'function') {
+            automationService.wsService.broadcast({ type, data });
+            return res.json({ success: true, type, data });
+        }
+        else {
+            return res.status(500).json({ error: 'WebSocket service not available' });
+        }
+    }
+    catch (error) {
+        return res.status(500).json({ error: 'Broadcast failed', details: error instanceof Error ? error.message : error });
+    }
+    return res.status(500).json({ error: 'Unknown error in broadcast-test endpoint' });
+});
 exports.default = router;
 //# sourceMappingURL=automation.js.map
