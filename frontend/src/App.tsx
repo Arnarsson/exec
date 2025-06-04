@@ -8,6 +8,7 @@ import Email from '@/pages/Email'
 import Tasks from '@/pages/Tasks'
 import Settings from '@/pages/Settings'
 import Chat from '@/pages/Chat'
+import GoogleSetup from '@/pages/GoogleSetup'
 import SimpleTest from './SimpleTest'
 
 function App() {
@@ -300,6 +301,7 @@ function App() {
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/google-setup" element={<GoogleSetup />} />
             <Route path="/test" element={<SimpleTest />} />
           </Routes>
         </main>
