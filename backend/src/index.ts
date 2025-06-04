@@ -13,6 +13,7 @@ import { AutomationService } from './services/AutomationService';
 import automationRoutes, { initializeAutomationRoutes } from './routes/automation';
 import okrRoutes from './routes/okr.js';
 import webhookRoutes from './routes/webhooks.js';
+import authRoutes from './routes/auth';
 import { okrService } from './services/okr-service.js';
 
 const app = express();
@@ -269,6 +270,9 @@ app.post('/api/copilot', async (req, res): Promise<void> => {
     });
   }
 });
+
+// Authentication routes
+app.use('/auth', authRoutes);
 
 // OKR API routes
 app.use('/api/okr', okrRoutes);
