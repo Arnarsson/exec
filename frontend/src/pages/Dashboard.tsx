@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react'
-import { format, startOfDay, endOfDay, isToday, addDays } from 'date-fns'
+import { useState, useEffect } from 'react'
+import { format } from 'date-fns'
 
 export default function Dashboard() {
   const [currentTime, setCurrentTime] = useState(new Date())
-  const [agentStatus, setAgentStatus] = useState('online')
-  const [recentActivity, setRecentActivity] = useState([])
   
   // Real executive assistant data
   const executiveProfile = {
@@ -123,7 +121,7 @@ export default function Dashboard() {
     return 'Good evening'
   }
   
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: 'on-track' | 'ahead' | 'at-risk' | string) => {
     switch(status) {
       case 'on-track': return '#22c55e'
       case 'ahead': return '#3b82f6'

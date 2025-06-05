@@ -87,10 +87,10 @@ router.get('/google/callback', async (req, res) => {
     console.log('User authenticated:', userInfo.data.email);
 
     // Redirect to frontend with success
-    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/?auth=success`);
+    return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/?auth=success`);
   } catch (error) {
     console.error('Google callback error:', error);
-    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/?auth=error`);
+    return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/?auth=error`);
   }
 });
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { 
   ClipboardDocumentListIcon,
   PlusIcon,
@@ -11,9 +11,8 @@ import {
   CalendarIcon
 } from '@heroicons/react/24/outline'
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid'
-import { useActiveProjects } from '@/hooks/useExecutiveState'
 import { useAGUIToolCalls } from '@/hooks/useWebSocket'
-import { format, isOverdue, isBefore, addDays } from 'date-fns'
+import { format, isBefore } from 'date-fns'
 
 interface Task {
   id: string;
@@ -115,13 +114,11 @@ const mockTasks: Task[] = [
 ]
 
 export default function Tasks() {
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [showCreateTask, setShowCreateTask] = useState(false)
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [filterPriority, setFilterPriority] = useState<string>('all')
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list')
   
-  const { projects } = useActiveProjects()
   const activeTool = useAGUIToolCalls()
 
   // Filter tasks
@@ -335,7 +332,6 @@ export default function Tasks() {
               <div
                 key={task.id}
                 className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer"
-                onClick={() => setSelectedTask(task)}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-4 flex-1">
@@ -456,7 +452,6 @@ export default function Tasks() {
                   <div
                     key={task.id}
                     className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-                    onClick={() => setSelectedTask(task)}
                   >
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="text-sm font-medium text-gray-900 dark:text-white">

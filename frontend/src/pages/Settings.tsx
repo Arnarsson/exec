@@ -1,107 +1,33 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { 
-  Cog6ToothIcon,
-  UserCircleIcon,
+  CogIcon,
   BellIcon,
-  GlobeAltIcon,
+  UserIcon,
   ShieldCheckIcon,
-  LinkIcon,
+  GlobeAltIcon,
   EyeIcon,
-  EyeSlashIcon,
-  CheckCircleIcon,
-  XCircleIcon,
-  ExclamationTriangleIcon
+  EyeSlashIcon
 } from '@heroicons/react/24/outline'
-import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid'
 import { useExecutiveProfile, useIntegrations } from '@/hooks/useExecutiveState'
-import { useAGUIToolCalls } from '@/hooks/useWebSocket'
-
-interface IntegrationCardProps {
-  title: string;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
-  connected: boolean;
-  onConnect: () => void;
-  onDisconnect: () => void;
-  accounts?: Array<{
-    id: string;
-    email: string;
-    connected: boolean;
-  }>;
-}
-
-function IntegrationCard({ title, description, icon: Icon, connected, onConnect, onDisconnect, accounts }: IntegrationCardProps) {
-  return (
-    <div className="ea-card p-6">
-      <div className="flex items-start justify-between">
-        <div className="flex items-start space-x-4">
-          <div className={`p-3 rounded-lg ${
-            connected ? 'bg-green-100 dark:bg-green-900' : 'bg-gray-100 dark:bg-gray-700'
-          }`}>
-            <Icon className={`h-6 w-6 ${
-              connected ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'
-            }`} />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{description}</p>
-            
-            {accounts && accounts.length > 0 && (
-              <div className="mt-3 space-y-2">
-                {accounts.map(account => (
-                  <div key={account.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 rounded-lg p-2">
-                    <span className="text-sm text-gray-700 dark:text-gray-300">{account.email}</span>
-                    <span className={`inline-flex items-center text-xs px-2 py-1 rounded-full font-medium ${
-                      account.connected 
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                        : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
-                    }`}>
-                      {account.connected ? 'Connected' : 'Disconnected'}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          {connected && (
-            <CheckCircleIconSolid className="h-5 w-5 text-green-500" />
-          )}
-          {connected ? (
-            <button
-              onClick={onDisconnect}
-              className="text-sm px-3 py-1 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-            >
-              Disconnect
-            </button>
-          ) : (
-            <button
-              onClick={onConnect}
-              className="ea-button-primary"
-            >
-              Connect
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState('profile')
-  const [showApiKey, setShowApiKey] = useState(false)
-  const { profile, updateProfile } = useExecutiveProfile()
-  const { integrations, updateCalendarAccount, updateEmailAccount } = useIntegrations()
-  const activeTool = useAGUIToolCalls()
+  const [showPassword, setShowPassword] = useState(false)
+  const [notifications, setNotifications] = useState({
+    email: true,
+    calendar: true,
+    tasks: false,
+    urgent: true
+  })
+  
+  const { profile } = useExecutiveProfile()
+  const { integrations } = useIntegrations()
 
   const tabs = [
-    { id: 'profile', label: 'Profile', icon: UserCircleIcon },
-    { id: 'integrations', label: 'Integrations', icon: LinkIcon },
+    { id: 'profile', label: 'Profile', icon: UserIcon },
+    { id: 'integrations', label: 'Integrations', icon: GlobeAltIcon },
     { id: 'notifications', label: 'Notifications', icon: BellIcon },
-    { id: 'preferences', label: 'Preferences', icon: Cog6ToothIcon },
+    { id: 'preferences', label: 'Preferences', icon: CogIcon },
     { id: 'security', label: 'Security', icon: ShieldCheckIcon },
   ]
 
@@ -126,18 +52,6 @@ export default function Settings() {
           Manage your profile, integrations, and preferences
         </p>
       </div>
-
-      {/* AG-UI Tool Status */}
-      {activeTool && activeTool.toolName.includes('settings') && (
-        <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
-          <div className="flex items-center">
-            <div className="animate-spin h-4 w-4 border-2 border-purple-600 border-t-transparent rounded-full mr-3"></div>
-            <span className="text-purple-800 dark:text-purple-200">
-              {activeTool.toolName}: {activeTool.isComplete ? 'Completed' : 'Processing...'}
-            </span>
-          </div>
-        </div>
-      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Settings Navigation */}
@@ -173,7 +87,7 @@ export default function Settings() {
                 <div className="p-6 space-y-6">
                   <div className="flex items-center space-x-6">
                     <div className="h-20 w-20 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
-                      <UserCircleIcon className="h-12 w-12 text-primary-600 dark:text-primary-400" />
+                      <UserIcon className="h-12 w-12 text-primary-600 dark:text-primary-400" />
                     </div>
                     <div>
                       <button className="ea-button-secondary">Change Photo</button>
@@ -330,7 +244,7 @@ export default function Settings() {
                   <IntegrationCard
                     title="Slack"
                     description="Get notifications and updates in your Slack workspace"
-                    icon={LinkIcon}
+                    icon={GlobeAltIcon}
                     connected={false}
                     onConnect={() => console.log('Connect Slack')}
                     onDisconnect={() => console.log('Disconnect Slack')}
@@ -338,7 +252,7 @@ export default function Settings() {
                   <IntegrationCard
                     title="Microsoft Teams"
                     description="Integrate with Teams for meeting management"
-                    icon={LinkIcon}
+                    icon={GlobeAltIcon}
                     connected={false}
                     onConnect={() => console.log('Connect Teams')}
                     onDisconnect={() => console.log('Disconnect Teams')}
@@ -530,16 +444,16 @@ export default function Settings() {
                     <div className="flex space-x-2">
                       <div className="flex-1 relative">
                         <input
-                          type={showApiKey ? 'text' : 'password'}
+                          type={showPassword ? 'text' : 'password'}
                           value="ea-api-key-1234567890abcdef"
                           readOnly
                           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
                         />
                         <button
-                          onClick={() => setShowApiKey(!showApiKey)}
+                          onClick={() => setShowPassword(!showPassword)}
                           className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                         >
-                          {showApiKey ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
+                          {showPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
                         </button>
                       </div>
                       <button className="ea-button-secondary">Regenerate</button>

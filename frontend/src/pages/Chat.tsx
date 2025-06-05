@@ -1,18 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { format } from 'date-fns'
 import { useWebSocket } from '@/hooks/useWebSocket'
-
-interface ChatMessage {
-  id: string
-  role: 'user' | 'assistant' | 'system'
-  content: string
-  timestamp: string
-  metadata?: {
-    toolCalls?: string[]
-    category?: string
-    priority?: string
-  }
-}
+import { ChatMessage } from '@/types'
 
 interface StreamingMessage {
   messageId: string
@@ -121,7 +110,7 @@ export default function Chat() {
                 content: `🔧 Completed: ${data.toolCallName || activeTool.toolName}`,
                 timestamp: new Date().toISOString(),
                 metadata: {
-                  category: 'tool',
+                  category: 'general',
                   toolCalls: [activeTool.toolName]
                 }
               }
@@ -138,8 +127,7 @@ export default function Chat() {
               content: `📅 Calendar ${data.action}: ${data.events?.length || 0} events updated`,
               timestamp: new Date().toISOString(),
               metadata: {
-                category: 'calendar',
-                events: data.events
+                category: 'calendar'
               }
             }
             setMessages(prev => [...prev, calendarMessage])
@@ -153,9 +141,7 @@ export default function Chat() {
               content: `📧 Email update: ${data.emails?.length || 0} new emails${data.summary ? ` - ${data.summary}` : ''}`,
               timestamp: new Date().toISOString(),
               metadata: {
-                category: 'email',
-                emails: data.emails,
-                summary: data.summary
+                category: 'email'
               }
             }
             setMessages(prev => [...prev, emailMessage])
@@ -218,22 +204,19 @@ export default function Chat() {
         role: 'system',
         content: 'Failed to send message. Please check your connection and try again.',
         timestamp: new Date().toISOString(),
-        metadata: { category: 'error' }
+        metadata: { category: 'general' }
       }
       setMessages(prev => [...prev, errorMessage])
     }
   }
   
-  const detectMessageCategory = (message: string): string => {
+  const detectMessageCategory = (message: string): 'calendar' | 'email' | 'research' | 'general' => {
     const lowerMessage = message.toLowerCase()
     if (lowerMessage.includes('calendar') || lowerMessage.includes('meeting') || lowerMessage.includes('schedule')) {
       return 'calendar'
     }
     if (lowerMessage.includes('email') || lowerMessage.includes('inbox') || lowerMessage.includes('message')) {
       return 'email'
-    }
-    if (lowerMessage.includes('task') || lowerMessage.includes('project') || lowerMessage.includes('todo')) {
-      return 'tasks'
     }
     if (lowerMessage.includes('research') || lowerMessage.includes('analyze') || lowerMessage.includes('find')) {
       return 'research'
