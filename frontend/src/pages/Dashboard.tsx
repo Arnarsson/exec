@@ -1,112 +1,105 @@
 import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
+import { useExecutiveState } from '@/hooks/useExecutiveState'
+import { executiveService } from '@/services/executiveService'
 
 export default function Dashboard() {
   const [currentTime, setCurrentTime] = useState(new Date())
+  const [todaysMetrics, setTodaysMetrics] = useState({
+    meetings: 0,
+    emailsProcessed: 0,
+    decisionsRequired: 0,
+    projectsMoved: 0
+  })
+  const [upcomingMeetings, setUpcomingMeetings] = useState<any[]>([])
+  const [emailSummary, setEmailSummary] = useState({
+    unread: 0,
+    important: 0,
+    urgent: 0,
+    topSenders: [] as string[]
+  })
+  const [pendingDecisions, setPendingDecisions] = useState<any[]>([])
+  const [activeProjects, setActiveProjects] = useState<any[]>([])
   
-  // Real executive assistant data
-  const executiveProfile = {
-    name: 'Sarah Chen',
-    title: 'Chief Executive Officer',
-    company: 'TechVentures Inc.',
-    timezone: 'PST',
-    workingHours: { start: '08:00', end: '18:00' }
+  const { state: executiveState } = useExecutiveState()
+  
+  // Get real user profile or default to authenticated user
+  const executiveProfile = executiveState?.profile || {
+    name: 'Executive User',
+    email: 'user@company.com',
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    preferences: {
+      workingHours: { start: '08:00', end: '18:00' },
+      communicationStyle: 'professional' as const,
+      priorityLevel: 'high' as const,
+      autoApprovalLimits: {
+        calendar: false,
+        email: false,
+        documents: false
+      }
+    }
   }
   
-  const todaysMetrics = {
-    meetings: 7,
-    emailsProcessed: 45,
-    decisionsRequired: 3,
-    projectsMoved: 2
-  }
-  
-  const upcomingMeetings = [
-    {
-      id: '1',
-      title: 'Board Strategy Review',
-      time: '10:00 AM',
-      duration: '2 hours',
-      attendees: ['John Smith', 'Emma Wilson', '4 others'],
-      priority: 'high',
-      status: 'confirmed'
-    },
-    {
-      id: '2', 
-      title: 'Product Launch Planning',
-      time: '2:00 PM',
-      duration: '1 hour',
-      attendees: ['Marketing Team'],
-      priority: 'medium',
-      status: 'tentative'
-    },
-    {
-      id: '3',
-      title: 'Investor Call - Series B',
-      time: '4:30 PM', 
-      duration: '45 min',
-      attendees: ['Andreessen Horowitz'],
-      priority: 'high',
-      status: 'confirmed'
+  // Fetch real data on component mount
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        // Fetch real calendar agenda
+        const agenda = await executiveService.getCalendarAgenda()
+        setUpcomingMeetings(agenda.slice(0, 3)) // Get next 3 meetings
+        setTodaysMetrics(prev => ({ ...prev, meetings: agenda.length }))
+        
+        // Fetch real email summary
+        const emailData = await executiveService.getEmailSummary()
+        setEmailSummary({
+          unread: emailData.unreadCount,
+          important: emailData.importantCount,
+          urgent: emailData.importantCount, // Assuming important emails are urgent
+          topSenders: emailData.categories?.slice(0, 3).map(cat => cat.name) || []
+        })
+        setTodaysMetrics(prev => ({ ...prev, emailsProcessed: emailData.totalEmails }))
+        
+        // Fetch real tasks/projects
+        const tasks = await executiveService.getTasks()
+        const projects = tasks.filter((task: any) => task.type === 'project').slice(0, 3)
+        setActiveProjects(projects)
+        setTodaysMetrics(prev => ({ 
+          ...prev, 
+          projectsMoved: tasks.filter((t: any) => t.status === 'completed').length,
+          decisionsRequired: tasks.filter((t: any) => t.priority === 'high' && t.status === 'pending').length
+        }))
+        
+        // Get pending decisions from high priority tasks
+        const decisions = tasks
+          .filter((task: any) => task.priority === 'high' && task.status === 'pending')
+          .slice(0, 3)
+          .map((task: any) => ({
+            id: task.id,
+            title: task.title,
+            urgency: task.priority,
+            deadline: task.deadline ? format(new Date(task.deadline), 'MMM d') : 'No deadline',
+            requester: task.assignee || 'System'
+          }))
+        setPendingDecisions(decisions)
+        
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error)
+        // Fallback to minimal data structure
+        setTodaysMetrics({
+          meetings: 0,
+          emailsProcessed: 0,
+          decisionsRequired: 0,
+          projectsMoved: 0
+        })
+      }
     }
-  ]
-  
-  const emailSummary = {
-    unread: 23,
-    important: 8,
-    urgent: 2,
-    topSenders: ['Legal Team', 'VP Engineering', 'Board Assistant']
-  }
-  
-  const pendingDecisions = [
-    {
-      id: '1',
-      title: 'Approve Q1 Marketing Budget ($2.5M)',
-      urgency: 'high',
-      deadline: 'Today 5:00 PM',
-      requester: 'CMO'
-    },
-    {
-      id: '2',
-      title: 'Sign Partnership Agreement - Microsoft',
-      urgency: 'medium', 
-      deadline: 'Tomorrow',
-      requester: 'VP Business Development'
-    },
-    {
-      id: '3',
-      title: 'New Hire Approval - Senior Engineer',
-      urgency: 'low',
-      deadline: 'This Week',
-      requester: 'VP Engineering'
-    }
-  ]
-  
-  const activeProjects = [
-    {
-      id: '1',
-      name: 'Q4 Product Roadmap',
-      status: 'on-track',
-      progress: 75,
-      nextMilestone: 'Feature Freeze',
-      dueDate: 'Dec 15'
-    },
-    {
-      id: '2',
-      name: 'Series B Fundraising',
-      status: 'ahead',
-      progress: 90,
-      nextMilestone: 'Term Sheet Signing', 
-      dueDate: 'Nov 30'
-    },
-    {
-      id: '3',
-      name: 'Enterprise Sales Expansion',
-      status: 'at-risk',
-      progress: 45,
-      nextMilestone: 'Hire Sales Director',
-      dueDate: 'Dec 1'
-    }
-  ]
+    
+    fetchDashboardData()
+    
+    // Refresh data every 5 minutes
+    const interval = setInterval(fetchDashboardData, 5 * 60 * 1000)
+    return () => clearInterval(interval)
+  }, [])
   
   // Update time every minute
   useEffect(() => {
@@ -130,8 +123,6 @@ export default function Dashboard() {
     }
   }
 
-
-
   return (
     <div className="space-y-6">
       {/* Executive Header */}
@@ -147,7 +138,7 @@ export default function Dashboard() {
               {getGreeting()}, {executiveProfile.name}
             </h1>
             <p style={{opacity: 0.9, marginTop: '0.5rem'}}>
-              {executiveProfile.title} • {format(currentTime, 'EEEE, MMMM d, yyyy')}
+              Executive Assistant • {format(currentTime, 'EEEE, MMMM d, yyyy')}
             </p>
           </div>
           <div className="text-right">

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   ClipboardDocumentListIcon,
   PlusIcon,
@@ -12,6 +12,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid'
 import { useAGUIToolCalls } from '@/hooks/useWebSocket'
+import { executiveService } from '@/services/executiveService'
 import { format, isBefore } from 'date-fns'
 
 interface Task {
@@ -29,100 +30,96 @@ interface Task {
   updatedAt: string;
 }
 
-// Mock tasks data
-const mockTasks: Task[] = [
-  {
-    id: '1',
-    title: 'Prepare Q4 financial presentation',
-    description: 'Create comprehensive slides for board meeting including revenue, expenses, and projections',
-    priority: 'high',
-    status: 'in-progress',
-    assignee: 'John Doe',
-    deadline: '2024-05-30T17:00:00Z',
-    projectId: 'project_1',
-    tags: ['finance', 'presentation'],
-    progress: 65,
-    createdAt: '2024-05-20T09:00:00Z',
-    updatedAt: '2024-05-24T14:30:00Z'
-  },
-  {
-    id: '2',
-    title: 'Review vendor contracts',
-    description: 'Review and approve pending vendor contracts for legal compliance',
-    priority: 'high',
-    status: 'todo',
-    assignee: 'Sarah Johnson',
-    deadline: '2024-05-25T23:59:00Z',
-    projectId: 'project_2',
-    tags: ['legal', 'contracts'],
-    progress: 0,
-    createdAt: '2024-05-22T11:00:00Z',
-    updatedAt: '2024-05-22T11:00:00Z'
-  },
-  {
-    id: '3',
-    title: 'Team performance reviews',
-    description: 'Complete quarterly performance reviews for direct reports',
-    priority: 'medium',
-    status: 'in-progress',
-    assignee: 'Michael Chen',
-    deadline: '2024-06-01T17:00:00Z',
-    tags: ['hr', 'reviews'],
-    progress: 40,
-    createdAt: '2024-05-18T08:00:00Z',
-    updatedAt: '2024-05-23T16:00:00Z'
-  },
-  {
-    id: '4',
-    title: 'Strategic planning workshop',
-    description: 'Organize and facilitate next quarter strategic planning session',
-    priority: 'medium',
-    status: 'todo',
-    deadline: '2024-06-05T10:00:00Z',
-    tags: ['strategy', 'planning'],
-    progress: 0,
-    createdAt: '2024-05-21T10:00:00Z',
-    updatedAt: '2024-05-21T10:00:00Z'
-  },
-  {
-    id: '5',
-    title: 'Update company website',
-    description: 'Review and update company website content for accuracy',
-    priority: 'low',
-    status: 'completed',
-    assignee: 'Marketing Team',
-    deadline: '2024-05-23T17:00:00Z',
-    tags: ['marketing', 'website'],
-    progress: 100,
-    createdAt: '2024-05-15T14:00:00Z',
-    updatedAt: '2024-05-23T15:30:00Z'
-  },
-  {
-    id: '6',
-    title: 'Budget allocation review',
-    description: 'Review and finalize budget allocations for next quarter',
-    priority: 'high',
-    status: 'blocked',
-    assignee: 'Finance Team',
-    deadline: '2024-05-28T17:00:00Z',
-    projectId: 'project_1',
-    tags: ['finance', 'budget'],
-    progress: 20,
-    createdAt: '2024-05-19T09:00:00Z',
-    updatedAt: '2024-05-24T12:00:00Z'
-  }
-]
-
 export default function Tasks() {
   const [showCreateTask, setShowCreateTask] = useState(false)
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [filterPriority, setFilterPriority] = useState<string>('all')
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list')
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   
   const activeTool = useAGUIToolCalls()
 
+  // Fetch real tasks
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        setIsLoading(true)
+        const tasksData = await executiveService.getTasks()
+        
+        // Transform backend task data to frontend format
+        const formattedTasks: Task[] = tasksData.map((task: any) => ({
+          id: task.id || `task_${Date.now()}`,
+          title: task.title || task.name || 'Untitled Task',
+          description: task.description,
+          priority: task.priority || 'medium',
+          status: task.status || 'todo',
+          assignee: task.assignee || task.owner,
+          deadline: task.deadline || task.dueDate,
+          projectId: task.projectId,
+          tags: task.tags || [],
+          progress: task.progress || 0,
+          createdAt: task.createdAt || new Date().toISOString(),
+          updatedAt: task.updatedAt || new Date().toISOString()
+        }))
+        
+        setTasks(formattedTasks)
+      } catch (error) {
+        console.error('Failed to fetch tasks:', error)
+        // Set a welcome task if no tasks are available
+        setTasks([{
+          id: '1',
+          title: 'Welcome to your Executive Assistant',
+          description: 'Your AI assistant is ready to help you manage tasks, schedule meetings, and handle emails. Start by creating your first task!',
+          priority: 'medium',
+          status: 'todo',
+          progress: 0,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchTasks()
+  }, [])
+
+  // Handle task creation
+  const handleCreateTask = async (taskData: Partial<Task>) => {
+    try {
+      await executiveService.createTask({
+        title: taskData.title || 'New Task',
+        description: taskData.description,
+        priority: taskData.priority || 'medium',
+        deadline: taskData.deadline
+      })
+      
+      // Refresh tasks after creation
+      const tasksData = await executiveService.getTasks()
+      const formattedTasks: Task[] = tasksData.map((task: any) => ({
+        id: task.id || `task_${Date.now()}`,
+        title: task.title || task.name || 'Untitled Task',
+        description: task.description,
+        priority: task.priority || 'medium',
+        status: task.status || 'todo',
+        assignee: task.assignee || task.owner,
+        deadline: task.deadline || task.dueDate,
+        projectId: task.projectId,
+        tags: task.tags || [],
+        progress: task.progress || 0,
+        createdAt: task.createdAt || new Date().toISOString(),
+        updatedAt: task.updatedAt || new Date().toISOString()
+      }))
+      setTasks(formattedTasks)
+      setShowCreateTask(false)
+    } catch (error) {
+      console.error('Failed to create task:', error)
+    }
+  }
+
   // Filter tasks
-  const filteredTasks = mockTasks.filter(task => {
+  const filteredTasks = tasks.filter(task => {
     const matchesStatus = filterStatus === 'all' || task.status === filterStatus
     const matchesPriority = filterPriority === 'all' || task.priority === filterPriority
     return matchesStatus && matchesPriority
@@ -169,10 +166,10 @@ export default function Tasks() {
   }
 
   const getTaskStats = () => {
-    const total = mockTasks.length
-    const completed = mockTasks.filter(t => t.status === 'completed').length
-    const overdue = mockTasks.filter(t => isTaskOverdue(t)).length
-    const dueToday = mockTasks.filter(t => 
+    const total = tasks.length
+    const completed = tasks.filter(t => t.status === 'completed').length
+    const overdue = tasks.filter(t => isTaskOverdue(t)).length
+    const dueToday = tasks.filter(t => 
       t.deadline && format(new Date(t.deadline), 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
     ).length
 
@@ -180,6 +177,23 @@ export default function Tasks() {
   }
 
   const stats = getTaskStats()
+
+  if (isLoading) {
+    return (
+      <div className="p-6">
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-6"></div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          </div>
+          <div className="h-96 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -510,91 +524,141 @@ export default function Tasks() {
 
       {/* Create Task Modal */}
       {showCreateTask && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onClick={() => setShowCreateTask(false)} />
+        <TaskCreateModal
+          onClose={() => setShowCreateTask(false)}
+          onSubmit={handleCreateTask}
+        />
+      )}
+    </div>
+  )
+}
+
+// Task Creation Modal Component
+function TaskCreateModal({ 
+  onClose, 
+  onSubmit 
+}: { 
+  onClose: () => void;
+  onSubmit: (taskData: Partial<Task>) => void;
+}) {
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    priority: 'medium' as Task['priority'],
+    deadline: '',
+    assignee: ''
+  })
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!formData.title.trim()) return
+
+    onSubmit({
+      title: formData.title,
+      description: formData.description || undefined,
+      priority: formData.priority,
+      deadline: formData.deadline || undefined
+    })
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onClick={onClose} />
+        
+        <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-xl rounded-lg">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+            Create New Task
+          </h3>
+          
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Task Title *
+              </label>
+              <input
+                type="text"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                placeholder="Enter task title"
+                required
+              />
+            </div>
             
-            <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-xl rounded-lg">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                Create New Task
-              </h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Task Title
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-                    placeholder="Enter task title"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Description
-                  </label>
-                  <textarea
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white resize-none"
-                    placeholder="Enter task description"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Priority
-                    </label>
-                    <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white">
-                      <option value="low">Low</option>
-                      <option value="medium">Medium</option>
-                      <option value="high">High</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Deadline
-                    </label>
-                    <input
-                      type="date"
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Assignee
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-                    placeholder="Enter assignee name"
-                  />
-                </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Description
+              </label>
+              <textarea
+                rows={3}
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white resize-none"
+                placeholder="Enter task description"
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Priority
+                </label>
+                <select 
+                  value={formData.priority}
+                  onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value as Task['priority'] }))}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
               </div>
               
-              <div className="flex justify-end space-x-3 mt-6">
-                <button
-                  onClick={() => setShowCreateTask(false)}
-                  className="ea-button-secondary"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => setShowCreateTask(false)}
-                  className="ea-button-primary"
-                >
-                  Create Task
-                </button>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Deadline
+                </label>
+                <input
+                  type="date"
+                  value={formData.deadline}
+                  onChange={(e) => setFormData(prev => ({ ...prev, deadline: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                />
               </div>
             </div>
-          </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Assignee
+              </label>
+              <input
+                type="text"
+                value={formData.assignee}
+                onChange={(e) => setFormData(prev => ({ ...prev, assignee: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                placeholder="Enter assignee name"
+              />
+            </div>
+            
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                type="button"
+                onClick={onClose}
+                className="ea-button-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="ea-button-primary"
+              >
+                Create Task
+              </button>
+            </div>
+          </form>
         </div>
-      )}
+      </div>
     </div>
   )
 }
