@@ -1,113 +1,129 @@
 import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
+import { executiveService } from '@/services/executiveService'
+import toast from 'react-hot-toast'
+
+interface TaskData {
+  id: string;
+  title: string;
+  status: string;
+  priority: string;
+  dueDate: string;
+}
+
+interface CalendarEventData {
+  id: string;
+  title: string;
+  startTime: string;
+  endTime: string;
+  attendees: string[];
+  priority: string;
+}
+
+interface EmailSummaryData {
+  totalEmails: number;
+  unreadCount: number;
+  importantCount: number;
+  recentEmails: Array<{
+    from: string;
+    subject: string;
+    priority: string;
+  }>;
+}
 
 export default function Dashboard() {
   const [currentTime, setCurrentTime] = useState(new Date())
+  const [tasks, setTasks] = useState<TaskData[]>([])
+  const [meetings, setMeetings] = useState<CalendarEventData[]>([])
+  const [emailSummary, setEmailSummary] = useState<EmailSummaryData | null>(null)
+  const [loading, setLoading] = useState(true)
   
   // Real executive assistant data
   const executiveProfile = {
-    name: 'Sarah Chen',
+    name: 'Executive',
     title: 'Chief Executive Officer',
     company: 'TechVentures Inc.',
     timezone: 'PST',
     workingHours: { start: '08:00', end: '18:00' }
   }
+
+  // Load real data from APIs
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        setLoading(true)
+        
+        // Load tasks, calendar, and email data in parallel
+        const [tasksResponse, calendarResponse, emailResponse] = await Promise.all([
+          executiveService.getTasks(),
+          executiveService.getCalendarAgenda(),
+          executiveService.getEmailSummary()
+        ])
+        
+        setTasks(tasksResponse || [])
+        setMeetings(calendarResponse as any || [])
+        setEmailSummary(emailResponse as any)
+        
+      } catch (error) {
+        console.error('Failed to load dashboard data:', error)
+        toast.error('Failed to load dashboard data')
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    loadDashboardData()
+  }, [])
   
+  // Calculate metrics from real data
   const todaysMetrics = {
-    meetings: 7,
-    emailsProcessed: 45,
-    decisionsRequired: 3,
-    projectsMoved: 2
+    meetings: meetings.length,
+    emailsProcessed: emailSummary?.totalEmails || 0,
+    decisionsRequired: tasks.filter(t => t.priority === 'high' && t.status === 'pending').length,
+    projectsMoved: tasks.filter(t => t.status === 'completed').length
   }
   
-  const upcomingMeetings = [
-    {
-      id: '1',
-      title: 'Board Strategy Review',
-      time: '10:00 AM',
-      duration: '2 hours',
-      attendees: ['John Smith', 'Emma Wilson', '4 others'],
-      priority: 'high',
-      status: 'confirmed'
-    },
-    {
-      id: '2', 
-      title: 'Product Launch Planning',
-      time: '2:00 PM',
-      duration: '1 hour',
-      attendees: ['Marketing Team'],
-      priority: 'medium',
-      status: 'tentative'
-    },
-    {
-      id: '3',
-      title: 'Investor Call - Series B',
-      time: '4:30 PM', 
-      duration: '45 min',
-      attendees: ['Andreessen Horowitz'],
-      priority: 'high',
-      status: 'confirmed'
-    }
-  ]
+  // Convert calendar events to meeting format
+  const upcomingMeetings = meetings.slice(0, 3).map(meeting => ({
+    id: meeting.id,
+    title: meeting.title,
+    time: format(new Date(meeting.startTime), 'h:mm a'),
+    duration: '1 hour', // Default duration
+    attendees: meeting.attendees || [],
+    priority: meeting.priority || 'medium',
+    status: 'confirmed'
+  }))
   
-  const emailSummary = {
-    unread: 23,
-    important: 8,
-    urgent: 2,
-    topSenders: ['Legal Team', 'VP Engineering', 'Board Assistant']
+  // Email data from API
+  const emailData = {
+    unread: emailSummary?.unreadCount || 0,
+    important: emailSummary?.importantCount || 0,
+    urgent: emailSummary?.recentEmails?.filter(e => e.priority === 'high').length || 0,
+    topSenders: emailSummary?.recentEmails?.map(e => e.from.split('@')[0]).slice(0, 3) || []
   }
   
-  const pendingDecisions = [
-    {
-      id: '1',
-      title: 'Approve Q1 Marketing Budget ($2.5M)',
-      urgency: 'high',
-      deadline: 'Today 5:00 PM',
-      requester: 'CMO'
-    },
-    {
-      id: '2',
-      title: 'Sign Partnership Agreement - Microsoft',
-      urgency: 'medium', 
-      deadline: 'Tomorrow',
-      requester: 'VP Business Development'
-    },
-    {
-      id: '3',
-      title: 'New Hire Approval - Senior Engineer',
-      urgency: 'low',
-      deadline: 'This Week',
-      requester: 'VP Engineering'
-    }
-  ]
+  // Convert tasks to projects format
+  const activeProjects = tasks.slice(0, 3).map(task => ({
+    id: task.id,
+    name: task.title,
+    status: task.status === 'completed' ? 'ahead' : task.status === 'in-progress' ? 'on-track' : 'at-risk',
+    progress: task.status === 'completed' ? 100 : task.status === 'in-progress' ? 50 : 25,
+    nextMilestone: 'Next action required',
+    dueDate: format(new Date(task.dueDate), 'MMM d')
+  }))
   
-  const activeProjects = [
-    {
-      id: '1',
-      name: 'Q4 Product Roadmap',
-      status: 'on-track',
-      progress: 75,
-      nextMilestone: 'Feature Freeze',
-      dueDate: 'Dec 15'
-    },
-    {
-      id: '2',
-      name: 'Series B Fundraising',
-      status: 'ahead',
-      progress: 90,
-      nextMilestone: 'Term Sheet Signing', 
-      dueDate: 'Nov 30'
-    },
-    {
-      id: '3',
-      name: 'Enterprise Sales Expansion',
-      status: 'at-risk',
-      progress: 45,
-      nextMilestone: 'Hire Sales Director',
-      dueDate: 'Dec 1'
-    }
-  ]
-  
+  // Pending decisions from high priority tasks
+  const pendingDecisions = tasks
+    .filter(t => t.priority === 'high' && t.status === 'pending')
+    .slice(0, 3)
+    .map(task => ({
+      id: task.id,
+      title: task.title,
+      urgency: task.priority,
+      deadline: format(new Date(task.dueDate), 'MMM d'),
+      requester: 'Executive Assistant'
+    }))
+
   // Update time every minute
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000)
@@ -130,7 +146,16 @@ export default function Dashboard() {
     }
   }
 
-
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="text-gray-600">Loading dashboard...</div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -198,7 +223,7 @@ export default function Dashboard() {
               📧
             </div>
             <div>
-              <div className="text-sm text-gray-600">Emails Processed</div>
+              <div className="text-sm text-gray-600">Total Emails</div>
               <div className="text-2xl font-bold text-green-600">{todaysMetrics.emailsProcessed}</div>
             </div>
           </div>
@@ -215,7 +240,7 @@ export default function Dashboard() {
               ⚡
             </div>
             <div>
-              <div className="text-sm text-gray-600">Decisions Required</div>
+              <div className="text-sm text-gray-600">High Priority Tasks</div>
               <div className="text-2xl font-bold text-yellow-600">{todaysMetrics.decisionsRequired}</div>
             </div>
           </div>
@@ -232,7 +257,7 @@ export default function Dashboard() {
               🚀
             </div>
             <div>
-              <div className="text-sm text-gray-600">Projects Advanced</div>
+              <div className="text-sm text-gray-600">Completed Tasks</div>
               <div className="text-2xl font-bold text-purple-600">{todaysMetrics.projectsMoved}</div>
             </div>
           </div>
@@ -249,12 +274,15 @@ export default function Dashboard() {
             </h3>
           </div>
           <div className="p-4 space-y-3">
-            {upcomingMeetings.map((meeting) => (
+            {upcomingMeetings.length > 0 ? upcomingMeetings.map((meeting) => (
               <div key={meeting.id} className="flex items-center justify-between p-3 rounded-lg" style={{background: '#f8fafc'}}>
                 <div>
                   <div className="font-medium text-sm">{meeting.title}</div>
                   <div className="text-xs text-gray-500">{meeting.time} • {meeting.duration}</div>
-                  <div className="text-xs text-gray-400">{meeting.attendees[0]} {meeting.attendees.length > 1 && `+${meeting.attendees.length - 1}`}</div>
+                  <div className="text-xs text-gray-400">
+                    {meeting.attendees.length > 0 ? meeting.attendees[0] : 'No attendees'} 
+                    {meeting.attendees.length > 1 && ` +${meeting.attendees.length - 1}`}
+                  </div>
                 </div>
                 <div style={{
                   background: meeting.priority === 'high' ? '#fee2e2' : '#fef3c7',
@@ -267,7 +295,11 @@ export default function Dashboard() {
                   {meeting.priority.toUpperCase()}
                 </div>
               </div>
-            ))}
+            )) : (
+              <div className="text-center text-gray-500 py-4">
+                No upcoming meetings
+              </div>
+            )}
           </div>
         </div>
 
@@ -281,26 +313,28 @@ export default function Dashboard() {
           <div className="p-4">
             <div className="grid grid-cols-2 gap-3 mb-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-red-600">{emailSummary.unread}</div>
+                <div className="text-2xl font-bold text-red-600">{emailData.unread}</div>
                 <div className="text-xs text-gray-500">Unread</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{emailSummary.important}</div>
+                <div className="text-2xl font-bold text-blue-600">{emailData.important}</div>
                 <div className="text-xs text-gray-500">Important</div>
               </div>
             </div>
             
             <div style={{background: '#fef2f2', padding: '0.75rem', borderRadius: '0.5rem', marginBottom: '1rem'}}>
-              <div className="font-medium text-sm text-red-800">🚨 {emailSummary.urgent} Urgent Emails</div>
-              <div className="text-xs text-red-600">Require immediate attention</div>
+              <div className="font-medium text-sm text-red-800">🚨 {emailData.urgent} High Priority Emails</div>
+              <div className="text-xs text-red-600">Require attention</div>
             </div>
             
-            <div>
-              <div className="text-sm font-medium mb-2">Top Senders Today:</div>
-              {emailSummary.topSenders.map((sender, i) => (
-                <div key={i} className="text-xs text-gray-600 mb-1">• {sender}</div>
-              ))}
-            </div>
+            {emailData.topSenders.length > 0 && (
+              <div>
+                <div className="text-sm font-medium mb-2">Recent Senders:</div>
+                {emailData.topSenders.map((sender, i) => (
+                  <div key={i} className="text-xs text-gray-600 mb-1">• {sender}</div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -308,16 +342,16 @@ export default function Dashboard() {
         <div className="ea-card">
           <div className="p-4 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-              ⚡ Pending Decisions
+              ⚡ High Priority Tasks
             </h3>
           </div>
           <div className="p-4 space-y-3">
-            {pendingDecisions.map((decision) => (
+            {pendingDecisions.length > 0 ? pendingDecisions.map((decision) => (
               <div key={decision.id} className="p-3 rounded-lg border border-gray-200">
                 <div className="font-medium text-sm mb-1">{decision.title}</div>
-                <div className="text-xs text-gray-500 mb-2">From: {decision.requester}</div>
+                <div className="text-xs text-gray-500 mb-2">Assigned to: {decision.requester}</div>
                 <div className="flex items-center justify-between">
-                  <div className="text-xs text-gray-400">{decision.deadline}</div>
+                  <div className="text-xs text-gray-400">Due: {decision.deadline}</div>
                   <div style={{
                     background: decision.urgency === 'high' ? '#fee2e2' : decision.urgency === 'medium' ? '#fef3c7' : '#f0f9ff',
                     color: decision.urgency === 'high' ? '#dc2626' : decision.urgency === 'medium' ? '#ca8a04' : '#2563eb',
@@ -329,7 +363,11 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-            ))}
+            )) : (
+              <div className="text-center text-gray-500 py-4">
+                No high priority tasks
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -338,46 +376,52 @@ export default function Dashboard() {
       <div className="ea-card">
         <div className="p-4 border-b border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900 flex items-center justify-between">
-            🚀 Active Projects
-            <span className="text-sm font-normal text-gray-500">{activeProjects.length} projects</span>
+            🚀 Recent Tasks
+            <span className="text-sm font-normal text-gray-500">{activeProjects.length} tasks shown</span>
           </h3>
         </div>
         <div className="p-4">
-          <div className="grid grid-cols-3 gap-4">
-            {activeProjects.map((project) => (
-              <div key={project.id} className="p-4 rounded-lg border border-gray-200">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="font-medium text-sm">{project.name}</div>
-                  <div style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    background: getStatusColor(project.status)
-                  }}></div>
-                </div>
-                
-                <div className="mb-3">
-                  <div className="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>Progress</span>
-                    <span>{project.progress}%</span>
-                  </div>
-                  <div style={{background: '#f3f4f6', height: '6px', borderRadius: '3px'}}>
+          {activeProjects.length > 0 ? (
+            <div className="grid grid-cols-3 gap-4">
+              {activeProjects.map((project) => (
+                <div key={project.id} className="p-4 rounded-lg border border-gray-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="font-medium text-sm">{project.name}</div>
                     <div style={{
-                      background: getStatusColor(project.status),
-                      height: '100%',
-                      width: `${project.progress}%`,
-                      borderRadius: '3px'
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      background: getStatusColor(project.status)
                     }}></div>
                   </div>
+                  
+                  <div className="mb-3">
+                    <div className="flex justify-between text-xs text-gray-500 mb-1">
+                      <span>Progress</span>
+                      <span>{project.progress}%</span>
+                    </div>
+                    <div style={{background: '#f3f4f6', height: '6px', borderRadius: '3px'}}>
+                      <div style={{
+                        background: getStatusColor(project.status),
+                        height: '100%',
+                        width: `${project.progress}%`,
+                        borderRadius: '3px'
+                      }}></div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-xs text-gray-600">
+                    <div>Status: {project.status}</div>
+                    <div>Due: {project.dueDate}</div>
+                  </div>
                 </div>
-                
-                <div className="text-xs text-gray-600">
-                  <div>Next: {project.nextMilestone}</div>
-                  <div>Due: {project.dueDate}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-gray-500 py-8">
+              No recent tasks available
+            </div>
+          )}
         </div>
       </div>
 

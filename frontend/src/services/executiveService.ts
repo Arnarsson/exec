@@ -81,8 +81,8 @@ class ExecutiveService {
   // Calendar Operations
   async getCalendarAgenda(date?: string): Promise<CalendarEvent[]> {
     const params = date ? { date } : {}
-    const response = await this.api.get<APIResponse<{ agenda: CalendarEvent[] }>>('/api/calendar/agenda', { params })
-    return response.data.data?.agenda || []
+    const response = await this.api.get<{ success: boolean; agenda: CalendarEvent[] }>('/api/calendar/agenda', { params })
+    return response.data.agenda || []
   }
 
   async checkAvailability(
@@ -131,8 +131,8 @@ class ExecutiveService {
 
   // Email Operations
   async getEmailSummary(): Promise<EmailSummary> {
-    const response = await this.api.get<APIResponse<EmailSummary>>('/api/email/summary')
-    return response.data.data || {
+    const response = await this.api.get<{ success: boolean; summary: EmailSummary }>('/api/email/summary')
+    return response.data.summary || {
       totalEmails: 0,
       unreadCount: 0,
       importantCount: 0,
@@ -187,8 +187,8 @@ class ExecutiveService {
   }
 
   async getTasks(): Promise<any[]> {
-    const response = await this.api.get<APIResponse<any[]>>('/api/tasks')
-    return response.data.data || []
+    const response = await this.api.get<{ success: boolean; tasks: any[] }>('/api/tasks')
+    return response.data.tasks || []
   }
 
   async updateTask(taskId: string, updates: any): Promise<void> {

@@ -14,6 +14,7 @@ import automationRoutes, { initializeAutomationRoutes } from './routes/automatio
 import okrRoutes from './routes/okr.js';
 import webhookRoutes from './routes/webhooks.js';
 import authRoutes from './routes/auth';
+import executiveRoutes from './routes/executive';
 import { okrService } from './services/okr-service.js';
 
 const app = express();
@@ -274,6 +275,9 @@ app.post('/api/copilot', async (req, res): Promise<void> => {
 // Authentication routes
 app.use('/auth', authRoutes);
 
+// Executive API routes (tasks, calendar, email)
+app.use('/api', executiveRoutes);
+
 // OKR API routes
 app.use('/api/okr', okrRoutes);
 
@@ -344,41 +348,6 @@ app.post('/webhooks/email/received', async (req, res) => {
     });
   } catch (error) {
     logError('Email webhook', error);
-    res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
-  }
-});
-
-// Get current calendar agenda (now supports n8n data)
-app.get('/api/calendar/agenda', async (req, res) => {
-  try {
-    // In production, you'd query your database here
-    // For now, return placeholder that n8n can populate
-    res.json({
-      agenda: [],
-      message: 'Calendar ready for n8n integration via POST /webhooks/calendar/events',
-      webhookUrl: `${req.protocol}://${req.get('host')}/webhooks/calendar/events`,
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
-  }
-});
-
-// Email integration endpoints (now supports n8n data)
-app.get('/api/email/summary', async (req, res) => {
-  try {
-    // In production, you'd query your database here
-    res.json({
-      summary: {
-        totalEmails: 0,
-        unreadCount: 0,
-        importantCount: 0
-      },
-      message: 'Email ready for n8n integration via POST /webhooks/email/received',
-      webhookUrl: `${req.protocol}://${req.get('host')}/webhooks/email/received`,
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
     res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
   }
 });
