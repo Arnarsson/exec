@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
-import { ExecutiveState, APIResponse } from '@/types'
+import { ExecutiveState } from '@/types'
 import { executiveService } from '@/services/executiveService'
 import { useAGUIEvent } from './useWebSocket'
 
@@ -28,7 +28,6 @@ export function useExecutiveState(): UseExecutiveStateReturn {
       retry: 2,
       refetchInterval: 30000, // Refetch every 30 seconds
       staleTime: 10000, // Consider data stale after 10 seconds
-      timeout: 10000, // Timeout after 10 seconds
       onError: (error: any) => {
         console.error('Failed to load executive state:', error)
       },
@@ -110,7 +109,7 @@ export function useExecutiveState(): UseExecutiveStateReturn {
     null
 
   return {
-    state: state || null,
+    state: state as ExecutiveState | null,
     isLoading,
     error,
     updateState: updateMutation.mutateAsync,

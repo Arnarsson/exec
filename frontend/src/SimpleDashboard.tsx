@@ -1,4 +1,3 @@
-import React from 'react'
 import { useWebSocket } from '@/hooks/useWebSocket'
 
 function SimpleDashboard() {
@@ -130,12 +129,14 @@ function SimpleDashboard() {
                 transition: 'all 0.2s'
               }}
               onMouseOver={(e) => {
-                e.target.style.backgroundColor = '#e2e8f0'
-                e.target.style.transform = 'translateY(-2px)'
+                const target = e.target as HTMLButtonElement
+                target.style.backgroundColor = '#e2e8f0'
+                target.style.transform = 'translateY(-2px)'
               }}
               onMouseOut={(e) => {
-                e.target.style.backgroundColor = '#f8fafc'
-                e.target.style.transform = 'translateY(0)'
+                const target = e.target as HTMLButtonElement
+                target.style.backgroundColor = '#f8fafc'
+                target.style.transform = 'translateY(0)'
               }}
             >
               <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{item.emoji}</div>

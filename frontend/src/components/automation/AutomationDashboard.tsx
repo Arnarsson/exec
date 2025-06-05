@@ -3,7 +3,6 @@ import {
   CogIcon, 
   PlayIcon,
   CheckCircleIcon,
-  ExclamationTriangleIcon,
   EnvelopeIcon,
   CalendarIcon,
   ClipboardDocumentListIcon

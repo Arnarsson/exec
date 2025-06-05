@@ -21,7 +21,7 @@ export function useWebSocket(url: string): UseWebSocketReturn {
     if (socketRef.current && isConnected) {
       const wsMessage: WSMessage = {
         id: `msg_${Date.now()}`,
-        type: 'message',
+        type: 'request',
         data: { content: message },
         timestamp: new Date().toISOString()
       }
@@ -126,17 +126,18 @@ export function useAGUIEvent(
   dependencies: any[] = []
 ) {
   useEffect(() => {
-    const handleEvent = (event: CustomEvent) => {
-      const aguiEvent = event.detail as AGUIEvent
+    const handleEvent = (event: Event) => {
+      const customEvent = event as CustomEvent
+      const aguiEvent = customEvent.detail as AGUIEvent
       if (aguiEvent.type === eventType) {
         handler(aguiEvent)
       }
     }
 
-    window.addEventListener('ag-ui-event', handleEvent)
+    window.addEventListener('ag-ui-event', handleEvent as EventListener)
 
     return () => {
-      window.removeEventListener('ag-ui-event', handleEvent)
+      window.removeEventListener('ag-ui-event', handleEvent as EventListener)
     }
   }, [eventType, ...dependencies])
 }

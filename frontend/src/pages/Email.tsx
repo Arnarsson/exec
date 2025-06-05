@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { 
   EnvelopeIcon,
   PaperAirplaneIcon,
@@ -6,7 +6,6 @@ import {
   ArchiveBoxIcon,
   TrashIcon,
   PlusIcon,
-  FunnelIcon,
   MagnifyingGlassIcon,
   ExclamationCircleIcon
 } from '@heroicons/react/24/outline'
