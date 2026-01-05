@@ -7,10 +7,18 @@ import { CalendarAgent } from './calendar-agent';
 import { EmailAgent } from './email-agent';
 import { AGUIStream, createAGUIStream } from '@/events/stream';
 import { ExecutiveState } from '../types/ag-ui';
+import {
+  getMemoryService,
+  MemoryService,
+  MemoryChunk,
+  ProactiveSuggestion,
+  Belief,
+  ExecutiveBrief,
+} from '../services/MemoryService';
 
 export interface AgentRequest {
   id: string;
-  type: 'chat' | 'calendar' | 'email' | 'research' | 'task';
+  type: 'chat' | 'calendar' | 'email' | 'research' | 'task' | 'memory' | 'brief';
   content: string;
   metadata?: {
     threadId?: string;
@@ -25,17 +33,21 @@ export interface AgentResponse {
   content: string;
   data?: any;
   followUpActions?: string[];
+  proactiveSuggestions?: ProactiveSuggestion[];
+  relevantBeliefs?: Belief[];
 }
 
 export class ExecutiveAssistantOrchestrator {
   private calendarAgent?: CalendarAgent;
   private emailAgent?: EmailAgent;
+  private memoryService: MemoryService;
   private stream: AGUIStream;
   private executiveState: ExecutiveState;
 
   constructor(credentials?: any) {
     this.stream = createAGUIStream();
     this.executiveState = this.getDefaultExecutiveState();
+    this.memoryService = getMemoryService();
 
     // Initialize agents if credentials provided
     if (credentials?.google) {
@@ -72,6 +84,12 @@ export class ExecutiveAssistantOrchestrator {
           break;
         case 'task':
           response = await this.handleTaskRequest(request, intent);
+          break;
+        case 'memory':
+          response = await this.handleMemoryRequest(request, intent);
+          break;
+        case 'brief':
+          response = await this.handleBriefRequest(request, intent);
           break;
         default:
           response = await this.handleUnknownRequest(request);
@@ -264,24 +282,144 @@ export class ExecutiveAssistantOrchestrator {
   }
 
   /**
-   * Handle general chat requests
+   * Handle general chat requests with proactive memory context
    */
   private async handleChatRequest(request: AgentRequest, intent: any): Promise<AgentResponse> {
     this.stream.startStep('processing_chat_request');
 
     try {
+      // Fetch proactive suggestions based on the user's message
+      const suggestionsResponse = await this.memoryService.getProactiveSuggestions(
+        request.content,
+        [], // mentioned entities will be extracted server-side
+        []  // recent accessed memories
+      );
+
+      let proactiveContext = '';
+      const suggestions = suggestionsResponse.suggestions || [];
+      const relevantBeliefs: Belief[] = [];
+
+      // Build proactive context from suggestions
+      if (suggestions.length > 0) {
+        proactiveContext = '\n\n---\n💡 **Related from your memory:**\n';
+
+        for (const suggestion of suggestions.slice(0, 3)) {
+          switch (suggestion.type) {
+            case 'entity_context':
+              if (suggestion.entity) {
+                proactiveContext += `• You've mentioned **${suggestion.entity}** before`;
+                if (suggestion.memories && suggestion.memories.length > 0) {
+                  proactiveContext += `: "${suggestion.memories[0].snippet}"`;
+                }
+                proactiveContext += '\n';
+              }
+              break;
+            case 'belief_update':
+              if (suggestion.updates && suggestion.updates.length > 0) {
+                const update = suggestion.updates[0];
+                proactiveContext += `• ⚠️ Note: You previously said "${update.old}" about ${update.subject}, but more recently said "${update.new}"\n`;
+              }
+              break;
+            case 'forgotten_relevant':
+              if (suggestion.memories && suggestion.memories.length > 0) {
+                proactiveContext += `• You might find this relevant: "${suggestion.memories[0].snippet}"\n`;
+              }
+              break;
+            case 'chain_continuation':
+              proactiveContext += `• This seems related to previous discussions about: ${suggestion.trigger}\n`;
+              break;
+            case 'temporal_pattern':
+              proactiveContext += `• Pattern detected: ${suggestion.trigger}\n`;
+              break;
+          }
+        }
+      }
+
+      // Fetch relevant beliefs for the context
+      const beliefs = await this.memoryService.getBeliefs();
+      if (beliefs.length > 0) {
+        // Find beliefs that might be relevant to the current conversation
+        const contextWords = request.content.toLowerCase().split(/\s+/);
+        const matchingBeliefs = beliefs.filter(belief =>
+          contextWords.some(word =>
+            belief.subject.toLowerCase().includes(word) ||
+            belief.fact.toLowerCase().includes(word)
+          )
+        ).slice(0, 2);
+
+        if (matchingBeliefs.length > 0) {
+          if (!proactiveContext) {
+            proactiveContext = '\n\n---\n💡 **Your preferences/decisions:**\n';
+          } else {
+            proactiveContext += '\n**Your preferences/decisions:**\n';
+          }
+          matchingBeliefs.forEach(belief => {
+            proactiveContext += `• ${belief.fact} (${belief.category})\n`;
+            relevantBeliefs.push(belief);
+          });
+        }
+      }
+
       // Generate contextual response based on executive state
       const response = await this.generateContextualResponse(request.content);
-      
-      await this.stream.streamMessage(response, 'assistant');
+      const fullResponse = response + proactiveContext;
+
+      await this.stream.streamMessage(fullResponse, 'assistant');
+
+      // Store important interactions back to memory (if the message seems significant)
+      if (this.isSignificantInteraction(request.content, response)) {
+        await this.storeInteractionToMemory(request.content, response);
+      }
 
       return {
         id: request.id,
         type: 'text',
-        content: response
+        content: fullResponse,
+        proactiveSuggestions: suggestions,
+        relevantBeliefs
       };
     } finally {
       this.stream.finishStep('processing_chat_request');
+    }
+  }
+
+  /**
+   * Determine if an interaction is significant enough to store
+   */
+  private isSignificantInteraction(userMessage: string, response: string): boolean {
+    const lowerMessage = userMessage.toLowerCase();
+
+    // Keywords indicating strategic/important content
+    const significantKeywords = [
+      'decision', 'decided', 'strategy', 'plan', 'goal', 'priority',
+      'important', 'critical', 'deadline', 'budget', 'contract',
+      'client', 'partner', 'investor', 'hire', 'fire', 'promotion',
+      'launch', 'release', 'milestone', 'target', 'objective',
+      'prefer', 'always', 'never', 'policy', 'rule', 'principle'
+    ];
+
+    return significantKeywords.some(keyword => lowerMessage.includes(keyword));
+  }
+
+  /**
+   * Store important interactions to memory for future recall
+   */
+  private async storeInteractionToMemory(userMessage: string, assistantResponse: string): Promise<void> {
+    try {
+      const content = `User: ${userMessage}\n\nAssistant: ${assistantResponse}`;
+
+      await this.memoryService.storeMemory(content, {
+        tags: ['chat', 'executive-assistant'],
+        importance: 0.6,
+        source: 'executive-assistant-chat',
+        extractEntities: true,
+        extractBeliefs: true
+      });
+
+      console.log('[Orchestrator] Stored significant interaction to memory');
+    } catch (error) {
+      console.warn('[Orchestrator] Failed to store interaction to memory:', error);
+      // Don't fail the request if memory storage fails
     }
   }
 
@@ -341,6 +479,166 @@ export class ExecutiveAssistantOrchestrator {
   }
 
   /**
+   * Handle memory search requests
+   */
+  private async handleMemoryRequest(request: AgentRequest, intent: any): Promise<AgentResponse> {
+    this.stream.startStep('searching_memory');
+
+    try {
+      // Stream tool call for memory search
+      await this.stream.streamToolCall('memory_search', { query: intent.params.query });
+
+      // Search memory
+      const chunks = await this.memoryService.searchWithContent(intent.params.query, 5);
+
+      if (chunks.length === 0) {
+        const noResultsMessage = `I searched my memory but couldn't find any relevant conversations about "${intent.params.query}". Would you like me to help with something else?`;
+        await this.stream.streamMessage(noResultsMessage, 'assistant');
+
+        return {
+          id: request.id,
+          type: 'text',
+          content: noResultsMessage,
+          data: { memoryResults: [] }
+        };
+      }
+
+      // Format memory results for display
+      let responseContent = `🧠 **Memory Search Results**\n\nI found ${chunks.length} relevant conversation${chunks.length > 1 ? 's' : ''} in my memory:\n\n`;
+
+      chunks.forEach((chunk, index) => {
+        const preview = chunk.text.substring(0, 300).trim();
+        responseContent += `**${index + 1}. ${chunk.title || 'Conversation'}**\n`;
+        responseContent += `> ${preview}${chunk.text.length > 300 ? '...' : ''}\n\n`;
+        if (chunk.metadata.ts_start) {
+          const date = new Date(chunk.metadata.ts_start).toLocaleDateString();
+          responseContent += `📅 _${date}_\n\n`;
+        }
+      });
+
+      responseContent += '\nWould you like me to provide more details on any of these?';
+
+      await this.stream.streamMessage(responseContent, 'assistant');
+
+      return {
+        id: request.id,
+        type: 'text',
+        content: responseContent,
+        data: {
+          memoryResults: chunks,
+          query: intent.params.query
+        }
+      };
+    } catch (error) {
+      console.error('Memory search error:', error);
+      const errorMessage = 'I encountered an issue searching my memory. The memory service may be unavailable.';
+      await this.stream.streamMessage(errorMessage, 'assistant');
+
+      return {
+        id: request.id,
+        type: 'error',
+        content: errorMessage
+      };
+    } finally {
+      this.stream.finishStep('searching_memory');
+    }
+  }
+
+  /**
+   * Handle executive brief requests
+   * "Brief me on X", "What decisions about Y?", "Summarize my history with Z"
+   */
+  private async handleBriefRequest(request: AgentRequest, intent: any): Promise<AgentResponse> {
+    this.stream.startStep('generating_brief');
+
+    try {
+      const focus = intent.params.focus || 'general business strategy';
+      const timeRangeDays = intent.params.timeRangeDays || 30;
+
+      await this.stream.streamToolCall('generate_brief', { focus, timeRangeDays });
+
+      const briefResponse = await this.memoryService.generateBrief(focus, timeRangeDays);
+
+      if (!briefResponse.generated || !briefResponse.brief) {
+        const noDataMessage = `I don't have enough relevant memories about "${focus}" to generate a meaningful brief. Try being more specific or expanding the time range.`;
+        await this.stream.streamMessage(noDataMessage, 'assistant');
+
+        return {
+          id: request.id,
+          type: 'text',
+          content: noDataMessage
+        };
+      }
+
+      const brief = briefResponse.brief;
+
+      // Format the executive brief for display
+      let responseContent = `📋 **Executive Brief: ${brief.scope}**\n`;
+      responseContent += `📅 Period: ${brief.period}\n\n`;
+
+      responseContent += `## Summary\n${brief.summary}\n\n`;
+
+      if (brief.highlights.length > 0) {
+        responseContent += `## Key Highlights\n`;
+        brief.highlights.forEach((h, i) => {
+          responseContent += `${i + 1}. ${h}\n`;
+        });
+        responseContent += '\n';
+      }
+
+      if (brief.risks.length > 0) {
+        responseContent += `## ⚠️ Risks & Concerns\n`;
+        brief.risks.forEach((r, i) => {
+          responseContent += `- ${r}\n`;
+        });
+        responseContent += '\n';
+      }
+
+      if (brief.opportunities.length > 0) {
+        responseContent += `## 🎯 Opportunities\n`;
+        brief.opportunities.forEach((o, i) => {
+          responseContent += `- ${o}\n`;
+        });
+        responseContent += '\n';
+      }
+
+      if (brief.recommendations.length > 0) {
+        responseContent += `## 💡 Recommendations\n`;
+        brief.recommendations.forEach((r, i) => {
+          responseContent += `${i + 1}. ${r}\n`;
+        });
+        responseContent += '\n';
+      }
+
+      if (brief.notable_entities.length > 0) {
+        responseContent += `## 👥 Key People/Topics Mentioned\n`;
+        responseContent += brief.notable_entities.join(', ') + '\n';
+      }
+
+      await this.stream.streamMessage(responseContent, 'assistant');
+
+      return {
+        id: request.id,
+        type: 'text',
+        content: responseContent,
+        data: { brief }
+      };
+    } catch (error) {
+      console.error('Brief generation error:', error);
+      const errorMessage = 'I encountered an issue generating the executive brief. The memory service may be unavailable.';
+      await this.stream.streamMessage(errorMessage, 'assistant');
+
+      return {
+        id: request.id,
+        type: 'error',
+        content: errorMessage
+      };
+    } finally {
+      this.stream.finishStep('generating_brief');
+    }
+  }
+
+  /**
    * Handle unknown requests
    */
   private async handleUnknownRequest(request: AgentRequest): Promise<AgentResponse> {
@@ -349,7 +647,9 @@ export class ExecutiveAssistantOrchestrator {
       "📅 **Calendar**: Schedule meetings, check availability, get agenda\n" +
       "📧 **Email**: Summarize inbox, draft responses, prioritize messages\n" +
       "💬 **Chat**: Answer questions and have conversations\n" +
-      "📋 **Tasks**: Create and manage your projects\n\n" +
+      "📋 **Tasks**: Create and manage your projects\n" +
+      "🧠 **Memory**: Search past conversations and recall context\n" +
+      "📋 **Brief**: Get executive summaries - 'Brief me on client discussions'\n\n" +
       "What would you like me to help you with?",
       'assistant'
     );
@@ -357,7 +657,7 @@ export class ExecutiveAssistantOrchestrator {
     return {
       id: request.id,
       type: 'text',
-      content: 'I can help with calendar, email, chat, and task management. What would you like to do?'
+      content: 'I can help with calendar, email, chat, task management, and memory search. What would you like to do?'
     };
   }
 
@@ -442,6 +742,39 @@ export class ExecutiveAssistantOrchestrator {
       }
     }
 
+    // Executive brief intents
+    if (lowerContent.includes('brief me') ||
+        lowerContent.includes('brief on') ||
+        lowerContent.includes('summarize my') ||
+        lowerContent.includes('what decisions') ||
+        lowerContent.includes('what have i said about') ||
+        lowerContent.includes('my history with') ||
+        lowerContent.includes('give me a brief') ||
+        lowerContent.includes('executive summary') ||
+        lowerContent.includes('catch me up on')) {
+      return {
+        type: 'brief',
+        action: 'generate',
+        params: this.extractBriefParams(content)
+      };
+    }
+
+    // Memory search intents
+    if (lowerContent.includes('remember') ||
+        lowerContent.includes('recall') ||
+        lowerContent.includes('what did we') ||
+        lowerContent.includes('previous conversation') ||
+        lowerContent.includes('search memory') ||
+        lowerContent.includes('find in memory') ||
+        lowerContent.includes('we discussed') ||
+        lowerContent.includes('talked about')) {
+      return {
+        type: 'memory',
+        action: 'search',
+        params: { query: content }
+      };
+    }
+
     // Default to chat
     return {
       type: 'chat',
@@ -493,6 +826,57 @@ export class ExecutiveAssistantOrchestrator {
       title: content.replace(/create|add|new|task|project/gi, '').trim() || 'New Task',
       priority: 'medium'
     };
+  }
+
+  private extractBriefParams(content: string): any {
+    const lowerContent = content.toLowerCase();
+
+    // Extract focus topic from various patterns
+    let focus = 'general business strategy';
+
+    // "brief me on X", "brief on X"
+    const briefOnMatch = content.match(/brief(?:\s+me)?\s+on\s+(.+?)(?:\.|$)/i);
+    if (briefOnMatch) {
+      focus = briefOnMatch[1].trim();
+    }
+
+    // "what decisions about X"
+    const decisionsMatch = content.match(/what\s+decisions?\s+(?:about|on|regarding)\s+(.+?)(?:\?|$)/i);
+    if (decisionsMatch) {
+      focus = decisionsMatch[1].trim();
+    }
+
+    // "my history with X"
+    const historyMatch = content.match(/my\s+history\s+with\s+(.+?)(?:\.|$)/i);
+    if (historyMatch) {
+      focus = historyMatch[1].trim();
+    }
+
+    // "catch me up on X"
+    const catchUpMatch = content.match(/catch\s+me\s+up\s+on\s+(.+?)(?:\.|$)/i);
+    if (catchUpMatch) {
+      focus = catchUpMatch[1].trim();
+    }
+
+    // "summarize my X"
+    const summarizeMatch = content.match(/summarize\s+my\s+(.+?)(?:\.|$)/i);
+    if (summarizeMatch) {
+      focus = summarizeMatch[1].trim();
+    }
+
+    // Extract time range
+    let timeRangeDays = 30; // default
+    if (lowerContent.includes('this week') || lowerContent.includes('past week')) {
+      timeRangeDays = 7;
+    } else if (lowerContent.includes('this month') || lowerContent.includes('past month')) {
+      timeRangeDays = 30;
+    } else if (lowerContent.includes('this quarter') || lowerContent.includes('past quarter')) {
+      timeRangeDays = 90;
+    } else if (lowerContent.includes('this year') || lowerContent.includes('past year')) {
+      timeRangeDays = 365;
+    }
+
+    return { focus, timeRangeDays };
   }
 
   private async generateContextualResponse(content: string): Promise<string> {

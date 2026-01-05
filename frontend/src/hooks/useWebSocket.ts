@@ -19,13 +19,10 @@ export function useWebSocket(url: string): UseWebSocketReturn {
 
   const sendMessage = useCallback((message: any) => {
     if (socketRef.current && isConnected) {
-      const wsMessage: WSMessage = {
-        id: `msg_${Date.now()}`,
-        type: 'request',
-        data: { content: message },
-        timestamp: new Date().toISOString()
-      }
-      socketRef.current.send(JSON.stringify(wsMessage))
+      // Send the message directly without wrapping
+      // The message should already have the correct format (e.g., ChatMessage)
+      socketRef.current.send(JSON.stringify(message))
+      console.log('📤 WebSocket sent:', message)
     } else {
       console.warn('WebSocket not connected, cannot send message:', message)
     }

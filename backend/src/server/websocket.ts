@@ -129,7 +129,12 @@ export class AGUIWebSocketServer {
     const rawMessage = JSON.parse(data.toString());
     connection.lastActivity = new Date();
 
-    console.log(`📨 Message from ${connection.id}:`, rawMessage.type, rawMessage.content?.substring(0, 50) || rawMessage.data?.content?.substring(0, 50));
+    const contentPreview = typeof rawMessage.content === 'string'
+      ? rawMessage.content.substring(0, 50)
+      : typeof rawMessage.data?.content === 'string'
+        ? rawMessage.data.content.substring(0, 50)
+        : '[complex content]';
+    console.log(`📨 Message from ${connection.id}:`, rawMessage.type, contentPreview);
 
     // Handle new AG-UI chat message format
     if (rawMessage.type === 'ChatMessage') {

@@ -1,89 +1,386 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg: #ffffff;
+  --fg: #000000;
+  --muted: #666666;
+  --border: #000000;
+  --surface: #f2f2f2;
+  --accent: #ff0000;
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
 @layer base {
   * {
-    border-color: #e5e7eb;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    border-color: var(--border);
   }
-  
+
   body {
-    background-color: #f9fafb;
-    color: #111827;
-    font-feature-settings: "rlig" 1, "calt" 1;
-    font-family: system-ui, -apple-system, sans-serif;
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-main);
   }
-  
+
   html {
     scroll-behavior: smooth;
   }
 }
 
 @layer components {
+  /* Swiss Design System */
+  .swiss-sidebar {
+    border-right: 1px solid var(--border);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    background: var(--bg);
+  }
+
+  .swiss-logo {
+    font-weight: 900;
+    font-size: 1.2rem;
+    letter-spacing: -0.05em;
+    text-transform: uppercase;
+    margin-bottom: 4rem;
+  }
+
+  .swiss-nav a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+
+  .swiss-nav a:hover,
+  .swiss-nav a.active {
+    color: var(--fg);
+  }
+
+  .swiss-nav a.active::before {
+    content: "→ ";
+  }
+
+  /* Hero Header */
+  .swiss-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 4rem;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 2rem;
+  }
+
+  .swiss-hero h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .swiss-hero-subtitle {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .swiss-time {
+    font-size: 2rem;
+    font-weight: 300;
+  }
+
+  .swiss-status {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--accent);
+  }
+
+  /* Metric Grid */
+  .swiss-metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+    margin-bottom: 4rem;
+  }
+
+  .swiss-metric {
+    padding: 2rem;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .swiss-metric-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .swiss-metric-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+
+  /* Dashboard Grid */
+  .swiss-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    margin-bottom: 4rem;
+  }
+
+  .swiss-section-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+    display: inline-block;
+  }
+
+  /* Items */
+  .swiss-item {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .swiss-item:last-child {
+    border-bottom: none;
+  }
+
+  .swiss-item-title {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .swiss-item-meta {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  /* Badges */
+  .swiss-badge {
+    font-size: 0.6rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border: 1px solid var(--border);
+  }
+
+  .swiss-badge-high {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .swiss-urgent {
+    color: var(--accent);
+    font-weight: 900;
+  }
+
+  /* Progress Bars */
+  .swiss-progress-container {
+    height: 2px;
+    background: #eee;
+    width: 100%;
+  }
+
+  .swiss-progress-fill {
+    height: 100%;
+    background: var(--fg);
+  }
+
+  /* Action Bar */
+  .swiss-action-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border: 1px solid var(--border);
+  }
+
+  .swiss-btn {
+    padding: 1.5rem;
+    border: none;
+    border-right: 1px solid var(--border);
+    background: transparent;
+    font-family: var(--font-main);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .swiss-btn:last-child {
+    border-right: none;
+  }
+
+  .swiss-btn:hover {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .swiss-btn-primary {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .swiss-btn-primary:hover {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  /* Surface */
+  .swiss-surface {
+    background: var(--surface);
+    padding: 1rem;
+    font-size: 0.8rem;
+  }
+
+  /* Chat Styles */
+  .swiss-chat-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .swiss-message {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #eee;
+  }
+
+  .swiss-message-user {
+    background: var(--surface);
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .swiss-message-assistant {
+    padding: 1rem 0;
+  }
+
+  .swiss-input-container {
+    border-top: 2px solid var(--border);
+    padding-top: 2rem;
+    margin-top: 2rem;
+  }
+
+  .swiss-input {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    font-family: var(--font-main);
+    font-size: 0.9rem;
+    background: transparent;
+    outline: none;
+  }
+
+  .swiss-input:focus {
+    border-color: var(--accent);
+  }
+
   /* Custom scrollbar */
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: rgb(203 213 225) transparent;
+    scrollbar-color: var(--muted) transparent;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar {
     width: 6px;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar-track {
     background: transparent;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: rgb(203 213 225);
+    background-color: var(--muted);
     border-radius: 3px;
   }
-  
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background-color: rgb(148 163 184);
+
+  /* Legacy support classes */
+  .ea-card {
+    border: 1px solid var(--border);
+    background: var(--bg);
   }
 
-  /* Executive Assistant specific styles */
-  .ea-glass {
-    @apply bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50;
-  }
-  
-  .ea-card {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700;
-  }
-  
   .ea-button-primary {
-    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium px-4 py-2 rounded-lg transition-colors;
+    background: var(--fg);
+    color: var(--bg);
+    font-weight: 700;
+    padding: 1rem 1.5rem;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    transition: background 0.2s, color 0.2s;
+    border: 1px solid var(--border);
   }
-  
+
+  .ea-button-primary:hover {
+    background: var(--accent);
+    color: #fff;
+  }
+
   .ea-button-secondary {
-    @apply bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-medium px-4 py-2 rounded-lg transition-colors;
+    background: transparent;
+    color: var(--fg);
+    font-weight: 700;
+    padding: 1rem 1.5rem;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    transition: background 0.2s, color 0.2s;
+    border: 1px solid var(--border);
   }
-  
-  /* AG-UI event animations */
-  .ag-ui-event {
-    @apply animate-fade-in;
+
+  .ea-button-secondary:hover {
+    background: var(--fg);
+    color: var(--bg);
   }
-  
-  .ag-ui-typing {
-    @apply animate-pulse;
-  }
-  
-  .ag-ui-tool-call {
-    @apply animate-bounce-subtle;
-  }
-  
+
   /* Chat message styles */
   .message-user {
-    @apply bg-primary-600 text-white rounded-2xl rounded-br-sm;
+    background: var(--surface);
+    color: var(--fg);
+    padding: 1rem;
+    border: 1px solid var(--border);
   }
-  
+
   .message-assistant {
-    @apply bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-2xl rounded-bl-sm;
+    background: transparent;
+    color: var(--fg);
+    padding: 1rem 0;
   }
-  
+
   .message-system {
-    @apply bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 rounded-lg border border-yellow-200 dark:border-yellow-800;
+    background: var(--surface);
+    color: var(--muted);
+    padding: 1rem;
+    font-size: 0.85rem;
+    border-left: 2px solid var(--accent);
   }
 }
 
@@ -91,18 +388,46 @@
   .text-balance {
     text-wrap: balance;
   }
-  
+
   .text-pretty {
     text-wrap: pretty;
   }
-  
-  /* Hide scrollbar but keep functionality */
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .swiss-metric-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .swiss-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .swiss-action-bar {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .swiss-metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .swiss-hero h1 {
+    font-size: 2rem;
+  }
+
+  .swiss-action-bar {
+    grid-template-columns: 1fr;
   }
 }
