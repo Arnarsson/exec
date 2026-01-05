@@ -1,7 +1,8 @@
 import { useWebSocket } from '@/hooks/useWebSocket'
+import { config } from '@/config/api'
 
 function SimpleDashboard() {
-  const { isConnected, connectionError } = useWebSocket('ws://localhost:8080')
+  const { isConnected, connectionError } = useWebSocket(config.wsUrl)
   
   const currentTime = new Date().toLocaleString()
   

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay, addMonths, subMonths, addDays } from 'date-fns'
+import { getApiUrl, getMemoryUrl } from '@/config/api'
 
 interface CalendarEvent {
   id: string;
@@ -34,7 +35,7 @@ export default function Calendar() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('http://localhost:3001/auth/status')
+        const response = await fetch(`${getApiUrl()}/auth/status`)
         if (response.ok) {
           const data = await response.json()
           setGoogleConnected(data.authenticated)
@@ -53,7 +54,7 @@ export default function Calendar() {
   const fetchEvents = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch(`http://localhost:3001/calendar/events?date=${format(currentDate, 'yyyy-MM-dd')}`)
+      const response = await fetch(`${getApiUrl()}/calendar/events?date=${format(currentDate, 'yyyy-MM-dd')}`)
       if (response.ok) {
         const data = await response.json()
         setEvents(data.events || [])
@@ -68,7 +69,7 @@ export default function Calendar() {
   // Search memory for meeting-related content
   const searchMemoryForMeetings = useCallback(async () => {
     try {
-      const response = await fetch(`http://localhost:8765/search?q=meeting schedule calendar&limit=5`)
+      const response = await fetch(`${getMemoryUrl()}/search?q=meeting schedule calendar&limit=5`)
       if (response.ok) {
         const data = await response.json()
         setMemorySuggestions(data.results || [])

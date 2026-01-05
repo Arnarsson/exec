@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { config } from '../config/api';
 
 interface AuthStatus {
   authenticated: boolean;
@@ -14,7 +15,7 @@ const GoogleSetup: React.FC = () => {
   const checkAuthStatus = async () => {
     try {
       console.log('Checking auth status...');
-      const response = await fetch('http://localhost:3001/auth/status');
+      const response = await fetch(`${config.apiUrl}/auth/status`);
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -34,7 +35,7 @@ const GoogleSetup: React.FC = () => {
   const startGoogleAuth = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3001/auth/google');
+      const response = await fetch(`${config.apiUrl}/auth/google`);
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);

@@ -156,7 +156,7 @@ export class MemoryService {
         return { results: [], query, timestamp: new Date().toISOString() };
       }
 
-      const data = await response.json();
+      const data = await response.json() as { results?: MemorySearchResult[] };
 
       return {
         results: data.results || [],
@@ -185,7 +185,7 @@ export class MemoryService {
         return null;
       }
 
-      return await response.json();
+      return await response.json() as MemoryChunk;
     } catch (error) {
       console.warn('[MemoryService] Fetch error:', error);
       return null;
@@ -276,7 +276,7 @@ export class MemoryService {
     try {
       const response = await fetch(`${this.baseUrl}/api/stats`);
       if (!response.ok) return null;
-      return await response.json();
+      return await response.json() as MemoryStats;
     } catch (error) {
       console.warn('[MemoryService] Stats error:', error);
       return null;
@@ -322,7 +322,7 @@ export class MemoryService {
         };
       }
 
-      return await response.json();
+      return await response.json() as SuggestionsResponse;
     } catch (error) {
       console.warn('[MemoryService] Suggestions error:', error);
       return {
@@ -358,7 +358,7 @@ export class MemoryService {
         return { brief: null, generated: false, error: `Request failed: ${response.status}` };
       }
 
-      return await response.json();
+      return await response.json() as BriefResponse;
     } catch (error) {
       console.warn('[MemoryService] Brief generation error:', error);
       return { brief: null, generated: false, error: String(error) };
@@ -374,7 +374,7 @@ export class MemoryService {
     try {
       const response = await fetch(`${this.baseUrl}/api/briefs?limit=${limit}`);
       if (!response.ok) return [];
-      const data = await response.json();
+      const data = await response.json() as { briefs?: ExecutiveBrief[] };
       return data.briefs || [];
     } catch (error) {
       console.warn('[MemoryService] Get briefs error:', error);
@@ -430,7 +430,7 @@ export class MemoryService {
         };
       }
 
-      return await response.json();
+      return await response.json() as StoreMemoryResult;
     } catch (error) {
       console.warn('[MemoryService] Store memory error:', error);
       return {
@@ -466,7 +466,7 @@ export class MemoryService {
       });
 
       if (!response.ok) return [];
-      const data = await response.json();
+      const data = await response.json() as { entities?: Entity[] };
       return data.entities || [];
     } catch (error) {
       console.warn('[MemoryService] Get entities error:', error);
@@ -483,7 +483,7 @@ export class MemoryService {
     try {
       const response = await fetch(`${this.baseUrl}/api/entity/${entityId}`);
       if (!response.ok) return null;
-      const data = await response.json();
+      const data = await response.json() as { entity: Entity; observations?: EntityDetail['observations']; relations?: EntityDetail['relations'] };
       return {
         ...data.entity,
         observations: data.observations || [],
@@ -518,7 +518,7 @@ export class MemoryService {
       });
 
       if (!response.ok) return [];
-      const data = await response.json();
+      const data = await response.json() as { beliefs?: Belief[] };
       return data.beliefs || [];
     } catch (error) {
       console.warn('[MemoryService] Get beliefs error:', error);
@@ -536,7 +536,7 @@ export class MemoryService {
     try {
       const response = await fetch(`${this.baseUrl}/api/contradictions`);
       if (!response.ok) return [];
-      const data = await response.json();
+      const data = await response.json() as { contradictions?: Contradiction[] };
       return data.contradictions || [];
     } catch (error) {
       console.warn('[MemoryService] Get contradictions error:', error);

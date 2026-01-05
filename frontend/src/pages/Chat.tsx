@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { format } from 'date-fns'
 import { useWebSocket } from '@/hooks/useWebSocket'
 import { ChatMessage } from '@/types'
+import { getWsUrl, getMemoryUrl } from '@/config/api'
 
 interface StreamingMessage {
   messageId: string
@@ -56,7 +57,7 @@ export default function Chat() {
   const [showMemoryPanel, setShowMemoryPanel] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const { socket, isConnected, sendMessage, connectionError } = useWebSocket('ws://localhost:8080')
+  const { socket, isConnected, sendMessage, connectionError } = useWebSocket(getWsUrl())
 
   // Debounced memory search as user types
   const searchMemory = useCallback(async (query: string) => {
@@ -67,8 +68,8 @@ export default function Chat() {
 
     setMemoryLoading(true)
     try {
-      // Use GET endpoint with query params - matches server_http.py /search endpoint on port 8765
-      const response = await fetch(`http://localhost:8765/search?q=${encodeURIComponent(query)}&limit=5`)
+      // Use GET endpoint with query params - matches server_http.py /search endpoint
+      const response = await fetch(`${getMemoryUrl()}/search?q=${encodeURIComponent(query)}&limit=5`)
 
       if (!response.ok) throw new Error('Memory search failed')
 

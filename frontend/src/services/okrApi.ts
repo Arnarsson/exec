@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { OKR, OKRDashboardData, OKRProgress } from '../types/okr';
+import { getApiUrl } from '@/config/api';
 
-const API_BASE_URL = (typeof window !== 'undefined' && (window as any).__API_URL__) || 'http://localhost:3001';
+const API_BASE_URL = getApiUrl();
 
 // Create axios instance with default config
 const okrApi = axios.create({

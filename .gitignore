@@ -33,4 +33,4 @@ build
 
 # Test coverage
 coverage/
-.nyc_output/ 
+.nyc_output/ backend/.env.production

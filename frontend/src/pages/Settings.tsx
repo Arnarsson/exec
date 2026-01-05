@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { getApiUrl, getMemoryUrl } from '@/config/api'
 
 interface IntegrationStatus {
   authenticated: boolean;
@@ -51,7 +52,7 @@ export default function Settings() {
   const checkGoogleAuth = async () => {
     try {
       setGoogleLoading(true)
-      const response = await fetch('http://localhost:3001/auth/status')
+      const response = await fetch(`${getApiUrl()}/auth/status`)
       if (!response.ok) throw new Error('Auth service unavailable')
       const data = await response.json()
       setGoogleStatus(data)
@@ -76,7 +77,7 @@ export default function Settings() {
   // Start Google OAuth flow
   const connectGoogle = async () => {
     try {
-      const response = await fetch('http://localhost:3001/auth/google')
+      const response = await fetch(`${getApiUrl()}/auth/google`)
       if (!response.ok) throw new Error('Failed to start authentication')
       const data = await response.json()
       if (data.authUrl) {
@@ -91,7 +92,7 @@ export default function Settings() {
   // Check memory service status
   const checkMemoryStatus = async () => {
     try {
-      const response = await fetch('http://localhost:8765/stats')
+      const response = await fetch(`${getMemoryUrl()}/stats`)
       if (response.ok) {
         setIntegrations(prev => prev.map(i =>
           i.id === 'memory'

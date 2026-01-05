@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { format, isBefore, addDays } from 'date-fns'
+import { getMemoryUrl } from '@/config/api'
 
 interface Task {
   id: string;
@@ -152,7 +153,7 @@ export default function Tasks() {
       const allMemories: MemoryResult[] = []
 
       for (const query of queries) {
-        const response = await fetch(`http://localhost:8765/search?q=${encodeURIComponent(query)}&limit=5`)
+        const response = await fetch(`${getMemoryUrl()}/search?q=${encodeURIComponent(query)}&limit=5`)
         if (response.ok) {
           const data = await response.json()
           allMemories.push(...(data.results || []))

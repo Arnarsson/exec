@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
+import { getMemoryUrl } from '@/config/api'
 
 interface MemoryStats {
   imported_conversations: number;
@@ -90,7 +91,7 @@ export default function Dashboard() {
       try {
         setMemoryLoading(true)
         setMemoryError(null)
-        const response = await fetch('http://localhost:8765/stats')
+        const response = await fetch(`${getMemoryUrl()}/stats`)
         if (!response.ok) throw new Error('Memory service unavailable')
         const data = await response.json()
         setMemoryStats(data)

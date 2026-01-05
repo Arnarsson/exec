@@ -1,0 +1,40 @@
+# Caddyfile for Executive Assistant
+# IP-based deployment (HTTP only - can add domain later for HTTPS)
+
+:80 {
+    # API endpoints - proxy to backend
+    handle /api/* {
+        reverse_proxy backend:3001
+    }
+
+    # Auth endpoints - proxy to backend
+    handle /auth/* {
+        reverse_proxy backend:3001
+    }
+
+    # Webhook endpoints - proxy to backend
+    handle /webhooks/* {
+        reverse_proxy backend:3001
+    }
+
+    # Health check endpoint
+    handle /health {
+        reverse_proxy backend:3001
+    }
+
+    # WebSocket endpoint - proxy to backend WS port
+    handle /ws {
+        reverse_proxy backend:8080
+    }
+
+    # Memory RAG endpoints
+    handle /memory/* {
+        uri strip_prefix /memory
+        reverse_proxy memory:8765
+    }
+
+    # Default response for root
+    handle {
+        respond "Executive Assistant API" 200
+    }
+}

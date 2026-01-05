@@ -49,10 +49,13 @@ app.use(helmet({
   },
 }));
 
+// CORS configuration with environment-based origins
+const allowedOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(',').map(s => s.trim())
+  : ['http://localhost:3000', 'http://localhost:5173'];
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://yourdomain.com', 'https://n8n.aigrowthadvisors.cc'] 
-    : ['http://localhost:3000', 'http://localhost:5173', 'https://n8n.aigrowthadvisors.cc'],
+  origin: allowedOrigins,
   credentials: true
 }));
 

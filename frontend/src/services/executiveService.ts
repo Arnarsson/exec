@@ -1,20 +1,21 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios'
-import { 
-  ExecutiveState, 
-  APIResponse, 
-  HealthCheck, 
-  CalendarEvent, 
+import {
+  ExecutiveState,
+  APIResponse,
+  HealthCheck,
+  CalendarEvent,
   EmailSummary,
   AvailabilitySlot,
-  EmailDraft 
+  EmailDraft
 } from '@/types'
+import { getApiUrl } from '@/config/api'
 
 class ExecutiveService {
   private api: AxiosInstance
 
   constructor() {
     this.api = axios.create({
-      baseURL: 'http://localhost:3001',
+      baseURL: getApiUrl(),
       timeout: 30000,
       headers: {
         'Content-Type': 'application/json',

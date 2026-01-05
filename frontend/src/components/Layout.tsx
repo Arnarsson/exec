@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useExecutiveState } from '@/hooks/useExecutiveState'
 import { useWebSocket } from '@/hooks/useWebSocket'
+import { getWsUrl } from '@/config/api'
 
 interface NavigationItem {
   id: string
@@ -26,7 +27,7 @@ export default function Layout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
   const { state } = useExecutiveState()
-  const { isConnected } = useWebSocket('ws://localhost:8080')
+  const { isConnected } = useWebSocket(getWsUrl())
 
   const currentPath = location.pathname
 

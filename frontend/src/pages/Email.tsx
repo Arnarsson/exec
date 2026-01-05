@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { format } from 'date-fns'
+import { getApiUrl, getMemoryUrl } from '@/config/api'
 
 interface EmailMessage {
   id: string;
@@ -41,7 +42,7 @@ export default function Email() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('http://localhost:3001/auth/status')
+        const response = await fetch(`${getApiUrl()}/auth/status`)
         if (response.ok) {
           const data = await response.json()
           setGoogleConnected(data.authenticated)
@@ -60,7 +61,7 @@ export default function Email() {
   const fetchEmails = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch('http://localhost:3001/gmail/messages')
+      const response = await fetch(`${getApiUrl()}/gmail/messages`)
       if (response.ok) {
         const data = await response.json()
         setEmails(data.messages || [])
@@ -75,7 +76,7 @@ export default function Email() {
   // Search memory for email-related content
   const searchMemoryForEmails = useCallback(async () => {
     try {
-      const response = await fetch(`http://localhost:8765/search?q=email communication message&limit=5`)
+      const response = await fetch(`${getMemoryUrl()}/search?q=email communication message&limit=5`)
       if (response.ok) {
         const data = await response.json()
         setMemorySuggestions(data.results || [])
