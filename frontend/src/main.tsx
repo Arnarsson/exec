@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast'
 
 import App from './App'
 import ErrorBoundary from './components/ErrorBoundary'
+import { ThemeProvider } from './contexts/ThemeContext'
 import './index.css'
 
 console.log('Main.tsx loading...')
@@ -27,22 +28,25 @@ try {
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
       <ErrorBoundary>
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <App />
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                duration: 4000,
-                style: {
-                  background: '#ffffff',
-                  border: '1px solid #e5e7eb',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                },
-              }}
-            />
-          </BrowserRouter>
-        </QueryClientProvider>
+        <ThemeProvider>
+          <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+              <App />
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  duration: 4000,
+                  style: {
+                    background: 'var(--bg)',
+                    color: 'var(--fg)',
+                    border: '1px solid var(--border)',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  },
+                }}
+              />
+            </BrowserRouter>
+          </QueryClientProvider>
+        </ThemeProvider>
       </ErrorBoundary>
     </React.StrictMode>,
   )

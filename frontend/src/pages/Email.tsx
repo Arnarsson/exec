@@ -193,18 +193,18 @@ export default function Email() {
           <p className="swiss-hero-subtitle">Communications</p>
           <h1 style={{ fontSize: '2rem' }}>Email</h1>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <span style={{
-            fontSize: '0.7rem',
+            fontSize: '0.6rem',
             fontWeight: 800,
-            color: googleConnected ? '#16a34a' : '#666'
+            color: googleConnected ? 'var(--success)' : 'var(--muted)'
           }}>
-            {googleConnected ? '● GMAIL SYNCED' : '○ LOCAL ONLY'}
+            {googleConnected ? '● SYNCED' : '○ LOCAL'}
           </span>
           <button
             onClick={() => fetchEmails()}
             className="swiss-btn"
-            style={{ padding: '0.75rem 1rem' }}
+            style={{ padding: '0.5rem 0.75rem', fontSize: '0.7rem' }}
             disabled={isLoading}
           >
             {isLoading ? '...' : '↻'}
@@ -212,9 +212,9 @@ export default function Email() {
           <button
             onClick={() => setShowCompose(true)}
             className="swiss-btn swiss-btn-primary"
-            style={{ padding: '0.75rem 1.5rem' }}
+            style={{ padding: '0.5rem 1rem', fontSize: '0.65rem' }}
           >
-            + COMPOSE
+            + NEW
           </button>
         </div>
       </header>
@@ -238,16 +238,16 @@ export default function Email() {
           className="swiss-metric"
           style={{
             cursor: 'pointer',
-            background: activeFilter === 'all' ? '#000' : 'transparent',
-            color: activeFilter === 'all' ? '#fff' : undefined,
-            border: activeFilter === 'all' ? '2px solid #000' : '1px solid #e5e5e5',
+            background: activeFilter === 'all' ? 'var(--fg)' : 'transparent',
+            color: activeFilter === 'all' ? 'var(--bg)' : undefined,
+            border: activeFilter === 'all' ? '2px solid var(--fg)' : '1px solid var(--surface)',
             transition: 'all 0.15s ease'
           }}
         >
-          <span className="swiss-metric-label" style={{ color: activeFilter === 'all' ? '#ccc' : undefined }}>
+          <span className="swiss-metric-label" style={{ color: activeFilter === 'all' ? 'var(--muted)' : undefined }}>
             Total
           </span>
-          <span className="swiss-metric-value" style={{ color: activeFilter === 'all' ? '#fff' : undefined }}>
+          <span className="swiss-metric-value" style={{ color: activeFilter === 'all' ? 'var(--bg)' : undefined }}>
             {String(stats.total).padStart(2, '0')}
           </span>
         </button>
@@ -256,16 +256,16 @@ export default function Email() {
           className="swiss-metric"
           style={{
             cursor: 'pointer',
-            background: activeFilter === 'unread' ? '#000' : 'transparent',
-            color: activeFilter === 'unread' ? '#fff' : undefined,
-            border: activeFilter === 'unread' ? '2px solid #000' : '1px solid #e5e5e5',
+            background: activeFilter === 'unread' ? 'var(--fg)' : 'transparent',
+            color: activeFilter === 'unread' ? 'var(--bg)' : undefined,
+            border: activeFilter === 'unread' ? '2px solid var(--fg)' : '1px solid var(--surface)',
             transition: 'all 0.15s ease'
           }}
         >
-          <span className="swiss-metric-label" style={{ color: activeFilter === 'unread' ? '#ccc' : undefined }}>
+          <span className="swiss-metric-label" style={{ color: activeFilter === 'unread' ? 'var(--muted)' : undefined }}>
             Unread
           </span>
-          <span className="swiss-metric-value" style={{ color: activeFilter === 'unread' ? '#fff' : (stats.unread > 0 ? '#ff0000' : undefined) }}>
+          <span className="swiss-metric-value" style={{ color: activeFilter === 'unread' ? 'var(--bg)' : (stats.unread > 0 ? 'var(--accent)' : undefined) }}>
             {String(stats.unread).padStart(2, '0')}
           </span>
         </button>
@@ -274,16 +274,16 @@ export default function Email() {
           className="swiss-metric"
           style={{
             cursor: 'pointer',
-            background: activeFilter === 'starred' ? '#000' : 'transparent',
-            color: activeFilter === 'starred' ? '#fff' : undefined,
-            border: activeFilter === 'starred' ? '2px solid #000' : '1px solid #e5e5e5',
+            background: activeFilter === 'starred' ? 'var(--fg)' : 'transparent',
+            color: activeFilter === 'starred' ? 'var(--bg)' : undefined,
+            border: activeFilter === 'starred' ? '2px solid var(--fg)' : '1px solid var(--surface)',
             transition: 'all 0.15s ease'
           }}
         >
-          <span className="swiss-metric-label" style={{ color: activeFilter === 'starred' ? '#ccc' : undefined }}>
+          <span className="swiss-metric-label" style={{ color: activeFilter === 'starred' ? 'var(--muted)' : undefined }}>
             Starred
           </span>
-          <span className="swiss-metric-value" style={{ color: activeFilter === 'starred' ? '#fff' : undefined }}>
+          <span className="swiss-metric-value" style={{ color: activeFilter === 'starred' ? 'var(--bg)' : undefined }}>
             {String(stats.starred).padStart(2, '0')}
           </span>
         </button>
@@ -292,16 +292,16 @@ export default function Email() {
           className="swiss-metric"
           style={{
             cursor: 'pointer',
-            background: activeFilter === 'important' ? '#000' : 'transparent',
-            color: activeFilter === 'important' ? '#fff' : undefined,
-            border: activeFilter === 'important' ? '2px solid #000' : '1px solid #e5e5e5',
+            background: activeFilter === 'important' ? 'var(--fg)' : 'transparent',
+            color: activeFilter === 'important' ? 'var(--bg)' : undefined,
+            border: activeFilter === 'important' ? '2px solid var(--fg)' : '1px solid var(--surface)',
             transition: 'all 0.15s ease'
           }}
         >
-          <span className="swiss-metric-label" style={{ color: activeFilter === 'important' ? '#ccc' : undefined }}>
+          <span className="swiss-metric-label" style={{ color: activeFilter === 'important' ? 'var(--muted)' : undefined }}>
             Important
           </span>
-          <span className="swiss-metric-value" style={{ color: activeFilter === 'important' ? '#fff' : undefined }}>
+          <span className="swiss-metric-value" style={{ color: activeFilter === 'important' ? 'var(--bg)' : undefined }}>
             {String(stats.important).padStart(2, '0')}
           </span>
         </button>
@@ -316,7 +316,7 @@ export default function Email() {
           flexWrap: 'wrap',
           alignItems: 'center'
         }}>
-          <span style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Active filters:
           </span>
           {activeFilter !== 'all' && (
@@ -327,8 +327,8 @@ export default function Email() {
                 alignItems: 'center',
                 gap: '0.25rem',
                 padding: '0.25rem 0.75rem',
-                background: '#000',
-                color: '#fff',
+                background: 'var(--fg)',
+                color: 'var(--bg)',
                 border: 'none',
                 fontSize: '0.7rem',
                 fontWeight: 700,
@@ -347,8 +347,8 @@ export default function Email() {
                 alignItems: 'center',
                 gap: '0.25rem',
                 padding: '0.25rem 0.75rem',
-                background: '#000',
-                color: '#fff',
+                background: 'var(--fg)',
+                color: 'var(--bg)',
                 border: 'none',
                 fontSize: '0.7rem',
                 fontWeight: 700,
@@ -363,14 +363,14 @@ export default function Email() {
             style={{
               padding: '0.25rem 0.5rem',
               background: 'transparent',
-              border: '1px solid #ccc',
+              border: '1px solid var(--muted)',
               fontSize: '0.7rem',
               cursor: 'pointer'
             }}
           >
             Clear all
           </button>
-          <span style={{ fontSize: '0.75rem', color: '#666', marginLeft: 'auto' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--muted)', marginLeft: 'auto' }}>
             Showing {filteredEmails.length} of {emails.length}
           </span>
         </div>
@@ -381,8 +381,8 @@ export default function Email() {
         <div style={{
           padding: '1.5rem',
           marginBottom: '2rem',
-          border: '2px solid #000',
-          background: '#fafafa'
+          border: '2px solid var(--fg)',
+          background: 'var(--surface)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
             <span style={{
@@ -426,7 +426,7 @@ export default function Email() {
             style={{
               width: '100%',
               padding: '1rem',
-              border: '1px solid #000',
+              border: '1px solid var(--fg)',
               background: 'transparent',
               fontSize: '0.9rem',
               fontFamily: 'inherit',
@@ -477,8 +477,8 @@ export default function Email() {
             <div style={{
               padding: '3rem',
               textAlign: 'center',
-              color: '#666',
-              border: '1px dashed #ccc'
+              color: 'var(--muted)',
+              border: '1px dashed var(--muted)'
             }}>
               <p style={{ marginBottom: '1rem' }}>Gmail not connected</p>
               <p style={{ fontSize: '0.85rem' }}>
@@ -489,8 +489,8 @@ export default function Email() {
             <div style={{
               padding: '3rem',
               textAlign: 'center',
-              color: '#666',
-              border: '1px dashed #ccc'
+              color: 'var(--muted)',
+              border: '1px dashed var(--muted)'
             }}>
               <p>No emails match your filter</p>
               {(activeFilter !== 'all' || searchQuery) && (
@@ -514,7 +514,7 @@ export default function Email() {
                 className="swiss-item"
                 style={{
                   cursor: 'pointer',
-                  background: selectedEmail?.id === email.id ? '#f2f2f2' : 'transparent',
+                  background: selectedEmail?.id === email.id ? 'var(--surface)' : 'transparent',
                   opacity: email.isRead ? 0.7 : 1
                 }}
               >
@@ -530,7 +530,7 @@ export default function Email() {
                         border: 'none',
                         cursor: 'pointer',
                         fontSize: '1rem',
-                        color: email.isStarred ? '#f59e0b' : '#ccc'
+                        color: email.isStarred ? 'var(--warning)' : 'var(--muted)'
                       }}
                     >
                       {email.isStarred ? '★' : '☆'}
@@ -543,8 +543,8 @@ export default function Email() {
                     </strong>
                     {email.isImportant && (
                       <span style={{
-                        background: '#ff0000',
-                        color: '#fff',
+                        background: 'var(--accent)',
+                        color: 'var(--bg)',
                         fontSize: '0.6rem',
                         padding: '0.1rem 0.3rem',
                         fontWeight: 700
@@ -555,7 +555,7 @@ export default function Email() {
                         width: '8px',
                         height: '8px',
                         borderRadius: '50%',
-                        background: '#3b82f6'
+                        background: 'var(--info)'
                       }} />
                     )}
                   </div>
@@ -576,7 +576,7 @@ export default function Email() {
                 </div>
                 <div style={{
                   fontSize: '0.75rem',
-                  color: '#666',
+                  color: 'var(--muted)',
                   whiteSpace: 'nowrap',
                   marginLeft: '1rem'
                 }}>
@@ -599,10 +599,10 @@ export default function Email() {
                     <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '0.5rem' }}>
                       {selectedEmail.subject}
                     </h3>
-                    <div style={{ fontSize: '0.85rem', color: '#666' }}>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--muted)' }}>
                       From: {selectedEmail.sender} &lt;{selectedEmail.senderEmail}&gt;
                     </div>
-                    <div style={{ fontSize: '0.8rem', color: '#999', marginTop: '0.25rem' }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginTop: '0.25rem' }}>
                       {format(new Date(selectedEmail.timestamp), 'EEEE, MMMM d, yyyy \'at\' HH:mm')}
                     </div>
                   </div>
@@ -610,14 +610,14 @@ export default function Email() {
                     <button
                       onClick={() => toggleStar(selectedEmail.id)}
                       className="swiss-btn"
-                      style={{ padding: '0.5rem 1rem', color: selectedEmail.isStarred ? '#f59e0b' : undefined }}
+                      style={{ padding: '0.5rem 1rem', color: selectedEmail.isStarred ? 'var(--warning)' : undefined }}
                     >
                       {selectedEmail.isStarred ? '★' : '☆'}
                     </button>
                     <button
                       onClick={() => deleteEmail(selectedEmail.id)}
                       className="swiss-btn"
-                      style={{ padding: '0.5rem 1rem', color: '#ff0000' }}
+                      style={{ padding: '0.5rem 1rem', color: 'var(--accent)' }}
                     >
                       Delete
                     </button>
@@ -627,8 +627,8 @@ export default function Email() {
 
               <div style={{
                 padding: '1.5rem',
-                background: '#fafafa',
-                border: '1px solid #eee',
+                background: 'var(--surface)',
+                border: '1px solid var(--surface)',
                 fontSize: '0.9rem',
                 lineHeight: 1.7,
                 marginBottom: '1.5rem'
@@ -659,8 +659,8 @@ export default function Email() {
               <div style={{
                 padding: '3rem',
                 textAlign: 'center',
-                color: '#666',
-                border: '1px dashed #ccc'
+                color: 'var(--muted)',
+                border: '1px dashed var(--muted)'
               }}>
                 <p>Click an email to view its contents</p>
               </div>
@@ -673,7 +673,7 @@ export default function Email() {
                     fontWeight: 700,
                     textTransform: 'uppercase',
                     letterSpacing: '0.1em',
-                    color: '#666',
+                    color: 'var(--muted)',
                     marginBottom: '1rem'
                   }}>
                     Related from Memory
@@ -685,7 +685,7 @@ export default function Email() {
                       style={{ marginBottom: '0.5rem', fontSize: '0.8rem' }}
                     >
                       <strong>{suggestion.title}</strong>
-                      <div style={{ color: '#666', marginTop: '0.25rem' }}>
+                      <div style={{ color: 'var(--muted)', marginTop: '0.25rem' }}>
                         {suggestion.snippet.substring(0, 100)}...
                       </div>
                     </div>
@@ -704,8 +704,8 @@ export default function Email() {
           top: '1rem',
           right: '1rem',
           padding: '0.75rem 1.5rem',
-          background: '#000',
-          color: '#fff',
+          background: 'var(--fg)',
+          color: 'var(--bg)',
           fontSize: '0.75rem',
           fontWeight: 700,
           textTransform: 'uppercase'

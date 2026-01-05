@@ -280,7 +280,7 @@ export default function Chat() {
             {isConnected ? '● CONNECTED' : '○ OFFLINE'}
           </div>
           {activeTool && (
-            <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.5rem' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: '0.5rem' }}>
               EXECUTING: {activeTool.toolName.toUpperCase()}
             </div>
           )}
@@ -295,8 +295,8 @@ export default function Chat() {
             style={{
               marginBottom: '1.5rem',
               padding: message.role === 'user' ? '1rem 1.5rem' : '1rem 0',
-              background: message.role === 'user' ? '#f2f2f2' : 'transparent',
-              borderLeft: message.role === 'system' ? '2px solid #ff0000' : 'none',
+              background: message.role === 'user' ? 'var(--surface)' : 'transparent',
+              borderLeft: message.role === 'system' ? '2px solid var(--accent)' : 'none',
               paddingLeft: message.role === 'system' ? '1rem' : undefined
             }}
           >
@@ -311,11 +311,11 @@ export default function Chat() {
                 fontWeight: 700,
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
-                color: '#666'
+                color: 'var(--muted)'
               }}>
                 {message.role === 'user' ? 'YOU' : message.role === 'system' ? 'SYSTEM' : 'ASSISTANT'}
               </span>
-              <span style={{ fontSize: '0.75rem', color: '#666' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>
                 {format(new Date(message.timestamp), 'HH:mm')}
               </span>
             </div>
@@ -330,7 +330,7 @@ export default function Chat() {
               <div style={{
                 marginTop: '0.75rem',
                 fontSize: '0.75rem',
-                color: '#666',
+                color: 'var(--muted)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em'
               }}>
@@ -353,14 +353,14 @@ export default function Chat() {
                 fontWeight: 700,
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
-                color: '#666'
+                color: 'var(--muted)'
               }}>
                 ASSISTANT
               </span>
               <span style={{
                 marginLeft: '0.5rem',
                 fontSize: '0.7rem',
-                color: '#ff0000'
+                color: 'var(--accent)'
               }}>
                 ● STREAMING
               </span>
@@ -383,7 +383,7 @@ export default function Chat() {
               fontWeight: 700,
               textTransform: 'uppercase',
               letterSpacing: '0.1em',
-              color: '#666'
+              color: 'var(--muted)'
             }}>
               ASSISTANT IS THINKING...
             </span>
@@ -396,7 +396,7 @@ export default function Chat() {
       {/* Memory Insights Panel */}
       {showMemoryPanel && (memorySuggestions.length > 0 || memoryLoading) && (
         <div style={{
-          borderTop: '1px solid #e5e5e5',
+          borderTop: '1px solid var(--surface)',
           padding: '1rem 0',
           marginBottom: '1rem'
         }}>
@@ -411,7 +411,7 @@ export default function Chat() {
               fontWeight: 700,
               textTransform: 'uppercase',
               letterSpacing: '0.1em',
-              color: '#666'
+              color: 'var(--muted)'
             }}>
               {memoryLoading ? '● SEARCHING MEMORY...' : '● MEMORY INSIGHTS'}
             </span>
@@ -421,7 +421,7 @@ export default function Chat() {
                 background: 'none',
                 border: 'none',
                 fontSize: '0.75rem',
-                color: '#666',
+                color: 'var(--muted)',
                 cursor: 'pointer',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em'
@@ -441,18 +441,18 @@ export default function Chat() {
                   }}
                   style={{
                     padding: '0.75rem 1rem',
-                    background: '#fafafa',
-                    border: '1px solid #e5e5e5',
+                    background: 'var(--surface)',
+                    border: '1px solid var(--surface-hover)',
                     cursor: 'pointer',
                     transition: 'all 0.2s'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = '#000'
-                    e.currentTarget.style.background = '#f5f5f5'
+                    e.currentTarget.style.borderColor = 'var(--fg)'
+                    e.currentTarget.style.background = 'var(--surface-hover)'
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = '#e5e5e5'
-                    e.currentTarget.style.background = '#fafafa'
+                    e.currentTarget.style.borderColor = 'var(--surface-hover)'
+                    e.currentTarget.style.background = 'var(--surface)'
                   }}
                 >
                   <div style={{
@@ -464,7 +464,7 @@ export default function Chat() {
                     <span style={{
                       fontSize: '0.8rem',
                       fontWeight: 600,
-                      color: '#000'
+                      color: 'var(--fg)'
                     }}>
                       {suggestion.title}
                     </span>
@@ -473,15 +473,15 @@ export default function Chat() {
                       fontWeight: 700,
                       textTransform: 'uppercase',
                       padding: '2px 6px',
-                      background: suggestion.relevance >= 70 ? '#000' : '#666',
-                      color: '#fff'
+                      background: suggestion.relevance >= 70 ? 'var(--fg)' : 'var(--muted)',
+                      color: 'var(--bg)'
                     }}>
                       {suggestion.relevance}%
                     </span>
                   </div>
                   <p style={{
                     fontSize: '0.75rem',
-                    color: '#666',
+                    color: 'var(--muted)',
                     margin: 0,
                     lineHeight: 1.4,
                     overflow: 'hidden',
@@ -494,7 +494,7 @@ export default function Chat() {
                   </p>
                   <span style={{
                     fontSize: '0.65rem',
-                    color: '#999',
+                    color: 'var(--muted)',
                     marginTop: '0.25rem',
                     display: 'block'
                   }}>
@@ -508,7 +508,7 @@ export default function Chat() {
       )}
 
       {/* Input Area */}
-      <div style={{ borderTop: '2px solid #000', paddingTop: '2rem' }}>
+      <div style={{ borderTop: '2px solid var(--fg)', paddingTop: '2rem' }}>
         <div style={{ display: 'flex', gap: '1rem' }}>
           <input
             type="text"
@@ -540,7 +540,7 @@ export default function Chat() {
               border: 'none',
               fontSize: '0.7rem',
               fontWeight: 600,
-              color: '#666',
+              color: 'var(--muted)',
               cursor: 'pointer',
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
@@ -554,38 +554,39 @@ export default function Chat() {
         {/* Quick commands */}
         <div style={{ marginTop: '1.5rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
           {[
-            "Show my calendar for today",
-            "Summarize my inbox",
-            "Create a high-priority task",
-            "Find time for a team meeting",
-            "Research latest industry trends",
-            "Review Q4 budget status"
+            "Calendar today",
+            "Summarize inbox",
+            "New task",
+            "Find meeting time",
+            "Research trends",
+            "Budget status"
           ].map((suggestion) => (
             <button
               key={suggestion}
               onClick={() => setInput(suggestion)}
               disabled={!isConnected}
               style={{
-                padding: '0.5rem 1rem',
-                fontSize: '0.75rem',
-                fontWeight: 500,
+                padding: '0.5rem 0.75rem',
+                fontSize: '0.65rem',
+                fontWeight: 600,
                 textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                border: '1px solid #000',
+                letterSpacing: '0.03em',
+                border: '1px solid var(--fg)',
                 background: 'transparent',
+                color: 'var(--fg)',
                 cursor: isConnected ? 'pointer' : 'not-allowed',
                 opacity: isConnected ? 1 : 0.5,
                 transition: 'all 0.2s'
               }}
               onMouseEnter={(e) => {
                 if (isConnected) {
-                  e.currentTarget.style.background = '#000'
-                  e.currentTarget.style.color = '#fff'
+                  e.currentTarget.style.background = 'var(--fg)'
+                  e.currentTarget.style.color = 'var(--bg)'
                 }
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = 'transparent'
-                e.currentTarget.style.color = '#000'
+                e.currentTarget.style.color = 'var(--fg)'
               }}
             >
               {suggestion}
@@ -597,9 +598,9 @@ export default function Chat() {
           <div style={{
             marginTop: '1.5rem',
             padding: '1rem',
-            background: '#f2f2f2',
+            background: 'var(--surface)',
             fontSize: '0.85rem',
-            borderLeft: '2px solid #ff0000'
+            borderLeft: '2px solid var(--accent)'
           }}>
             <span className="swiss-urgent">!</span> Connecting to AG-UI backend... Ensure the server is running on port 8080.
           </div>
@@ -609,7 +610,7 @@ export default function Chat() {
           <div style={{
             marginTop: '1rem',
             fontSize: '0.75rem',
-            color: '#ff0000',
+            color: 'var(--accent)',
             textTransform: 'uppercase',
             letterSpacing: '0.05em'
           }}>

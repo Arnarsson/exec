@@ -216,9 +216,9 @@ export default function Dashboard() {
       <section style={{ marginBottom: '4rem' }}>
         <h2 className="swiss-section-title">Memory Intelligence</h2>
         {memoryLoading ? (
-          <div style={{ padding: '2rem 0', color: '#666' }}>Loading memory stats...</div>
+          <div style={{ padding: '2rem 0', color: 'var(--muted)' }}>Loading memory stats...</div>
         ) : memoryError ? (
-          <div style={{ padding: '2rem 0', color: '#666' }}>{memoryError}</div>
+          <div style={{ padding: '2rem 0', color: 'var(--muted)' }}>{memoryError}</div>
         ) : memoryStats ? (
           <>
             <div className="swiss-metric-grid" style={{ marginBottom: '2rem' }}>
@@ -241,7 +241,7 @@ export default function Dashboard() {
             </div>
             <div className="swiss-surface">
               <strong>Memory Powers Your Assistant</strong>
-              <div style={{ marginTop: '0.5rem', color: '#666', fontSize: '0.85rem' }}>
+              <div style={{ marginTop: '0.5rem', color: 'var(--muted)', fontSize: '0.85rem' }}>
                 Ask "Brief me on [topic]" for executive summaries. Proactive context surfaces relevant past conversations.
               </div>
             </div>

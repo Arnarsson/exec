@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { useExecutiveState } from '@/hooks/useExecutiveState'
 import { useWebSocket } from '@/hooks/useWebSocket'
 import { getWsUrl } from '@/config/api'
+import { useTheme } from '@/contexts/ThemeContext'
 
 interface NavigationItem {
   id: string
@@ -28,15 +29,17 @@ export default function Layout({ children }: LayoutProps) {
   const location = useLocation()
   const { state } = useExecutiveState()
   const { isConnected } = useWebSocket(getWsUrl())
+  const { theme, toggleTheme } = useTheme()
 
   const currentPath = location.pathname
 
   return (
-    <div style={{
+    <div className="layout-container" style={{
       display: 'grid',
       gridTemplateColumns: '240px 1fr',
       minHeight: '100vh',
-      background: '#ffffff'
+      background: 'var(--bg)',
+      color: 'var(--fg)'
     }}>
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
@@ -70,51 +73,90 @@ export default function Layout({ children }: LayoutProps) {
           </ul>
         </nav>
 
-        {/* Connection status */}
+        {/* Connection status & Theme toggle */}
         <div style={{
           paddingTop: '1rem',
-          borderTop: '1px solid #eee',
+          borderTop: '1px solid var(--surface)',
           marginTop: 'auto'
         }}>
           <div style={{
             fontSize: '0.7rem',
             fontWeight: 800,
-            color: isConnected ? '#ff0000' : '#666'
+            color: isConnected ? 'var(--accent)' : 'var(--muted)'
           }}>
             {isConnected ? '● SYSTEM ACTIVE' : '○ OFFLINE'}
           </div>
           <div style={{
             fontSize: '0.75rem',
-            color: '#666',
+            color: 'var(--muted)',
             marginTop: '0.5rem'
           }}>
             Sven Arnarsson
           </div>
+          <button
+            onClick={toggleTheme}
+            style={{
+              marginTop: '1rem',
+              padding: '0.5rem 1rem',
+              background: 'transparent',
+              border: '1px solid var(--border)',
+              color: 'var(--fg)',
+              fontSize: '0.7rem',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              cursor: 'pointer',
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem'
+            }}
+          >
+            {theme === 'light' ? '◐ Dark' : '○ Light'}
+          </button>
         </div>
       </aside>
 
       {/* Mobile header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40" style={{
-        background: '#fff',
-        borderBottom: '1px solid #000',
+        background: 'var(--bg)',
+        borderBottom: '1px solid var(--border)',
         padding: '1rem'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div className="swiss-logo" style={{ marginBottom: 0 }}>E.A.</div>
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            style={{
-              background: 'none',
-              border: '1px solid #000',
-              padding: '0.5rem 1rem',
-              fontWeight: 700,
-              fontSize: '0.75rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em'
-            }}
-          >
-            Menu
-          </button>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button
+              onClick={toggleTheme}
+              style={{
+                background: 'none',
+                border: '1px solid var(--border)',
+                color: 'var(--fg)',
+                padding: '0.5rem',
+                fontWeight: 700,
+                fontSize: '0.75rem',
+                cursor: 'pointer'
+              }}
+            >
+              {theme === 'light' ? '◐' : '○'}
+            </button>
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              style={{
+                background: 'none',
+                border: '1px solid var(--border)',
+                color: 'var(--fg)',
+                padding: '0.5rem 1rem',
+                fontWeight: 700,
+                fontSize: '0.75rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em'
+              }}
+            >
+              Menu
+            </button>
+          </div>
         </div>
       </div>
 
@@ -125,7 +167,7 @@ export default function Layout({ children }: LayoutProps) {
             <div className="swiss-logo" style={{ marginBottom: 0 }}>E.A. / System</div>
             <button
               onClick={() => setSidebarOpen(false)}
-              style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' }}
+              style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: 'var(--fg)' }}
             >
               ×
             </button>
@@ -154,7 +196,7 @@ export default function Layout({ children }: LayoutProps) {
       )}
 
       {/* Main content */}
-      <main style={{ padding: '4rem', maxWidth: '1400px' }} className="lg:block">
+      <main className="main-content" style={{ maxWidth: '1400px' }}>
         <div className="lg:hidden" style={{ height: '60px' }} /> {/* Spacer for mobile header */}
         {children}
       </main>

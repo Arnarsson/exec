@@ -210,7 +210,7 @@ export default function Calendar() {
           <span style={{
             fontSize: '0.7rem',
             fontWeight: 800,
-            color: googleConnected ? '#16a34a' : '#666'
+            color: googleConnected ? 'var(--success)' : 'var(--muted)'
           }}>
             {googleConnected ? '● GOOGLE SYNCED' : '○ LOCAL ONLY'}
           </span>
@@ -243,16 +243,16 @@ export default function Calendar() {
           className="swiss-metric"
           style={{
             cursor: 'pointer',
-            background: viewFilter === 'today' ? '#000' : 'transparent',
-            color: viewFilter === 'today' ? '#fff' : undefined,
-            border: viewFilter === 'today' ? '2px solid #000' : '1px solid #e5e5e5',
+            background: viewFilter === 'today' ? 'var(--fg)' : 'transparent',
+            color: viewFilter === 'today' ? 'var(--bg)' : undefined,
+            border: viewFilter === 'today' ? '2px solid var(--fg)' : '1px solid var(--surface)',
             transition: 'all 0.15s ease'
           }}
         >
-          <span className="swiss-metric-label" style={{ color: viewFilter === 'today' ? '#ccc' : undefined }}>
+          <span className="swiss-metric-label" style={{ color: viewFilter === 'today' ? 'var(--muted)' : undefined }}>
             Today
           </span>
-          <span className="swiss-metric-value" style={{ color: viewFilter === 'today' ? '#fff' : undefined }}>
+          <span className="swiss-metric-value" style={{ color: viewFilter === 'today' ? 'var(--bg)' : undefined }}>
             {String(todayEvents.length).padStart(2, '0')}
           </span>
         </button>
@@ -261,16 +261,16 @@ export default function Calendar() {
           className="swiss-metric"
           style={{
             cursor: 'pointer',
-            background: viewFilter === 'week' ? '#000' : 'transparent',
-            color: viewFilter === 'week' ? '#fff' : undefined,
-            border: viewFilter === 'week' ? '2px solid #000' : '1px solid #e5e5e5',
+            background: viewFilter === 'week' ? 'var(--fg)' : 'transparent',
+            color: viewFilter === 'week' ? 'var(--bg)' : undefined,
+            border: viewFilter === 'week' ? '2px solid var(--fg)' : '1px solid var(--surface)',
             transition: 'all 0.15s ease'
           }}
         >
-          <span className="swiss-metric-label" style={{ color: viewFilter === 'week' ? '#ccc' : undefined }}>
+          <span className="swiss-metric-label" style={{ color: viewFilter === 'week' ? 'var(--muted)' : undefined }}>
             This Week
           </span>
-          <span className="swiss-metric-value" style={{ color: viewFilter === 'week' ? '#fff' : undefined }}>
+          <span className="swiss-metric-value" style={{ color: viewFilter === 'week' ? 'var(--bg)' : undefined }}>
             {String(thisWeekEvents.length).padStart(2, '0')}
           </span>
         </button>
@@ -279,16 +279,16 @@ export default function Calendar() {
           className="swiss-metric"
           style={{
             cursor: 'pointer',
-            background: viewFilter === 'month' ? '#000' : 'transparent',
-            color: viewFilter === 'month' ? '#fff' : undefined,
-            border: viewFilter === 'month' ? '2px solid #000' : '1px solid #e5e5e5',
+            background: viewFilter === 'month' ? 'var(--fg)' : 'transparent',
+            color: viewFilter === 'month' ? 'var(--bg)' : undefined,
+            border: viewFilter === 'month' ? '2px solid var(--fg)' : '1px solid var(--surface)',
             transition: 'all 0.15s ease'
           }}
         >
-          <span className="swiss-metric-label" style={{ color: viewFilter === 'month' ? '#ccc' : undefined }}>
+          <span className="swiss-metric-label" style={{ color: viewFilter === 'month' ? 'var(--muted)' : undefined }}>
             This Month
           </span>
-          <span className="swiss-metric-value" style={{ color: viewFilter === 'month' ? '#fff' : undefined }}>
+          <span className="swiss-metric-value" style={{ color: viewFilter === 'month' ? 'var(--bg)' : undefined }}>
             {String(events.length).padStart(2, '0')}
           </span>
         </button>
@@ -307,7 +307,7 @@ export default function Calendar() {
           flexWrap: 'wrap',
           alignItems: 'center'
         }}>
-          <span style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Active filters:
           </span>
           {viewFilter !== 'all' && (
@@ -318,8 +318,8 @@ export default function Calendar() {
                 alignItems: 'center',
                 gap: '0.25rem',
                 padding: '0.25rem 0.75rem',
-                background: '#000',
-                color: '#fff',
+                background: 'var(--fg)',
+                color: 'var(--bg)',
                 border: 'none',
                 fontSize: '0.7rem',
                 fontWeight: 700,
@@ -338,8 +338,8 @@ export default function Calendar() {
                 alignItems: 'center',
                 gap: '0.25rem',
                 padding: '0.25rem 0.75rem',
-                background: '#000',
-                color: '#fff',
+                background: 'var(--fg)',
+                color: 'var(--bg)',
                 border: 'none',
                 fontSize: '0.7rem',
                 fontWeight: 700,
@@ -354,7 +354,7 @@ export default function Calendar() {
             style={{
               padding: '0.25rem 0.5rem',
               background: 'transparent',
-              border: '1px solid #ccc',
+              border: '1px solid var(--muted)',
               fontSize: '0.7rem',
               cursor: 'pointer'
             }}
@@ -369,8 +369,8 @@ export default function Calendar() {
         <div style={{
           padding: '1.5rem',
           marginBottom: '2rem',
-          border: '2px solid #000',
-          background: '#fafafa'
+          border: '2px solid var(--fg)',
+          background: 'var(--surface)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
             <span style={{
@@ -405,7 +405,7 @@ export default function Calendar() {
                 fontSize: '0.7rem',
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
-                color: '#666',
+                color: 'var(--muted)',
                 marginBottom: '0.5rem'
               }}>
                 Time
@@ -423,7 +423,7 @@ export default function Calendar() {
                 fontSize: '0.7rem',
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
-                color: '#666',
+                color: 'var(--muted)',
                 marginBottom: '0.5rem'
               }}>
                 Duration
@@ -434,7 +434,7 @@ export default function Calendar() {
                 style={{
                   width: '100%',
                   padding: '1rem',
-                  border: '1px solid #000',
+                  border: '1px solid var(--fg)',
                   background: 'transparent',
                   fontSize: '0.9rem',
                   fontFamily: 'inherit'
@@ -501,8 +501,8 @@ export default function Calendar() {
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(7, 1fr)',
-            borderTop: '1px solid #000',
-            borderLeft: '1px solid #000'
+            borderTop: '1px solid var(--fg)',
+            borderLeft: '1px solid var(--fg)'
           }}>
             {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map(day => (
               <div
@@ -512,9 +512,9 @@ export default function Calendar() {
                   fontSize: '0.7rem',
                   fontWeight: 700,
                   textAlign: 'center',
-                  borderRight: '1px solid #000',
-                  borderBottom: '1px solid #000',
-                  background: '#f2f2f2'
+                  borderRight: '1px solid var(--fg)',
+                  borderBottom: '1px solid var(--fg)',
+                  background: 'var(--surface)'
                 }}
               >
                 {day}
@@ -526,7 +526,7 @@ export default function Calendar() {
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(7, 1fr)',
-            borderLeft: '1px solid #000'
+            borderLeft: '1px solid var(--fg)'
           }}>
             {/* Padding days */}
             {paddingDays.map((_, idx) => (
@@ -534,9 +534,9 @@ export default function Calendar() {
                 key={`pad-${idx}`}
                 style={{
                   height: '80px',
-                  borderRight: '1px solid #000',
-                  borderBottom: '1px solid #000',
-                  background: '#fafafa'
+                  borderRight: '1px solid var(--fg)',
+                  borderBottom: '1px solid var(--fg)',
+                  background: 'var(--surface)'
                 }}
               />
             ))}
@@ -556,10 +556,10 @@ export default function Calendar() {
                     height: '80px',
                     padding: '0.5rem',
                     border: 'none',
-                    borderRight: '1px solid #000',
-                    borderBottom: '1px solid #000',
-                    background: isSelected ? '#000' : isDayToday ? '#f2f2f2' : 'transparent',
-                    color: isSelected ? '#fff' : isCurrentMonth ? '#000' : '#999',
+                    borderRight: '1px solid var(--fg)',
+                    borderBottom: '1px solid var(--fg)',
+                    background: isSelected ? 'var(--fg)' : isDayToday ? 'var(--surface)' : 'transparent',
+                    color: isSelected ? 'var(--bg)' : isCurrentMonth ? 'var(--fg)' : 'var(--muted)',
                     textAlign: 'left',
                     verticalAlign: 'top',
                     cursor: 'pointer',
@@ -577,7 +577,7 @@ export default function Calendar() {
                       marginTop: '0.25rem',
                       fontSize: '0.6rem',
                       fontWeight: 600,
-                      color: isSelected ? '#ff0000' : '#000'
+                      color: isSelected ? 'var(--accent)' : 'var(--fg)'
                     }}>
                       {dayEvents.length} event{dayEvents.length > 1 ? 's' : ''}
                     </div>
@@ -603,8 +603,8 @@ export default function Calendar() {
                 <div style={{
                   padding: '3rem',
                   textAlign: 'center',
-                  color: '#666',
-                  border: '1px dashed #ccc'
+                  color: 'var(--muted)',
+                  border: '1px dashed var(--muted)'
                 }}>
                   <p>No events match your filter</p>
                 </div>
@@ -618,7 +618,7 @@ export default function Calendar() {
                         {event.location && ` / ${event.location}`}
                       </div>
                       {event.attendees && event.attendees.length > 0 && (
-                        <div style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.25rem' }}>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: '0.25rem' }}>
                           {event.attendees.length} attendee{event.attendees.length > 1 ? 's' : ''}
                         </div>
                       )}
@@ -637,8 +637,8 @@ export default function Calendar() {
                 <div style={{
                   padding: '3rem',
                   textAlign: 'center',
-                  color: '#666',
-                  border: '1px dashed #ccc'
+                  color: 'var(--muted)',
+                  border: '1px dashed var(--muted)'
                 }}>
                   <p style={{ marginBottom: '1rem' }}>No events scheduled</p>
                   <button
@@ -659,7 +659,7 @@ export default function Calendar() {
                         {event.location && ` / ${event.location}`}
                       </div>
                       {event.attendees && event.attendees.length > 0 && (
-                        <div style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.25rem' }}>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: '0.25rem' }}>
                           {event.attendees.length} attendee{event.attendees.length > 1 ? 's' : ''}
                         </div>
                       )}
@@ -678,7 +678,7 @@ export default function Calendar() {
                 fontWeight: 700,
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
-                color: '#666',
+                color: 'var(--muted)',
                 marginBottom: '1rem'
               }}>
                 Related from Memory
@@ -690,7 +690,7 @@ export default function Calendar() {
                   style={{ marginBottom: '0.5rem', fontSize: '0.8rem' }}
                 >
                   <strong>{suggestion.title}</strong>
-                  <div style={{ color: '#666', marginTop: '0.25rem' }}>
+                  <div style={{ color: 'var(--muted)', marginTop: '0.25rem' }}>
                     {suggestion.snippet.substring(0, 100)}...
                   </div>
                 </div>
@@ -707,8 +707,8 @@ export default function Calendar() {
           top: '1rem',
           right: '1rem',
           padding: '0.75rem 1.5rem',
-          background: '#000',
-          color: '#fff',
+          background: 'var(--fg)',
+          color: 'var(--bg)',
           fontSize: '0.75rem',
           fontWeight: 700,
           textTransform: 'uppercase'

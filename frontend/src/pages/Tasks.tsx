@@ -233,24 +233,26 @@ export default function Tasks() {
           <p className="swiss-hero-subtitle">Task Management</p>
           <h1 style={{ fontSize: '2rem' }}>Active Tasks</h1>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           <button
             onClick={generateTasksFromMemory}
             disabled={isGenerating}
             className="swiss-btn"
             style={{
-              padding: '0.75rem 1.5rem',
-              opacity: isGenerating ? 0.6 : 1
+              padding: '0.75rem 1rem',
+              opacity: isGenerating ? 0.6 : 1,
+              fontSize: '0.65rem',
+              whiteSpace: 'nowrap'
             }}
           >
-            {isGenerating ? 'ANALYZING...' : 'GENERATE FROM MEMORY'}
+            {isGenerating ? 'ANALYZING...' : 'FROM MEMORY'}
           </button>
           <button
             onClick={() => setShowNewTaskForm(true)}
             className="swiss-btn swiss-btn-primary"
-            style={{ padding: '0.75rem 1.5rem' }}
+            style={{ padding: '0.75rem 1rem', fontSize: '0.65rem' }}
           >
-            + NEW TASK
+            + NEW
           </button>
         </div>
       </header>
@@ -260,8 +262,8 @@ export default function Tasks() {
         <div style={{
           padding: '1rem',
           marginBottom: '2rem',
-          background: '#f2f2f2',
-          borderLeft: '2px solid #ff0000',
+          background: 'var(--surface)',
+          borderLeft: '2px solid var(--accent)',
           fontSize: '0.85rem'
         }}>
           {generateError}
@@ -273,8 +275,8 @@ export default function Tasks() {
         <div style={{
           padding: '1.5rem',
           marginBottom: '2rem',
-          border: '2px solid #000',
-          background: '#fafafa'
+          border: '2px solid var(--fg)',
+          background: 'var(--surface)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
             <span style={{
@@ -307,8 +309,9 @@ export default function Tasks() {
             style={{
               width: '100%',
               padding: '0.75rem 1rem',
-              border: '1px solid #000',
+              border: '1px solid var(--fg)',
               background: 'transparent',
+              color: 'var(--fg)',
               fontSize: '0.9rem',
               fontFamily: 'inherit',
               resize: 'vertical',
@@ -322,8 +325,9 @@ export default function Tasks() {
               onChange={(e) => setNewTaskPriority(e.target.value as 'high' | 'medium' | 'low')}
               style={{
                 padding: '0.5rem 1rem',
-                border: '1px solid #000',
-                background: 'transparent',
+                border: '1px solid var(--fg)',
+                background: 'var(--bg)',
+                color: 'var(--fg)',
                 fontSize: '0.75rem',
                 fontWeight: 600,
                 textTransform: 'uppercase'
@@ -357,7 +361,7 @@ export default function Tasks() {
         </div>
         <div className="swiss-metric">
           <span className="swiss-metric-label">Overdue</span>
-          <span className="swiss-metric-value" style={{ color: stats.overdue > 0 ? '#ff0000' : undefined }}>
+          <span className="swiss-metric-value" style={{ color: stats.overdue > 0 ? 'var(--accent)' : undefined }}>
             {String(stats.overdue).padStart(2, '0')}
           </span>
         </div>
@@ -368,21 +372,24 @@ export default function Tasks() {
       </section>
 
       {/* Filters */}
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', alignItems: 'center' }}>
-        <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#666' }}>
-          Filters:
+      <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '2rem', alignItems: 'center', flexWrap: 'wrap' }}>
+        <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--muted)', width: '100%' }}>
+          Filters
         </span>
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
           style={{
-            padding: '0.5rem 1rem',
-            border: '1px solid #000',
-            background: 'transparent',
-            fontSize: '0.75rem',
+            padding: '0.5rem 0.75rem',
+            border: '1px solid var(--fg)',
+            background: 'var(--bg)',
+            color: 'var(--fg)',
+            fontSize: '0.7rem',
             fontWeight: 600,
             textTransform: 'uppercase',
-            letterSpacing: '0.05em'
+            letterSpacing: '0.05em',
+            flex: '1 1 auto',
+            minWidth: '120px'
           }}
         >
           <option value="all">All Status</option>
@@ -396,13 +403,16 @@ export default function Tasks() {
           value={filterPriority}
           onChange={(e) => setFilterPriority(e.target.value)}
           style={{
-            padding: '0.5rem 1rem',
-            border: '1px solid #000',
-            background: 'transparent',
-            fontSize: '0.75rem',
+            padding: '0.5rem 0.75rem',
+            border: '1px solid var(--fg)',
+            background: 'var(--bg)',
+            color: 'var(--fg)',
+            fontSize: '0.7rem',
             fontWeight: 600,
             textTransform: 'uppercase',
-            letterSpacing: '0.05em'
+            letterSpacing: '0.05em',
+            flex: '1 1 auto',
+            minWidth: '120px'
           }}
         >
           <option value="all">All Priority</option>
@@ -420,8 +430,8 @@ export default function Tasks() {
           <div style={{
             padding: '3rem',
             textAlign: 'center',
-            color: '#666',
-            border: '1px dashed #ccc'
+            color: 'var(--muted)',
+            border: '1px dashed var(--muted)'
           }}>
             <p style={{ marginBottom: '1rem' }}>No tasks yet</p>
             <p style={{ fontSize: '0.85rem' }}>
@@ -432,45 +442,47 @@ export default function Tasks() {
         ) : (
           filteredTasks.map((task) => (
             <div key={task.id} className="swiss-item" style={{ alignItems: 'flex-start' }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
-                  <strong className="swiss-item-title" style={{
-                    textDecoration: task.status === 'completed' ? 'line-through' : 'none',
-                    color: task.status === 'completed' ? '#666' : '#000'
-                  }}>
-                    {task.title}
-                  </strong>
+              <div style={{ flex: 1, width: '100%' }}>
+                <strong className="swiss-item-title" style={{
+                  textDecoration: task.status === 'completed' ? 'line-through' : 'none',
+                  color: task.status === 'completed' ? 'var(--muted)' : 'var(--fg)',
+                  display: 'block',
+                  marginBottom: '0.5rem'
+                }}>
+                  {task.title}
+                </strong>
 
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
                   <span className={`swiss-badge ${task.priority === 'high' ? 'swiss-badge-high' : ''}`}>
                     {task.priority}
                   </span>
 
                   <span style={{
-                    fontSize: '0.6rem',
+                    fontSize: '0.55rem',
                     fontWeight: 900,
                     textTransform: 'uppercase',
                     padding: '2px 6px',
                     border: '1px solid',
-                    borderColor: task.status === 'blocked' ? '#ff0000' : task.status === 'completed' ? '#16a34a' : '#000',
-                    color: task.status === 'blocked' ? '#ff0000' : task.status === 'completed' ? '#16a34a' : '#000',
-                    background: task.status === 'completed' ? '#dcfce7' : 'transparent'
+                    borderColor: task.status === 'blocked' ? 'var(--accent)' : task.status === 'completed' ? 'var(--success)' : 'var(--fg)',
+                    color: task.status === 'blocked' ? 'var(--accent)' : task.status === 'completed' ? 'var(--success)' : 'var(--fg)',
+                    background: task.status === 'completed' ? 'var(--success-bg)' : 'transparent'
                   }}>
                     {task.status.replace('-', ' ')}
                   </span>
 
                   {isTaskOverdue(task) && (
-                    <span className="swiss-urgent">OVERDUE</span>
+                    <span className="swiss-urgent" style={{ fontSize: '0.6rem' }}>OVERDUE</span>
                   )}
 
                   {task.sourceMemory && (
                     <span style={{
-                      fontSize: '0.6rem',
+                      fontSize: '0.55rem',
                       fontWeight: 600,
                       padding: '2px 6px',
-                      background: '#e5e5e5',
-                      color: '#666'
+                      background: 'var(--surface)',
+                      color: 'var(--muted)'
                     }}>
-                      FROM MEMORY
+                      MEMORY
                     </span>
                   )}
                 </div>
@@ -481,7 +493,7 @@ export default function Tasks() {
                   </div>
                 )}
 
-                <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.75rem', color: '#666' }}>
+                <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.75rem', color: 'var(--muted)' }}>
                   {task.assignee && (
                     <span>Assignee: {task.assignee}</span>
                   )}
@@ -503,9 +515,9 @@ export default function Tasks() {
                         fontSize: '0.65rem',
                         fontWeight: 700,
                         textTransform: 'uppercase',
-                        border: '1px solid #16a34a',
+                        border: '1px solid var(--success)',
                         background: 'transparent',
-                        color: '#16a34a',
+                        color: 'var(--success)',
                         cursor: 'pointer'
                       }}
                     >
@@ -520,8 +532,9 @@ export default function Tasks() {
                         fontSize: '0.65rem',
                         fontWeight: 700,
                         textTransform: 'uppercase',
-                        border: '1px solid #000',
+                        border: '1px solid var(--fg)',
                         background: 'transparent',
+                        color: 'var(--fg)',
                         cursor: 'pointer'
                       }}
                     >
@@ -535,9 +548,9 @@ export default function Tasks() {
                       fontSize: '0.65rem',
                       fontWeight: 700,
                       textTransform: 'uppercase',
-                      border: '1px solid #ff0000',
+                      border: '1px solid var(--accent)',
                       background: 'transparent',
-                      color: '#ff0000',
+                      color: 'var(--accent)',
                       cursor: 'pointer'
                     }}
                   >

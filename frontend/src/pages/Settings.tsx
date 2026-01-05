@@ -127,7 +127,7 @@ export default function Settings() {
         display: 'flex',
         gap: '0',
         marginBottom: '3rem',
-        borderBottom: '1px solid #000'
+        borderBottom: '1px solid var(--fg)'
       }}>
         {tabs.map(tab => (
           <button
@@ -135,10 +135,10 @@ export default function Settings() {
             onClick={() => setActiveTab(tab.id)}
             style={{
               padding: '1rem 2rem',
-              background: activeTab === tab.id ? '#000' : 'transparent',
-              color: activeTab === tab.id ? '#fff' : '#000',
+              background: activeTab === tab.id ? 'var(--fg)' : 'transparent',
+              color: activeTab === tab.id ? 'var(--bg)' : 'var(--fg)',
               border: 'none',
-              borderBottom: activeTab === tab.id ? '2px solid #ff0000' : '2px solid transparent',
+              borderBottom: activeTab === tab.id ? '2px solid var(--accent)' : '2px solid transparent',
               fontSize: '0.75rem',
               fontWeight: 700,
               textTransform: 'uppercase',
@@ -162,8 +162,8 @@ export default function Settings() {
             <div style={{
               padding: '1rem',
               marginBottom: '2rem',
-              background: '#f2f2f2',
-              borderLeft: '2px solid #ff0000',
+              background: 'var(--surface)',
+              borderLeft: '2px solid var(--accent)',
               fontSize: '0.85rem'
             }}>
               {googleError} — Google Calendar and Gmail require the auth service on port 3001
@@ -178,8 +178,8 @@ export default function Settings() {
                 className="swiss-item"
                 style={{
                   padding: '1.5rem',
-                  border: '1px solid #000',
-                  background: integration.status === 'connected' ? '#fafafa' : 'transparent'
+                  border: '1px solid var(--fg)',
+                  background: integration.status === 'connected' ? 'var(--surface)' : 'transparent'
                 }}
               >
                 <div style={{ flex: 1 }}>
@@ -191,20 +191,20 @@ export default function Settings() {
                       textTransform: 'uppercase',
                       padding: '2px 8px',
                       border: '1px solid',
-                      borderColor: integration.status === 'connected' ? '#16a34a' :
-                                  integration.status === 'error' ? '#ff0000' : '#000',
-                      color: integration.status === 'connected' ? '#16a34a' :
-                             integration.status === 'error' ? '#ff0000' : '#000',
-                      background: integration.status === 'connected' ? '#dcfce7' : 'transparent'
+                      borderColor: integration.status === 'connected' ? 'var(--success)' :
+                                  integration.status === 'error' ? 'var(--accent)' : 'var(--fg)',
+                      color: integration.status === 'connected' ? 'var(--success)' :
+                             integration.status === 'error' ? 'var(--accent)' : 'var(--fg)',
+                      background: integration.status === 'connected' ? 'var(--success-bg)' : 'transparent'
                     }}>
                       {integration.status}
                     </span>
                   </div>
-                  <div style={{ fontSize: '0.85rem', color: '#666' }}>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--muted)' }}>
                     {integration.description}
                   </div>
                   {integration.lastSync && integration.status === 'connected' && (
-                    <div style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.5rem' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: '0.5rem' }}>
                       Last sync: {new Date(integration.lastSync).toLocaleString()}
                     </div>
                   )}
@@ -245,7 +245,7 @@ export default function Settings() {
                 <strong style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Google Integration
                 </strong>
-                <ul style={{ marginTop: '0.75rem', marginLeft: '1.5rem', fontSize: '0.85rem', color: '#666' }}>
+                <ul style={{ marginTop: '0.75rem', marginLeft: '1.5rem', fontSize: '0.85rem', color: 'var(--muted)' }}>
                   <li>Backend auth server running on port 3001</li>
                   <li>Google OAuth credentials configured</li>
                   <li>Calendar and Gmail API scopes enabled</li>
@@ -255,7 +255,7 @@ export default function Settings() {
                 <strong style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Memory System
                 </strong>
-                <ul style={{ marginTop: '0.75rem', marginLeft: '1.5rem', fontSize: '0.85rem', color: '#666' }}>
+                <ul style={{ marginTop: '0.75rem', marginLeft: '1.5rem', fontSize: '0.85rem', color: 'var(--muted)' }}>
                   <li>Memory HTTP server on port 8765</li>
                   <li>Qdrant vector database running</li>
                   <li>SQLite database with indexed conversations</li>
@@ -278,7 +278,7 @@ export default function Settings() {
                 fontSize: '0.7rem',
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
-                color: '#666',
+                color: 'var(--muted)',
                 marginBottom: '0.5rem'
               }}>
                 Full Name
@@ -296,7 +296,7 @@ export default function Settings() {
                 fontSize: '0.7rem',
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
-                color: '#666',
+                color: 'var(--muted)',
                 marginBottom: '0.5rem'
               }}>
                 Title
@@ -314,7 +314,7 @@ export default function Settings() {
                 fontSize: '0.7rem',
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
-                color: '#666',
+                color: 'var(--muted)',
                 marginBottom: '0.5rem'
               }}>
                 Company
@@ -332,7 +332,7 @@ export default function Settings() {
                 fontSize: '0.7rem',
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
-                color: '#666',
+                color: 'var(--muted)',
                 marginBottom: '0.5rem'
               }}>
                 Email
@@ -350,7 +350,7 @@ export default function Settings() {
                 fontSize: '0.7rem',
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
-                color: '#666',
+                color: 'var(--muted)',
                 marginBottom: '0.5rem'
               }}>
                 Timezone
@@ -360,7 +360,7 @@ export default function Settings() {
                 style={{
                   width: '100%',
                   padding: '1rem',
-                  border: '1px solid #000',
+                  border: '1px solid var(--fg)',
                   background: 'transparent',
                   fontSize: '0.9rem',
                   fontFamily: 'inherit'
@@ -405,7 +405,7 @@ export default function Settings() {
                     fontSize: '0.7rem',
                     textTransform: 'uppercase',
                     letterSpacing: '0.1em',
-                    color: '#666',
+                    color: 'var(--muted)',
                     marginBottom: '0.5rem'
                   }}>
                     Start
@@ -422,7 +422,7 @@ export default function Settings() {
                     fontSize: '0.7rem',
                     textTransform: 'uppercase',
                     letterSpacing: '0.1em',
-                    color: '#666',
+                    color: 'var(--muted)',
                     marginBottom: '0.5rem'
                   }}>
                     End
@@ -461,7 +461,7 @@ export default function Settings() {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     padding: '1rem 0',
-                    borderBottom: '1px solid #eee'
+                    borderBottom: '1px solid var(--surface)'
                   }}
                 >
                   <span style={{ fontSize: '0.9rem' }}>{pref.label}</span>
@@ -472,7 +472,7 @@ export default function Settings() {
                       style={{
                         width: '20px',
                         height: '20px',
-                        accentColor: '#000'
+                        accentColor: 'var(--fg)'
                       }}
                     />
                   </label>
@@ -496,7 +496,7 @@ export default function Settings() {
                 style={{
                   width: '100%',
                   padding: '1rem',
-                  border: '1px solid #000',
+                  border: '1px solid var(--fg)',
                   background: 'transparent',
                   fontSize: '0.9rem',
                   fontFamily: 'inherit'
