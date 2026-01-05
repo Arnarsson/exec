@@ -14,6 +14,8 @@ import automationRoutes, { initializeAutomationRoutes } from './routes/automatio
 import okrRoutes from './routes/okr.js';
 import webhookRoutes from './routes/webhooks.js';
 import authRoutes from './routes/auth';
+import calendarRoutes from './routes/calendar';
+import gmailRoutes from './routes/gmail';
 import { okrService } from './services/okr-service.js';
 
 const app = express();
@@ -276,6 +278,10 @@ app.post('/api/copilot', async (req, res): Promise<void> => {
 
 // Authentication routes
 app.use('/auth', authRoutes);
+
+// Google Calendar and Gmail API routes
+app.use('/api/calendar', calendarRoutes);
+app.use('/api/gmail', gmailRoutes);
 
 // OKR API routes
 app.use('/api/okr', okrRoutes);

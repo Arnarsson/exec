@@ -30,6 +30,8 @@ services:
       - NODE_ENV=production
       - PORT=3001
       - WS_PORT=8080
+    volumes:
+      - backend_data:/app/data
     depends_on:
       - memory
     networks:
@@ -87,5 +89,6 @@ networks:
 volumes:
   caddy_data:
   caddy_config:
+  backend_data:
   memory_data:
   qdrant_data:

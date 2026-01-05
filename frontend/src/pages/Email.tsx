@@ -23,12 +23,14 @@ interface MemoryResult {
   _score: number;
 }
 
+type FilterType = 'all' | 'unread' | 'starred' | 'important';
+
 export default function Email() {
   const [emails, setEmails] = useState<EmailMessage[]>([])
   const [selectedEmail, setSelectedEmail] = useState<EmailMessage | null>(null)
   const [showCompose, setShowCompose] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [activeFilter, setActiveFilter] = useState<FilterType>('all')
   const [googleConnected, setGoogleConnected] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [memorySuggestions, setMemorySuggestions] = useState<MemoryResult[]>([])
@@ -61,10 +63,33 @@ export default function Email() {
   const fetchEmails = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch(`${getApiUrl()}/gmail/messages`)
+      const response = await fetch(`${getApiUrl()}/api/gmail/inbox?limit=50`)
       if (response.ok) {
         const data = await response.json()
-        setEmails(data.messages || [])
+        // Map Gmail API response to frontend interface
+        const mappedEmails: EmailMessage[] = (data.messages || []).map((msg: {
+          id: string;
+          subject: string;
+          from: string;
+          snippet: string;
+          date: string;
+          isUnread: boolean;
+          labels: string[];
+        }) => ({
+          id: msg.id,
+          subject: msg.subject || '(No subject)',
+          sender: msg.from?.split('<')[0]?.trim() || 'Unknown',
+          senderEmail: msg.from?.match(/<(.+)>/)?.[1] || msg.from || '',
+          preview: msg.snippet || '',
+          timestamp: msg.date || new Date().toISOString(),
+          isRead: !msg.isUnread,
+          isStarred: msg.labels?.includes('STARRED') || false,
+          isImportant: msg.labels?.includes('IMPORTANT') || false,
+          category: msg.labels?.includes('CATEGORY_SOCIAL') ? 'social' :
+                    msg.labels?.includes('CATEGORY_PROMOTIONS') ? 'promotions' :
+                    msg.labels?.includes('CATEGORY_UPDATES') ? 'updates' : 'primary'
+        }))
+        setEmails(mappedEmails)
       }
     } catch (error) {
       console.warn('Failed to fetch emails')
@@ -90,22 +115,6 @@ export default function Email() {
     searchMemoryForEmails()
   }, [searchMemoryForEmails])
 
-  // Filter emails
-  const filteredEmails = emails.filter(email => {
-    const matchesSearch = !searchQuery ||
-      email.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      email.sender.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      email.preview.toLowerCase().includes(searchQuery.toLowerCase())
-
-    const matchesCategory = selectedCategory === 'all' ||
-      (selectedCategory === 'unread' && !email.isRead) ||
-      (selectedCategory === 'starred' && email.isStarred) ||
-      (selectedCategory === 'important' && email.isImportant) ||
-      email.category === selectedCategory
-
-    return matchesSearch && matchesCategory
-  })
-
   // Stats
   const stats = {
     total: emails.length,
@@ -113,6 +122,41 @@ export default function Email() {
     starred: emails.filter(e => e.isStarred).length,
     important: emails.filter(e => e.isImportant).length
   }
+
+  // Filter emails based on active filter and search
+  const getFilteredEmails = () => {
+    let filtered = emails
+
+    // Apply filter
+    switch (activeFilter) {
+      case 'unread':
+        filtered = emails.filter(e => !e.isRead)
+        break
+      case 'starred':
+        filtered = emails.filter(e => e.isStarred)
+        break
+      case 'important':
+        filtered = emails.filter(e => e.isImportant)
+        break
+      default:
+        filtered = emails
+    }
+
+    // Apply search
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.filter(email =>
+        email.subject.toLowerCase().includes(query) ||
+        email.sender.toLowerCase().includes(query) ||
+        email.senderEmail.toLowerCase().includes(query) ||
+        email.preview.toLowerCase().includes(query)
+      )
+    }
+
+    return filtered
+  }
+
+  const filteredEmails = getFilteredEmails()
 
   // Mark email as read
   const markAsRead = (emailId: string) => {
@@ -136,6 +180,11 @@ export default function Email() {
     }
   }
 
+  // Handle stat click to toggle filter
+  const handleStatClick = (filter: FilterType) => {
+    setActiveFilter(filter === activeFilter ? 'all' : filter)
+  }
+
   return (
     <div>
       {/* Header */}
@@ -153,6 +202,14 @@ export default function Email() {
             {googleConnected ? '● GMAIL SYNCED' : '○ LOCAL ONLY'}
           </span>
           <button
+            onClick={() => fetchEmails()}
+            className="swiss-btn"
+            style={{ padding: '0.75rem 1rem' }}
+            disabled={isLoading}
+          >
+            {isLoading ? '...' : '↻'}
+          </button>
+          <button
             onClick={() => setShowCompose(true)}
             className="swiss-btn swiss-btn-primary"
             style={{ padding: '0.75rem 1.5rem' }}
@@ -162,27 +219,162 @@ export default function Email() {
         </div>
       </header>
 
-      {/* Stats */}
-      <section className="swiss-metric-grid" style={{ marginBottom: '3rem' }}>
-        <div className="swiss-metric">
-          <span className="swiss-metric-label">Total</span>
-          <span className="swiss-metric-value">{String(stats.total).padStart(2, '0')}</span>
-        </div>
-        <div className="swiss-metric">
-          <span className="swiss-metric-label">Unread</span>
-          <span className="swiss-metric-value" style={{ color: stats.unread > 0 ? '#ff0000' : undefined }}>
+      {/* Search Bar */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <input
+          type="text"
+          placeholder="Search emails by sender, subject, or content..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="swiss-input"
+          style={{ maxWidth: '500px' }}
+        />
+      </div>
+
+      {/* Clickable Stats/Filters */}
+      <section className="swiss-metric-grid" style={{ marginBottom: '2rem' }}>
+        <button
+          onClick={() => handleStatClick('all')}
+          className="swiss-metric"
+          style={{
+            cursor: 'pointer',
+            background: activeFilter === 'all' ? '#000' : 'transparent',
+            color: activeFilter === 'all' ? '#fff' : undefined,
+            border: activeFilter === 'all' ? '2px solid #000' : '1px solid #e5e5e5',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <span className="swiss-metric-label" style={{ color: activeFilter === 'all' ? '#ccc' : undefined }}>
+            Total
+          </span>
+          <span className="swiss-metric-value" style={{ color: activeFilter === 'all' ? '#fff' : undefined }}>
+            {String(stats.total).padStart(2, '0')}
+          </span>
+        </button>
+        <button
+          onClick={() => handleStatClick('unread')}
+          className="swiss-metric"
+          style={{
+            cursor: 'pointer',
+            background: activeFilter === 'unread' ? '#000' : 'transparent',
+            color: activeFilter === 'unread' ? '#fff' : undefined,
+            border: activeFilter === 'unread' ? '2px solid #000' : '1px solid #e5e5e5',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <span className="swiss-metric-label" style={{ color: activeFilter === 'unread' ? '#ccc' : undefined }}>
+            Unread
+          </span>
+          <span className="swiss-metric-value" style={{ color: activeFilter === 'unread' ? '#fff' : (stats.unread > 0 ? '#ff0000' : undefined) }}>
             {String(stats.unread).padStart(2, '0')}
           </span>
-        </div>
-        <div className="swiss-metric">
-          <span className="swiss-metric-label">Starred</span>
-          <span className="swiss-metric-value">{String(stats.starred).padStart(2, '0')}</span>
-        </div>
-        <div className="swiss-metric">
-          <span className="swiss-metric-label">Important</span>
-          <span className="swiss-metric-value">{String(stats.important).padStart(2, '0')}</span>
-        </div>
+        </button>
+        <button
+          onClick={() => handleStatClick('starred')}
+          className="swiss-metric"
+          style={{
+            cursor: 'pointer',
+            background: activeFilter === 'starred' ? '#000' : 'transparent',
+            color: activeFilter === 'starred' ? '#fff' : undefined,
+            border: activeFilter === 'starred' ? '2px solid #000' : '1px solid #e5e5e5',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <span className="swiss-metric-label" style={{ color: activeFilter === 'starred' ? '#ccc' : undefined }}>
+            Starred
+          </span>
+          <span className="swiss-metric-value" style={{ color: activeFilter === 'starred' ? '#fff' : undefined }}>
+            {String(stats.starred).padStart(2, '0')}
+          </span>
+        </button>
+        <button
+          onClick={() => handleStatClick('important')}
+          className="swiss-metric"
+          style={{
+            cursor: 'pointer',
+            background: activeFilter === 'important' ? '#000' : 'transparent',
+            color: activeFilter === 'important' ? '#fff' : undefined,
+            border: activeFilter === 'important' ? '2px solid #000' : '1px solid #e5e5e5',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <span className="swiss-metric-label" style={{ color: activeFilter === 'important' ? '#ccc' : undefined }}>
+            Important
+          </span>
+          <span className="swiss-metric-value" style={{ color: activeFilter === 'important' ? '#fff' : undefined }}>
+            {String(stats.important).padStart(2, '0')}
+          </span>
+        </button>
       </section>
+
+      {/* Active Filter Indicator */}
+      {(activeFilter !== 'all' || searchQuery) && (
+        <div style={{
+          display: 'flex',
+          gap: '0.5rem',
+          marginBottom: '1.5rem',
+          flexWrap: 'wrap',
+          alignItems: 'center'
+        }}>
+          <span style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Active filters:
+          </span>
+          {activeFilter !== 'all' && (
+            <button
+              onClick={() => setActiveFilter('all')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+                padding: '0.25rem 0.75rem',
+                background: '#000',
+                color: '#fff',
+                border: 'none',
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                cursor: 'pointer'
+              }}
+            >
+              {activeFilter} ×
+            </button>
+          )}
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+                padding: '0.25rem 0.75rem',
+                background: '#000',
+                color: '#fff',
+                border: 'none',
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                cursor: 'pointer'
+              }}
+            >
+              "{searchQuery}" ×
+            </button>
+          )}
+          <button
+            onClick={() => { setActiveFilter('all'); setSearchQuery(''); }}
+            style={{
+              padding: '0.25rem 0.5rem',
+              background: 'transparent',
+              border: '1px solid #ccc',
+              fontSize: '0.7rem',
+              cursor: 'pointer'
+            }}
+          >
+            Clear all
+          </button>
+          <span style={{ fontSize: '0.75rem', color: '#666', marginLeft: 'auto' }}>
+            Showing {filteredEmails.length} of {emails.length}
+          </span>
+        </div>
+      )}
 
       {/* Compose Modal */}
       {showCompose && (
@@ -270,51 +462,16 @@ export default function Email() {
         </div>
       )}
 
-      {/* Search and Filters */}
-      <div style={{ marginBottom: '2rem' }}>
-        <input
-          type="text"
-          placeholder="Search emails..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="swiss-input"
-          style={{ marginBottom: '1rem' }}
-        />
-
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          {[
-            { id: 'all', label: 'All' },
-            { id: 'unread', label: 'Unread' },
-            { id: 'starred', label: 'Starred' },
-            { id: 'important', label: 'Important' },
-            { id: 'primary', label: 'Primary' },
-          ].map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              style={{
-                padding: '0.5rem 1rem',
-                fontSize: '0.7rem',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                border: '1px solid #000',
-                background: selectedCategory === cat.id ? '#000' : 'transparent',
-                color: selectedCategory === cat.id ? '#fff' : '#000',
-                cursor: 'pointer'
-              }}
-            >
-              {cat.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
       {/* Main Grid */}
       <div className="swiss-grid">
         {/* Email List */}
         <section>
-          <h2 className="swiss-section-title">Inbox ({filteredEmails.length})</h2>
+          <h2 className="swiss-section-title">
+            {activeFilter === 'all' ? 'INBOX' :
+             activeFilter === 'unread' ? 'UNREAD' :
+             activeFilter === 'starred' ? 'STARRED' :
+             'IMPORTANT'} ({filteredEmails.length})
+          </h2>
 
           {!googleConnected && emails.length === 0 ? (
             <div style={{
@@ -335,7 +492,16 @@ export default function Email() {
               color: '#666',
               border: '1px dashed #ccc'
             }}>
-              <p>No emails match your search</p>
+              <p>No emails match your filter</p>
+              {(activeFilter !== 'all' || searchQuery) && (
+                <button
+                  onClick={() => { setActiveFilter('all'); setSearchQuery(''); }}
+                  className="swiss-btn"
+                  style={{ marginTop: '1rem', padding: '0.5rem 1rem' }}
+                >
+                  Clear filters
+                </button>
+              )}
             </div>
           ) : (
             filteredEmails.map(email => (
@@ -363,7 +529,8 @@ export default function Email() {
                         background: 'none',
                         border: 'none',
                         cursor: 'pointer',
-                        fontSize: '1rem'
+                        fontSize: '1rem',
+                        color: email.isStarred ? '#f59e0b' : '#ccc'
                       }}
                     >
                       {email.isStarred ? '★' : '☆'}
@@ -375,14 +542,20 @@ export default function Email() {
                       {email.sender}
                     </strong>
                     {email.isImportant && (
-                      <span className="swiss-urgent" style={{ fontSize: '0.7rem' }}>!</span>
+                      <span style={{
+                        background: '#ff0000',
+                        color: '#fff',
+                        fontSize: '0.6rem',
+                        padding: '0.1rem 0.3rem',
+                        fontWeight: 700
+                      }}>!</span>
                     )}
                     {!email.isRead && (
                       <span style={{
                         width: '8px',
                         height: '8px',
                         borderRadius: '50%',
-                        background: '#ff0000'
+                        background: '#3b82f6'
                       }} />
                     )}
                   </div>
@@ -418,7 +591,7 @@ export default function Email() {
         <section>
           {selectedEmail ? (
             <>
-              <h2 className="swiss-section-title">Message</h2>
+              <h2 className="swiss-section-title">MESSAGE</h2>
 
               <div style={{ marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -437,7 +610,7 @@ export default function Email() {
                     <button
                       onClick={() => toggleStar(selectedEmail.id)}
                       className="swiss-btn"
-                      style={{ padding: '0.5rem 1rem' }}
+                      style={{ padding: '0.5rem 1rem', color: selectedEmail.isStarred ? '#f59e0b' : undefined }}
                     >
                       {selectedEmail.isStarred ? '★' : '☆'}
                     </button>
@@ -482,7 +655,7 @@ export default function Email() {
             </>
           ) : (
             <>
-              <h2 className="swiss-section-title">Select Message</h2>
+              <h2 className="swiss-section-title">SELECT MESSAGE</h2>
               <div style={{
                 padding: '3rem',
                 textAlign: 'center',

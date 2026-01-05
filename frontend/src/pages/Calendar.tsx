@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay, addMonths, subMonths, addDays } from 'date-fns'
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay, addMonths, subMonths, addDays, startOfWeek, endOfWeek } from 'date-fns'
 import { getApiUrl, getMemoryUrl } from '@/config/api'
 
 interface CalendarEvent {
@@ -19,6 +19,8 @@ interface MemoryResult {
   _score: number;
 }
 
+type ViewFilter = 'all' | 'today' | 'week' | 'month';
+
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState(new Date())
@@ -30,6 +32,8 @@ export default function Calendar() {
   const [newEventTime, setNewEventTime] = useState('09:00')
   const [newEventDuration, setNewEventDuration] = useState('60')
   const [memorySuggestions, setMemorySuggestions] = useState<MemoryResult[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [viewFilter, setViewFilter] = useState<ViewFilter>('all')
 
   // Check Google auth status
   useEffect(() => {
@@ -54,7 +58,12 @@ export default function Calendar() {
   const fetchEvents = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch(`${getApiUrl()}/calendar/events?date=${format(currentDate, 'yyyy-MM-dd')}`)
+      // Use the range endpoint to get events for the current month
+      const monthStart = startOfMonth(currentDate)
+      const monthEnd = endOfMonth(currentDate)
+      const response = await fetch(
+        `${getApiUrl()}/api/calendar/range?start=${monthStart.toISOString()}&end=${monthEnd.toISOString()}&limit=100`
+      )
       if (response.ok) {
         const data = await response.json()
         setEvents(data.events || [])
@@ -65,6 +74,13 @@ export default function Calendar() {
       setIsLoading(false)
     }
   }
+
+  // Refetch when month changes
+  useEffect(() => {
+    if (googleConnected) {
+      fetchEvents()
+    }
+  }, [currentDate, googleConnected])
 
   // Search memory for meeting-related content
   const searchMemoryForMeetings = useCallback(async () => {
@@ -91,6 +107,51 @@ export default function Calendar() {
   // Calculate padding days for the start of the month
   const startPadding = monthStart.getDay()
   const paddingDays = Array(startPadding).fill(null)
+
+  // Filter events based on view and search
+  const todayEvents = events.filter(e => isToday(new Date(e.start.dateTime)))
+
+  const weekStart = startOfWeek(new Date())
+  const weekEnd = endOfWeek(new Date())
+  const thisWeekEvents = events.filter(e => {
+    const eventDate = new Date(e.start.dateTime)
+    return eventDate >= weekStart && eventDate <= weekEnd
+  })
+
+  // Get filtered events based on view filter and search
+  const getFilteredEvents = () => {
+    let filtered = events
+
+    // Apply view filter
+    switch (viewFilter) {
+      case 'today':
+        filtered = todayEvents
+        break
+      case 'week':
+        filtered = thisWeekEvents
+        break
+      case 'month':
+        filtered = events
+        break
+      default:
+        filtered = events
+    }
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.filter(e =>
+        e.summary.toLowerCase().includes(query) ||
+        e.location?.toLowerCase().includes(query) ||
+        e.description?.toLowerCase().includes(query) ||
+        e.attendees?.some(a => a.email.toLowerCase().includes(query))
+      )
+    }
+
+    return filtered
+  }
+
+  const filteredEvents = getFilteredEvents()
 
   // Filter events for selected date
   const selectedDateEvents = events.filter(event =>
@@ -132,15 +193,10 @@ export default function Calendar() {
     setShowNewEventForm(false)
   }
 
-  // Stats
-  const todayEvents = events.filter(e => isToday(new Date(e.start.dateTime)))
-  const thisWeekEvents = events.filter(e => {
-    const eventDate = new Date(e.start.dateTime)
-    const weekStart = new Date()
-    weekStart.setDate(weekStart.getDate() - weekStart.getDay())
-    const weekEnd = addDays(weekStart, 7)
-    return eventDate >= weekStart && eventDate < weekEnd
-  })
+  // Handle stat click to set filter
+  const handleStatClick = (filter: ViewFilter) => {
+    setViewFilter(filter === viewFilter ? 'all' : filter)
+  }
 
   return (
     <div>
@@ -168,25 +224,145 @@ export default function Calendar() {
         </div>
       </header>
 
-      {/* Stats */}
-      <section className="swiss-metric-grid" style={{ marginBottom: '3rem' }}>
+      {/* Search Bar */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <input
+          type="text"
+          placeholder="Search events by title, location, or attendee..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="swiss-input"
+          style={{ maxWidth: '500px' }}
+        />
+      </div>
+
+      {/* Clickable Stats/Filters */}
+      <section className="swiss-metric-grid" style={{ marginBottom: '2rem' }}>
+        <button
+          onClick={() => handleStatClick('today')}
+          className="swiss-metric"
+          style={{
+            cursor: 'pointer',
+            background: viewFilter === 'today' ? '#000' : 'transparent',
+            color: viewFilter === 'today' ? '#fff' : undefined,
+            border: viewFilter === 'today' ? '2px solid #000' : '1px solid #e5e5e5',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <span className="swiss-metric-label" style={{ color: viewFilter === 'today' ? '#ccc' : undefined }}>
+            Today
+          </span>
+          <span className="swiss-metric-value" style={{ color: viewFilter === 'today' ? '#fff' : undefined }}>
+            {String(todayEvents.length).padStart(2, '0')}
+          </span>
+        </button>
+        <button
+          onClick={() => handleStatClick('week')}
+          className="swiss-metric"
+          style={{
+            cursor: 'pointer',
+            background: viewFilter === 'week' ? '#000' : 'transparent',
+            color: viewFilter === 'week' ? '#fff' : undefined,
+            border: viewFilter === 'week' ? '2px solid #000' : '1px solid #e5e5e5',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <span className="swiss-metric-label" style={{ color: viewFilter === 'week' ? '#ccc' : undefined }}>
+            This Week
+          </span>
+          <span className="swiss-metric-value" style={{ color: viewFilter === 'week' ? '#fff' : undefined }}>
+            {String(thisWeekEvents.length).padStart(2, '0')}
+          </span>
+        </button>
+        <button
+          onClick={() => handleStatClick('month')}
+          className="swiss-metric"
+          style={{
+            cursor: 'pointer',
+            background: viewFilter === 'month' ? '#000' : 'transparent',
+            color: viewFilter === 'month' ? '#fff' : undefined,
+            border: viewFilter === 'month' ? '2px solid #000' : '1px solid #e5e5e5',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <span className="swiss-metric-label" style={{ color: viewFilter === 'month' ? '#ccc' : undefined }}>
+            This Month
+          </span>
+          <span className="swiss-metric-value" style={{ color: viewFilter === 'month' ? '#fff' : undefined }}>
+            {String(events.length).padStart(2, '0')}
+          </span>
+        </button>
         <div className="swiss-metric">
-          <span className="swiss-metric-label">Today</span>
-          <span className="swiss-metric-value">{String(todayEvents.length).padStart(2, '0')}</span>
-        </div>
-        <div className="swiss-metric">
-          <span className="swiss-metric-label">This Week</span>
-          <span className="swiss-metric-value">{String(thisWeekEvents.length).padStart(2, '0')}</span>
-        </div>
-        <div className="swiss-metric">
-          <span className="swiss-metric-label">This Month</span>
-          <span className="swiss-metric-value">{String(events.length).padStart(2, '0')}</span>
-        </div>
-        <div className="swiss-metric">
-          <span className="swiss-metric-label">Selected</span>
-          <span className="swiss-metric-value">{String(selectedDateEvents.length).padStart(2, '0')}</span>
+          <span className="swiss-metric-label">Showing</span>
+          <span className="swiss-metric-value">{String(filteredEvents.length).padStart(2, '0')}</span>
         </div>
       </section>
+
+      {/* Active Filter Indicator */}
+      {(viewFilter !== 'all' || searchQuery) && (
+        <div style={{
+          display: 'flex',
+          gap: '0.5rem',
+          marginBottom: '1.5rem',
+          flexWrap: 'wrap',
+          alignItems: 'center'
+        }}>
+          <span style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Active filters:
+          </span>
+          {viewFilter !== 'all' && (
+            <button
+              onClick={() => setViewFilter('all')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+                padding: '0.25rem 0.75rem',
+                background: '#000',
+                color: '#fff',
+                border: 'none',
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                cursor: 'pointer'
+              }}
+            >
+              {viewFilter} ×
+            </button>
+          )}
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+                padding: '0.25rem 0.75rem',
+                background: '#000',
+                color: '#fff',
+                border: 'none',
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                cursor: 'pointer'
+              }}
+            >
+              "{searchQuery}" ×
+            </button>
+          )}
+          <button
+            onClick={() => { setViewFilter('all'); setSearchQuery(''); }}
+            style={{
+              padding: '0.25rem 0.5rem',
+              background: 'transparent',
+              border: '1px solid #ccc',
+              fontSize: '0.7rem',
+              cursor: 'pointer'
+            }}
+          >
+            Clear all
+          </button>
+        </div>
+      )}
 
       {/* New Event Form */}
       {showNewEventForm && (
@@ -412,49 +588,90 @@ export default function Calendar() {
           </div>
         </section>
 
-        {/* Selected Day Details */}
+        {/* Selected Day Details or Filtered List */}
         <section>
-          <h2 className="swiss-section-title">
-            {format(selectedDate, 'EEEE, MMMM d').toUpperCase()}
-          </h2>
+          {viewFilter !== 'all' || searchQuery ? (
+            <>
+              <h2 className="swiss-section-title">
+                {viewFilter === 'today' ? "TODAY'S EVENTS" :
+                 viewFilter === 'week' ? "THIS WEEK'S EVENTS" :
+                 searchQuery ? `SEARCH: "${searchQuery.toUpperCase()}"` :
+                 "ALL EVENTS"}
+              </h2>
 
-          {selectedDateEvents.length === 0 ? (
-            <div style={{
-              padding: '3rem',
-              textAlign: 'center',
-              color: '#666',
-              border: '1px dashed #ccc'
-            }}>
-              <p style={{ marginBottom: '1rem' }}>No events scheduled</p>
-              <button
-                onClick={() => setShowNewEventForm(true)}
-                className="swiss-btn"
-                style={{ padding: '0.5rem 1.5rem' }}
-              >
-                + Add Event
-              </button>
-            </div>
-          ) : (
-            selectedDateEvents.map(event => (
-              <div key={event.id} className="swiss-item">
-                <div style={{ flex: 1 }}>
-                  <strong className="swiss-item-title">{event.summary}</strong>
-                  <div className="swiss-item-meta">
-                    {format(new Date(event.start.dateTime), 'HH:mm')} — {format(new Date(event.end.dateTime), 'HH:mm')}
-                    {event.location && ` / ${event.location}`}
-                  </div>
-                  {event.attendees && event.attendees.length > 0 && (
-                    <div style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.25rem' }}>
-                      {event.attendees.length} attendee{event.attendees.length > 1 ? 's' : ''}
-                    </div>
-                  )}
+              {filteredEvents.length === 0 ? (
+                <div style={{
+                  padding: '3rem',
+                  textAlign: 'center',
+                  color: '#666',
+                  border: '1px dashed #ccc'
+                }}>
+                  <p>No events match your filter</p>
                 </div>
-              </div>
-            ))
+              ) : (
+                filteredEvents.map(event => (
+                  <div key={event.id} className="swiss-item">
+                    <div style={{ flex: 1 }}>
+                      <strong className="swiss-item-title">{event.summary}</strong>
+                      <div className="swiss-item-meta">
+                        {format(new Date(event.start.dateTime), 'EEE, MMM d')} · {format(new Date(event.start.dateTime), 'HH:mm')} — {format(new Date(event.end.dateTime), 'HH:mm')}
+                        {event.location && ` / ${event.location}`}
+                      </div>
+                      {event.attendees && event.attendees.length > 0 && (
+                        <div style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.25rem' }}>
+                          {event.attendees.length} attendee{event.attendees.length > 1 ? 's' : ''}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </>
+          ) : (
+            <>
+              <h2 className="swiss-section-title">
+                {format(selectedDate, 'EEEE, MMMM d').toUpperCase()}
+              </h2>
+
+              {selectedDateEvents.length === 0 ? (
+                <div style={{
+                  padding: '3rem',
+                  textAlign: 'center',
+                  color: '#666',
+                  border: '1px dashed #ccc'
+                }}>
+                  <p style={{ marginBottom: '1rem' }}>No events scheduled</p>
+                  <button
+                    onClick={() => setShowNewEventForm(true)}
+                    className="swiss-btn"
+                    style={{ padding: '0.5rem 1.5rem' }}
+                  >
+                    + Add Event
+                  </button>
+                </div>
+              ) : (
+                selectedDateEvents.map(event => (
+                  <div key={event.id} className="swiss-item">
+                    <div style={{ flex: 1 }}>
+                      <strong className="swiss-item-title">{event.summary}</strong>
+                      <div className="swiss-item-meta">
+                        {format(new Date(event.start.dateTime), 'HH:mm')} — {format(new Date(event.end.dateTime), 'HH:mm')}
+                        {event.location && ` / ${event.location}`}
+                      </div>
+                      {event.attendees && event.attendees.length > 0 && (
+                        <div style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.25rem' }}>
+                          {event.attendees.length} attendee{event.attendees.length > 1 ? 's' : ''}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </>
           )}
 
           {/* Memory Suggestions */}
-          {memorySuggestions.length > 0 && (
+          {memorySuggestions.length > 0 && !searchQuery && viewFilter === 'all' && (
             <div style={{ marginTop: '3rem' }}>
               <h3 style={{
                 fontSize: '0.75rem',
