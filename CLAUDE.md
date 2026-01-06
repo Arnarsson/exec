@@ -102,6 +102,22 @@ The app uses CSS custom properties for theming. All colors should reference thes
 3. **Swiss aesthetic** - Uppercase labels, thin borders, minimal decoration
 4. **Font**: Inter family (`var(--font-main)`)
 
+### Responsive Breakpoints
+
+The app uses three main breakpoints defined in `index.css`:
+
+| Breakpoint | Target | Key Changes |
+|------------|--------|-------------|
+| `1024px` | Tablet | Sidebar hidden, mobile header shown, 2-column grids |
+| `640px` | Mobile | Single column layouts, smaller fonts, stacked items |
+| `380px` | Small mobile | Further reduced padding and font sizes |
+
+**Mobile Layout Features**:
+- Hamburger menu replaces sidebar on tablet/mobile
+- Mobile header with theme toggle and menu button
+- Touch-friendly button sizes (min 44px tap targets)
+- `font-size: 16px` on inputs to prevent iOS zoom
+
 ## Development Commands
 
 ### Frontend
@@ -166,12 +182,38 @@ npm start            # Run production build
 
 ## Deployment
 
-Production deployment uses Docker:
+### Frontend (Vercel)
+The frontend is deployed on Vercel with automatic deployments from the main branch.
+
+```bash
+# Manual deployment
+cd frontend
+npx vercel --prod
+```
+
+**Production URL**: `https://frontend-xi-ashen.vercel.app/`
+
+**Vercel Configuration** (`frontend/vercel.json`):
+```json
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
+```
+
+The `rewrites` rule is essential for React Router SPA routing to work correctly.
+
+### Backend (Docker/VPS)
+Backend deployment uses Docker on a VPS:
 ```bash
 docker-compose -f docker-compose.production.yml up -d
 ```
 
-Backend runs on port 3001, frontend served via Caddy/nginx.
+Backend runs on port 3001.
 
 ## Common Tasks
 
@@ -220,9 +262,32 @@ cd backend && npm test
 
 ## Current Status
 
-- Google OAuth integration: Complete
-- Calendar API integration: Complete
-- Gmail API integration: Complete
-- Dark mode support: Complete
-- Mobile responsiveness: In progress
-- Multi-email account support: Planned
+- Google OAuth integration: ✅ Complete
+- Calendar API integration: ✅ Complete
+- Gmail API integration: ✅ Complete
+- Dark mode support: ✅ Complete (with localStorage persistence)
+- Mobile responsiveness: ✅ Complete (breakpoints at 1024px, 640px, 380px)
+- Multi-email account support: 🔜 Planned
+
+## Troubleshooting
+
+### Vercel Deployment Issues
+If changes aren't appearing on production after pushing to main:
+1. Check if Vercel auto-deployed: Visit the Vercel dashboard
+2. Manual redeploy: `cd frontend && npx vercel --prod`
+3. Clear browser cache and hard refresh (Cmd+Shift+R)
+
+### Dark Mode Not Working
+1. Ensure `ThemeProvider` wraps the app in `main.tsx`
+2. Check that `data-theme` attribute is being set on `<html>` element
+3. Verify all colors use CSS variables, not hardcoded hex values
+
+### Navigation Not Working
+1. Ensure `BrowserRouter` wraps the app in `main.tsx`
+2. For Vercel: Verify `vercel.json` has the SPA rewrite rule
+3. Use React Router's `<Link>` component, not `<a>` tags
+
+### Google OAuth Errors
+1. Verify redirect URI matches exactly in Google Cloud Console
+2. Check that all required scopes are enabled
+3. Ensure tokens are being persisted in `TokenStore`
