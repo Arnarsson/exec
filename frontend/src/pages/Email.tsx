@@ -23,6 +23,12 @@ interface MemoryResult {
   _score: number;
 }
 
+interface Account {
+  id: string;
+  email?: string;
+  updatedAt: string;
+}
+
 type FilterType = 'all' | 'unread' | 'starred' | 'important';
 
 export default function Email() {
@@ -34,6 +40,8 @@ export default function Email() {
   const [googleConnected, setGoogleConnected] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [memorySuggestions, setMemorySuggestions] = useState<MemoryResult[]>([])
+  const [accounts, setAccounts] = useState<Account[]>([])
+  const [selectedAccount, setSelectedAccount] = useState<string>('default')
 
   // Compose state
   const [composeTo, setComposeTo] = useState('')
@@ -48,8 +56,13 @@ export default function Email() {
         if (response.ok) {
           const data = await response.json()
           setGoogleConnected(data.authenticated)
+          setAccounts(data.accounts || [])
+          // Set first account as default if available
+          if (data.accounts?.length > 0) {
+            setSelectedAccount(data.accounts[0].id)
+          }
           if (data.authenticated) {
-            fetchEmails()
+            fetchEmails(data.accounts?.[0]?.id || 'default')
           }
         }
       } catch (error) {
@@ -60,10 +73,11 @@ export default function Email() {
   }, [])
 
   // Fetch emails from Gmail
-  const fetchEmails = async () => {
+  const fetchEmails = async (accountId?: string) => {
     try {
       setIsLoading(true)
-      const response = await fetch(`${getApiUrl()}/api/gmail/inbox?limit=50`)
+      const acctId = accountId || selectedAccount
+      const response = await fetch(`${getApiUrl()}/api/gmail/inbox?limit=50&accountId=${acctId}`)
       if (response.ok) {
         const data = await response.json()
         // Map Gmail API response to frontend interface
@@ -194,6 +208,31 @@ export default function Email() {
           <h1 style={{ fontSize: '2rem' }}>Email</h1>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          {/* Account Selector */}
+          {accounts.length > 1 && (
+            <select
+              value={selectedAccount}
+              onChange={(e) => {
+                setSelectedAccount(e.target.value)
+                fetchEmails(e.target.value)
+              }}
+              style={{
+                padding: '0.4rem 0.75rem',
+                border: '1px solid var(--fg)',
+                background: 'var(--surface)',
+                color: 'var(--fg)',
+                fontSize: '0.7rem',
+                fontFamily: 'inherit',
+                cursor: 'pointer'
+              }}
+            >
+              {accounts.map(account => (
+                <option key={account.id} value={account.id}>
+                  {account.email || account.id}
+                </option>
+              ))}
+            </select>
+          )}
           <span style={{
             fontSize: '0.6rem',
             fontWeight: 800,

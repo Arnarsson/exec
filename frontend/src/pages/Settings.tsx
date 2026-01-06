@@ -1,9 +1,16 @@
 import { useState, useEffect } from 'react'
 import { getApiUrl, getMemoryUrl } from '@/config/api'
 
+interface Account {
+  id: string;
+  email?: string;
+  updatedAt: string;
+}
+
 interface IntegrationStatus {
   authenticated: boolean;
   hasGoogleCredentials: boolean;
+  accounts: Account[];
   timestamp: string;
 }
 
@@ -20,6 +27,7 @@ export default function Settings() {
   const [googleStatus, setGoogleStatus] = useState<IntegrationStatus | null>(null)
   const [googleLoading, setGoogleLoading] = useState(true)
   const [googleError, setGoogleError] = useState<string | null>(null)
+  const [accounts, setAccounts] = useState<Account[]>([])
   const [integrations, setIntegrations] = useState<Integration[]>([
     {
       id: 'google-calendar',
@@ -56,6 +64,7 @@ export default function Settings() {
       if (!response.ok) throw new Error('Auth service unavailable')
       const data = await response.json()
       setGoogleStatus(data)
+      setAccounts(data.accounts || [])
 
       // Update integration statuses based on Google auth
       if (data.authenticated) {
@@ -71,6 +80,29 @@ export default function Settings() {
       setGoogleError('Google services offline')
     } finally {
       setGoogleLoading(false)
+    }
+  }
+
+  // Disconnect a specific account
+  const disconnectAccount = async (accountId: string) => {
+    try {
+      const response = await fetch(`${getApiUrl()}/auth/logout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accountId })
+      })
+      if (response.ok) {
+        setAccounts(prev => prev.filter(a => a.id !== accountId))
+        if (accounts.length <= 1) {
+          setIntegrations(prev => prev.map(i =>
+            (i.id === 'google-calendar' || i.id === 'gmail')
+              ? { ...i, status: 'disconnected', lastSync: undefined }
+              : i
+          ))
+        }
+      }
+    } catch (error) {
+      console.error('Failed to disconnect account:', error)
     }
   }
 
@@ -236,6 +268,58 @@ export default function Settings() {
               </div>
             ))}
           </div>
+
+          {/* Connected Accounts */}
+          {accounts.length > 0 && (
+            <div style={{ marginTop: '3rem' }}>
+              <h2 className="swiss-section-title">Connected Accounts</h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {accounts.map(account => (
+                  <div
+                    key={account.id}
+                    className="swiss-item"
+                    style={{
+                      padding: '1rem 1.5rem',
+                      border: '1px solid var(--fg)',
+                      background: 'var(--surface)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <div>
+                      <strong style={{ fontSize: '0.95rem' }}>{account.email || account.id}</strong>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: '0.25rem' }}>
+                        Connected: {new Date(account.updatedAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => disconnectAccount(account.id)}
+                      className="swiss-btn"
+                      style={{
+                        padding: '0.4rem 1rem',
+                        fontSize: '0.7rem',
+                        color: 'var(--accent)'
+                      }}
+                    >
+                      Disconnect
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={connectGoogle}
+                  className="swiss-btn"
+                  style={{
+                    padding: '0.75rem 1.5rem',
+                    marginTop: '0.5rem',
+                    alignSelf: 'flex-start'
+                  }}
+                >
+                  + Add Another Account
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Setup Instructions */}
           <div style={{ marginTop: '3rem' }}>
