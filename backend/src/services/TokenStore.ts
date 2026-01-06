@@ -194,6 +194,18 @@ export class TokenStore {
     const data = this.readFile();
     return Object.keys(data);
   }
+
+  /**
+   * List all accounts with metadata
+   */
+  listAccounts(): Array<{ id: string; email?: string; updatedAt: string }> {
+    const data = this.readFile();
+    return Object.entries(data).map(([id, userData]) => ({
+      id,
+      email: userData.email,
+      updatedAt: userData.updatedAt,
+    }));
+  }
 }
 
 // Singleton instance

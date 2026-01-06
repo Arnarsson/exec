@@ -142,10 +142,11 @@ npm start            # Run production build
 ## API Endpoints
 
 ### Auth Routes (`/auth/*`)
-- `GET /auth/google` - Initiate OAuth flow
-- `GET /auth/google/callback` - OAuth callback
-- `GET /auth/status` - Check auth status
-- `POST /auth/logout` - Clear tokens
+- `GET /auth/google` - Initiate OAuth flow (supports `?accountId=` for multi-account)
+- `GET /auth/google/callback` - OAuth callback (uses `state` param for accountId)
+- `GET /auth/status` - Check auth status (returns `accounts` array)
+- `GET /auth/accounts` - List all connected accounts
+- `POST /auth/logout` - Clear tokens (supports `accountId` in body for specific account)
 
 ### Calendar Routes (`/api/calendar/*`)
 - `GET /api/calendar/events` - List upcoming events
@@ -154,10 +155,13 @@ npm start            # Run production build
 - `GET /api/calendar/today` - Today's agenda
 
 ### Gmail Routes (`/api/gmail/*`)
+All Gmail routes support `?accountId=` query param for multi-account (defaults to 'default'):
 - `GET /api/gmail/inbox` - List inbox messages
 - `GET /api/gmail/messages/:id` - Get single message
 - `GET /api/gmail/unread` - Unread count
 - `GET /api/gmail/search` - Search messages
+- `GET /api/gmail/threads/:id` - Get thread with all messages
+- `GET /api/gmail/labels` - Get all labels
 
 ## Key Files
 
@@ -267,7 +271,7 @@ cd backend && npm test
 - Gmail API integration: ✅ Complete
 - Dark mode support: ✅ Complete (with localStorage persistence)
 - Mobile responsiveness: ✅ Complete (breakpoints at 1024px, 640px, 380px)
-- Multi-email account support: 🔜 Planned
+- Multi-email account support: ✅ Backend complete (frontend UI pending)
 
 ## Troubleshooting
 

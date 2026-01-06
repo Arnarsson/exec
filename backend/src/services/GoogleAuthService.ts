@@ -21,24 +21,15 @@ export class GoogleAuthService {
     // Set up token refresh listener
     this.oauth2Client.on('tokens', (tokens) => {
       console.log('[GoogleAuthService] Token refresh event received');
-      // When access token is refreshed, update the store
-      if (tokens.access_token) {
-        // Find the user and update their tokens
-        const users = this.tokenStore.listUsers();
-        if (users.length > 0) {
-          // For single-user app, update the default user
-          try {
-            this.tokenStore.updateTokens('default', {
-              access_token: tokens.access_token,
-              expiry_date: tokens.expiry_date,
-            });
-            console.log('[GoogleAuthService] Tokens refreshed and saved');
-          } catch (error) {
-            console.error('[GoogleAuthService] Failed to save refreshed tokens:', error);
-          }
-        }
-      }
+      // Token refresh is now handled per-user in refreshTokens method
     });
+  }
+
+  /**
+   * List all connected accounts
+   */
+  listAccounts(): Array<{ id: string; email?: string; updatedAt: string }> {
+    return this.tokenStore.listAccounts();
   }
 
   /**
@@ -51,7 +42,7 @@ export class GoogleAuthService {
   /**
    * Generate the authorization URL
    */
-  generateAuthUrl(): string {
+  generateAuthUrl(accountId?: string): string {
     const scopes = [
       'https://www.googleapis.com/auth/userinfo.email',
       'https://www.googleapis.com/auth/userinfo.profile',
@@ -63,6 +54,7 @@ export class GoogleAuthService {
       access_type: 'offline',
       scope: scopes,
       prompt: 'consent', // Force consent to get refresh token
+      state: accountId, // Pass accountId as state to preserve through OAuth flow
     });
   }
 

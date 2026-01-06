@@ -15,8 +15,9 @@ const gmailService = getGmailService();
  */
 router.get('/inbox', async (req: Request, res: Response): Promise<void> => {
   try {
+    const accountId = (req.query.accountId as string) || 'default';
     const limit = parseInt(req.query.limit as string) || 20;
-    const messages = await gmailService.getInbox('default', limit);
+    const messages = await gmailService.getInbox(accountId, limit);
 
     res.json({
       success: true,
@@ -51,7 +52,8 @@ router.get('/inbox', async (req: Request, res: Response): Promise<void> => {
 router.get('/messages/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const message = await gmailService.getMessage('default', id);
+    const accountId = (req.query.accountId as string) || 'default';
+    const message = await gmailService.getMessage(accountId, id);
 
     if (!message) {
       res.status(404).json({
@@ -92,7 +94,8 @@ router.get('/messages/:id', async (req: Request, res: Response): Promise<void> =
  */
 router.get('/unread', async (req: Request, res: Response): Promise<void> => {
   try {
-    const count = await gmailService.getUnreadCount('default');
+    const accountId = (req.query.accountId as string) || 'default';
+    const count = await gmailService.getUnreadCount(accountId);
 
     res.json({
       success: true,
@@ -136,8 +139,9 @@ router.get('/search', async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    const accountId = (req.query.accountId as string) || 'default';
     const maxResults = parseInt(limit as string) || 20;
-    const messages = await gmailService.searchMessages('default', q as string, maxResults);
+    const messages = await gmailService.searchMessages(accountId, q as string, maxResults);
 
     res.json({
       success: true,
@@ -173,7 +177,8 @@ router.get('/search', async (req: Request, res: Response): Promise<void> => {
 router.get('/threads/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const thread = await gmailService.getThread('default', id);
+    const accountId = (req.query.accountId as string) || 'default';
+    const thread = await gmailService.getThread(accountId, id);
 
     if (!thread) {
       res.status(404).json({
@@ -214,7 +219,8 @@ router.get('/threads/:id', async (req: Request, res: Response): Promise<void> =>
  */
 router.get('/labels', async (req: Request, res: Response): Promise<void> => {
   try {
-    const labels = await gmailService.getLabels('default');
+    const accountId = (req.query.accountId as string) || 'default';
+    const labels = await gmailService.getLabels(accountId);
 
     res.json({
       success: true,
