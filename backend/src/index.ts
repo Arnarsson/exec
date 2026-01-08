@@ -16,6 +16,7 @@ import webhookRoutes from './routes/webhooks.js';
 import authRoutes from './routes/auth';
 import calendarRoutes from './routes/calendar';
 import gmailRoutes from './routes/gmail';
+import memoryRoutes from './routes/memory';
 import { okrService } from './services/okr-service.js';
 
 const app = express();
@@ -282,6 +283,9 @@ app.use('/auth', authRoutes);
 // Google Calendar and Gmail API routes
 app.use('/api/calendar', calendarRoutes);
 app.use('/api/gmail', gmailRoutes);
+
+// Memory API routes (proxy to Memory service)
+app.use('/api/memory', memoryRoutes);
 
 // OKR API routes
 app.use('/api/okr', okrRoutes);
